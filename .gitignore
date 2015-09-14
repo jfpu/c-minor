@@ -30,3 +30,7 @@
 
 # Debug files
 *.dSYM/
+
+# Project files
+lex.yy.c
+cminor
