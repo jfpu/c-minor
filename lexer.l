@@ -198,7 +198,7 @@ while       { return (WHILE); }
 
 .           {
   /* Error case */
-  ERROR("Invalid token %s", yytext);
+  ERROR("Unknown character %s", yytext);
 }
 
 <<EOF>>     { return 0; }
