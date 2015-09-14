@@ -1,10 +1,51 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h>      // printf, fopen, fclose
+#include <unistd.h>     // getopt
+#include <getopt.h>     // getopt
 #include "lex.yy.c"
 
 extern const char *token_manifest_to_string(int token);
 
+// Redirect lex input to a file
+extern FILE *yyin;
+
+enum _cminor_options {
+    LEX = 1,
+};
+
+void _lex();
+
 int main(int argc, char* argv[]) {
+
+    // handle command line arguments
+    int opt;
+    const char *optstring = "";
+
+    // setup long arguments
+    struct option options_spec[1];
+    options_spec[0].name = "scan";
+    options_spec[0].has_arg = 1;
+    options_spec[0].flag = NULL;
+    options_spec[0].val = LEX;
+
+    while ((opt = getopt_long_only(argc, argv, optstring, options_spec, NULL)) != -1) {
+        if (opt == LEX) {
+            // Use file
+            FILE *source_file = fopen(optarg, "r");
+            if (!source_file) {
+                fprintf(stderr, "Cannot open file %s\n", optarg);
+                exit(1);
+            }
+
+            yyin = source_file;
+            _lex();
+            fclose(source_file);
+        }
+    }
+
+    return 0;
+}
+
+void _lex() {
     int token;
     YYSTYPE yylval;
     while ((token = yylex(&yylval)) != 0) {
@@ -20,5 +61,4 @@ int main(int argc, char* argv[]) {
 
         printf("\n");
     }
-    return 0;
 }

@@ -107,7 +107,7 @@ while       { return (WHILE); }
 {ID}        {
   if (strlen(yytext) > MAX_IDENTIFIER_LENGTH) {
     // Identifier is too long, throw error
-    ERROR("Identifier %s is longer than max length %d\n", yytext, MAX_IDENTIFIER_LENGTH);
+    ERROR("Identifier is overflowing max length %d\n", MAX_IDENTIFIER_LENGTH);
   }
   yylval->identifier_symbol = yytext;
   return (IDENTIFIER);
