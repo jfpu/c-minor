@@ -102,7 +102,7 @@ while       { return (WHILE); }
 \:          { return (COLON); }
 ,           { return (COMMA); }
 
-{WHITESPACE}+ ;   /* Eat whitespace */
+{WHITESPACE}+ {}   /* Eat whitespace */
 
 {ID}        {
   if (strlen(yytext) > MAX_IDENTIFIER_LENGTH) {
