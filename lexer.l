@@ -113,7 +113,7 @@ while       { return (WHILE); }
   return (IDENTIFIER);
 }
 
-{DIGIT}+    {
+-?{DIGIT}+  {
   yylval->int_value = strtoll(yytext, NULL, 10);
   return (INTEGER_LITERAL);
 }
