@@ -83,8 +83,8 @@ while       { return (WHILE); }
 \*          { return (OP_MULT); }
 \/          { return (OP_DIV); }
 %           { return (OP_MOD); }
-\+          { return (OP_ADD); }
--           { return (OP_NEGSUB); }
+\+          { return (OP_PLUS); }
+-           { return (OP_MINUS); }
 
 \<          { return (OP_LT); }
 \<=         { return (OP_LE); }
@@ -113,7 +113,7 @@ while       { return (WHILE); }
   return (IDENTIFIER);
 }
 
--?{DIGIT}+  {
+{DIGIT}+    {
   yylval->int_value = strtoll(yytext, NULL, 10);
   return (INTEGER_LITERAL);
 }

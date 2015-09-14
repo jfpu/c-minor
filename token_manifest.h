@@ -8,8 +8,8 @@ enum {
     CHAR_LITERAL = 275,             STRING_LITERAL = 276,
     IDENTIFIER = 277,
     LPAREN = 278,   RPAREN = 279,   LBRACKET = 280,     RBRACKET = 281,
-    OP_INC = 282,   OP_DEC = 283,   OP_NEGSUB = 284,    OP_EXP = 285,
-    OP_MULT = 286,  OP_DIV = 287,   OP_MOD = 288,       OP_ADD = 289,
+    OP_INC = 282,   OP_DEC = 283,   OP_MINUS = 284,    OP_EXP = 285,
+    OP_MULT = 286,  OP_DIV = 287,   OP_MOD = 288,       OP_PLUS = 289,
     OP_LT = 290,    OP_LE = 291,    OP_GT = 292,        OP_GE = 293,
     OP_EQ = 294,    OP_NE = 295,    OP_LAND = 296,      OP_LOR = 297,
     OP_ASSIGN = 298,
@@ -71,8 +71,8 @@ const char *token_manifest_to_string(int token) {
             return "INC";
         case OP_DEC:
             return "DEC";
-        case OP_NEGSUB:
-            return "NEGSUB";
+        case OP_MINUS:
+            return "MINUS";
         case OP_EXP:
             return "EXP";
         case OP_MULT:
@@ -81,8 +81,8 @@ const char *token_manifest_to_string(int token) {
             return "DIV";
         case OP_MOD:
             return "MOD";
-        case OP_ADD:
-            return "ADD";
+        case OP_PLUS:
+            return "PLUS";
         case OP_LT:
             return "LT";
         case OP_LE:
