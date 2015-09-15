@@ -25,17 +25,17 @@ char _global_string_buffer[MAX_STRING_LENGTH_BUFFERED];
 #define MAX_IDENTIFIER_LENGTH 256
 
 // Error handling routine
-#define ERROR(f_, ...) {                  \
-  fprintf(stderr, "SCAN ERROR: ");        \
-  fprintf(stderr, (f_), __VA_ARGS__);     \
-  fprintf(stderr, "\n");                  \
-  exit(1);                                \
+#define ERROR(f_, ...) {                        \
+  fprintf(stderr, "SCAN ERROR (%d) ", yylineno);\
+  fprintf(stderr, (f_), __VA_ARGS__);           \
+  fprintf(stderr, "\n");                        \
+  exit(1);                                      \
 }
-#define ERROR_NOARGS(f_) {                \
-  fprintf(stderr, "SCAN ERROR: ");        \
-  fprintf(stderr, (f_));                  \
-  fprintf(stderr, "\n");                  \
-  exit(1);                                \
+#define ERROR_NOARGS(f_) {                      \
+  fprintf(stderr, "SCAN ERROR (%d) ", yylineno);\
+  fprintf(stderr, (f_));                        \
+  fprintf(stderr, "\n");                        \
+  exit(1);                                      \
 }
 
 %}
