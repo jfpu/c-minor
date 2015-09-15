@@ -13,7 +13,7 @@ typedef union _yystype_fake {
     unsigned int string_buffer_index;
 } YYSTYPE;
 
-// Shared character buffer for identifier and strings
+// Shared character buffer for strings
 #define MAX_STRING_LENGTH 256
 #define MAX_STRING_LENGTH_BUFFERED 257
 char _global_string_buffer[MAX_STRING_LENGTH_BUFFERED];
@@ -21,7 +21,7 @@ char _global_string_buffer[MAX_STRING_LENGTH_BUFFERED];
 // String appending routine
 #define BUFFER_APPEND(c) _global_string_buffer[(yylval->string_buffer_index++)] = (c)
 
-// Make sure matched identifier are not too long
+// Make sure matched identifiers are not too long
 #define MAX_IDENTIFIER_LENGTH 256
 
 // Error handling routine
