@@ -15,8 +15,7 @@ typedef union _yystype_fake {
 
 // Shared character buffer for strings
 #define MAX_STRING_LENGTH 256
-#define MAX_STRING_LENGTH_BUFFERED 257
-char _global_string_buffer[MAX_STRING_LENGTH_BUFFERED];
+char _global_string_buffer[MAX_STRING_LENGTH];
 
 // String appending routine
 #define BUFFER_APPEND(c) _global_string_buffer[(yylval->string_buffer_index++)] = (c)
@@ -148,7 +147,7 @@ while       { return (WHILE); }
 }
 <STR>\\.    {
   // Handle escape sequences
-  if (yylval->string_buffer_index + 1 > MAX_STRING_LENGTH) {
+  if (yylval->string_buffer_index + 1 >= MAX_STRING_LENGTH) {
     // String is overflowing
     ERROR("String is overflowing max length %d", MAX_STRING_LENGTH);
   }
@@ -172,7 +171,7 @@ while       { return (WHILE); }
   ERROR_NOARGS("String contains line breaks");
 }
 <STR>.      {
-  if (yylval->string_buffer_index + 1 > MAX_STRING_LENGTH) {
+  if (yylval->string_buffer_index + 1 >= MAX_STRING_LENGTH) {
     // String is overflowing, throw error
     ERROR("String length is longer than max length %d", MAX_STRING_LENGTH);
   }
