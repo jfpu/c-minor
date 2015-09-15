@@ -10,6 +10,6 @@ lex.yy.c: lexer.l token_manifest.h
 	flex lexer.l
 
 clean:
-	rm -f lex.yy.c lex.yy.h cminor
+	rm -f lex.yy.c cminor
 
 .PHONY: all clean
