@@ -116,6 +116,12 @@ while       { return (WHILE); }
   yylval->int_value = strtoll(yytext, NULL, 10);
   return (INTEGER_LITERAL);
 }
+
+{DIGIT}({LETTER}|{DIGIT}|_)* {
+  // Illegal identifier
+  ERROR("Illegal identifier %s", yytext);
+}
+
 '.'         { yylval->char_value = yytext[1]; return (CHAR_LITERAL); }
 '\\.'       {
   // Handle escape sequences
