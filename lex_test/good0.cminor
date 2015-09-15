@@ -1,0 +1,89 @@
+// Test case 0
+// This sweeps all possible tokens in cminor
+
+// All built-in keywords
+array
+boolean
+char
+else
+false
+for
+function
+if
+integer
+print
+return
+string
+true
+void
+while
+
+// All supported operators
+(
+)
+[
+]
++
+-
+++
+--
+^
+*
+/
+%
+<
+<=
+>
+>=
+==
+!=
+&&
+||
+=
+
+// Other non-specified punctuation from the provided sample code
+:
+;
+{
+}
+,
+
+// Integer literals
+0
+1
+1234123412341234
+
+// Character literals
+'a'
+'\a'
+'\n'
+'\0'
+
+// String literals
+""
+"a"
+"\a"
+"This Is A Long String ThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongStringThisIsALongString"
+"\n"
+"\0"
+
+// Boolean literals (same as keywords)
+true
+false
+
+/* Identifiers */
+i
+x
+mystr
+fog123
+BigLongName55
+ThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifier
+
+/* More comments */
+// This is a line comment
+// This is another line comment
+/* This is a comment */
+/* This is a
+multiline
+comment
+*/

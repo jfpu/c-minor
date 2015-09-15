@@ -1,0 +1,41 @@
+// Test case 4
+// This is to test edge cases around comments
+
+"Begin"
+
+// Single line comment
+
+/* Multiline comment on one line */
+
+/**
+ * Multiline
+ * comment
+ * across
+ * multiple
+ * lines
+ */
+
+// Can I comment out some code?
+// This should be treated as one comment
+/*
+printarray: function void ( a: array [] integer, size: integer ) = {
+  i: integer;
+  for (i = 0; i < size; i++) {
+    print a[i], "\n";
+  }
+}
+*/
+
+// Unknown characters in a comment should be ignored
+// @#$^&_|~`
+/* @#$^&_|~` */
+
+/* What about putting /* inside a comment? */
+
+"This should be tokenized as a string literal"
+
+// Empty comment
+/**/
+//
+
+"End"

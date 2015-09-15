@@ -1,0 +1,4 @@
+// Test case 5
+// Invalid characters and operators should error out
+
+&

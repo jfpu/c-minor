@@ -1,0 +1,5 @@
+// Test case 6
+// Newlines in strings that looks like a comment
+
+"this is in a string and /* this should
+be an error */ and this is still in a string"

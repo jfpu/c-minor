@@ -1,0 +1,39 @@
+// Test case 3
+// This is to test edge cases around other fundamental types and identifiers
+
+// Integers
+0
+1
+-1
+010
+9223372036854775807   // INT64_MAX
+-9223372036854775808  // INT64_MIN
+
+// Chars
+'a'
+'\a'
+'\0'
+'\n'
+'\\'
+'"'
+'\"'
+'\''
+'@'
+'0'
+'-'
+';'
+
+// Identifiers
+truefalse
+_____
+_1_2_3_4_
+_abc
+
+// 255 chars
+ThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThi
+
+// 256 chars
+ThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThisIsALongIdentifierThis
+
+// 256 chars
+________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________

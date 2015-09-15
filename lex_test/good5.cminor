@@ -1,0 +1,11 @@
+// Test case 5
+// Other random edge cases involving the basics
+
+---
+----
++++
+++++
+
+"\\0"
+"\\n"
+"\\a"

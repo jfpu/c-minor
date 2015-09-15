@@ -1,0 +1,4 @@
+// Test case 4
+// This is a character literal with more than one characters in it
+
+'ab'

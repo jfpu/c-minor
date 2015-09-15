@@ -1,0 +1,39 @@
+// Test case 2
+// This is specifically testing edge cases around strings
+
+// Standard test cases
+""
+"\0"
+"\n"
+"Hello this is a test string!"
+"\a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z"
+
+// Escaped slashes
+"\\\\\\\\\\\\"
+
+// 256 escaped slashes
+"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"
+
+// Escaping quotes
+"outside \"inside\" outside"
+
+// Single quotes should be okay too
+"outside 'inside' outside"
+
+// "Empty character" in double quotes
+"''"
+
+// Unknown characters in double quotes
+"@#$^&_|~`"
+
+// 255 chars
+"abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz 123456789012"
+
+// 256 chars
+"abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz abcdefghijklmnopqrstuvwxyz 1234567890123"
+
+// 255 chars with escape characters
+"\a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z\ \a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z\ \a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z\ \a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z\ \a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z\ \a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z\ \a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z\ \a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z\ \a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z\ \1\2\3\4\5\6\7\8\9\1\2\3"
+
+// 256 chars with escape characters
+"\a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z\ \a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z\ \a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z\ \a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z\ \a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z\ \a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z\ \a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z\ \a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z\ \a\b\c\d\e\f\g\h\i\j\k\l\m\o\p\q\r\s\t\u\v\w\x\y\z\ \1\2\3\4\5\6\7\8\9\1\2\3\4"

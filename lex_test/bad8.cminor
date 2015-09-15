@@ -1,0 +1,13 @@
+// Test case 8
+// Comments and strings in comments
+
+/* // */ "This is out of a comment"
+// /* This is in a comment
+"This is out of a comment" // */
+
+/* "This is in a comment
+and still in a comment
+and still" */
+
+// And this should cause an error
+@

@@ -1,0 +1,8 @@
+// Test case 9
+// More strings since they're tricky
+
+"true"
+"false"
+"for"
+"/* this should be a string */"
+"// this should be a string too"

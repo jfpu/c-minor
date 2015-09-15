@@ -1,0 +1,5 @@
+// Test case 1
+// Unmatched /* at EOF
+
+/* this is some comment
+more comment

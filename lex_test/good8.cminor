@@ -1,0 +1,4 @@
+// Test case 8
+// Chained operators
+
+false_true=(++a+b---5^d*e/f%g)<h<=i>j>=k==(l!=m)&&123||true

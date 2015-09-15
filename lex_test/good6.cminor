@@ -1,0 +1,4 @@
+// Test case 6
+// What about something jammed together with no spaces?
+
+/*here's a comment*/printarray:function void(a:array[]integer,size:integer)={i:integer;for(i=0;i<size;i++){print a[i],"\n";}}/*and here's a comment*/
