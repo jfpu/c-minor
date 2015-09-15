@@ -107,7 +107,7 @@ while       { return (WHILE); }
 {ID}        {
   if (strlen(yytext) > MAX_IDENTIFIER_LENGTH) {
     // Identifier is too long, throw error
-    ERROR("Identifier is overflowing max length %d\n", MAX_IDENTIFIER_LENGTH);
+    ERROR("Identifier is overflowing max length %d", MAX_IDENTIFIER_LENGTH);
   }
   yylval->identifier_symbol = yytext;
   return (IDENTIFIER);
@@ -174,7 +174,7 @@ while       { return (WHILE); }
 <STR>.      {
   if (yylval->string_buffer_index + 1 > MAX_STRING_LENGTH) {
     // String is overflowing, throw error
-    ERROR("String length is longer than max length %d\n", MAX_STRING_LENGTH);
+    ERROR("String length is longer than max length %d", MAX_STRING_LENGTH);
   }
   BUFFER_APPEND(yytext[0]);
 }
