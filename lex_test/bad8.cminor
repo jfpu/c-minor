@@ -1,5 +1,4 @@
 // Test case 8
-// Comments and strings in comments
+// Non-ASCII character in string literal
 
-// And this should cause an error
-@
+"hello ɸ world"

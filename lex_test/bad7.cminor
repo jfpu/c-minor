@@ -1,4 +1,4 @@
 // Test case 7
-// Illegal identifier
+// Non-ASCII character literal
 
-0_identifier
+'ɸ'

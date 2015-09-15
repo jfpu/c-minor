@@ -1,8 +1,9 @@
 /* Scanner for C-Minor */
 
 %{
-#include <stdlib.h>       // strtoll
-#include <string.h>       // strlen
+#include <stdlib.h>         // strtoll
+#include <string.h>         // strlen
+#include <ctype.h>          // isascii
 #include "token_manifest.h"
 
 // Fake YYSTYPE definition
@@ -118,6 +119,10 @@ while       { return (WHILE); }
 }
 
 '.'         {
+    if (!isascii(yytext[1])) {
+        // Illegal character
+        ERROR_NOARGS("Illegal character literal");
+    }
     yylval->char_value = yytext[1];
     return (CHAR_LITERAL);
 }
@@ -133,6 +138,10 @@ while       { return (WHILE); }
             break;
         }
         default: {    // anything else is the same character
+            if (!isascii(yytext[2])) {
+                // Illegal character
+                ERROR_NOARGS("Illegal character literal");
+            }
             yylval->char_value = yytext[2];
             break;
         }
@@ -167,6 +176,10 @@ while       { return (WHILE); }
             break;
         }
         default: {    // anything else is the same character
+            if (!isascii(yytext[1])) {
+                // Illegal character
+                ERROR_NOARGS("Illegal character in string");
+            }
             BUFFER_APPEND(yytext[1]);
             break;
         }
@@ -180,6 +193,9 @@ while       { return (WHILE); }
     if (yylval->string_buffer_index + 1 >= MAX_STRING_LENGTH) {
         // String is overflowing, throw error
         ERROR("String is overflowing max length %d", MAX_STRING_LENGTH);
+    } else if (!isascii(yytext[0])) {
+        // Illegal character
+        ERROR_NOARGS("Illegal character in string");
     }
     BUFFER_APPEND(yytext[0]);
 }
@@ -198,8 +214,8 @@ while       { return (WHILE); }
 <CMT>\*\/   {
     BEGIN(INITIAL);
 }
-<CMT>\n     ;
-<CMT>.      ;
+<CMT>\n     {}
+<CMT>.      {}
 
 .           {
     // Error caseggit
