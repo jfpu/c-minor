@@ -15,6 +15,10 @@
  * lines
  */
 
+/* "This is in a comment
+and still in a comment
+and still" */
+
 // Can I comment out some code?
 // This should be treated as one comment
 /*
@@ -37,5 +41,10 @@ printarray: function void ( a: array [] integer, size: integer ) = {
 // Empty comment
 /**/
 //
+
+// Combining comments
+/* // */ "This is out of a comment"
+// /* This is in a comment
+"This is out of a comment" // */
 
 "End"
