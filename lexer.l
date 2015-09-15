@@ -17,7 +17,7 @@ typedef union _yystype_fake {
 #define MAX_STRING_LENGTH 256
 char _global_string_buffer[MAX_STRING_LENGTH];
 
-// String appending routine
+// String routines
 #define BUFFER_APPEND(c) _global_string_buffer[(yylval->string_buffer_index++)] = (c)
 
 // Make sure matched identifiers are not too long
@@ -25,16 +25,16 @@ char _global_string_buffer[MAX_STRING_LENGTH];
 
 // Error handling routine
 #define ERROR(f_, ...) {                        \
-  fprintf(stderr, "SCAN ERROR (%d) ", yylineno);\
-  fprintf(stderr, (f_), __VA_ARGS__);           \
-  fprintf(stderr, "\n");                        \
-  exit(1);                                      \
+    fprintf(stderr, "SCAN ERROR (%d) ", yylineno);\
+    fprintf(stderr, (f_), __VA_ARGS__);           \
+    fprintf(stderr, "\n");                        \
+    exit(1);                                      \
 }
 #define ERROR_NOARGS(f_) {                      \
-  fprintf(stderr, "SCAN ERROR (%d) ", yylineno);\
-  fprintf(stderr, (f_));                        \
-  fprintf(stderr, "\n");                        \
-  exit(1);                                      \
+    fprintf(stderr, "SCAN ERROR (%d) ", yylineno);\
+    fprintf(stderr, (f_));                        \
+    fprintf(stderr, "\n");                        \
+    exit(1);                                      \
 }
 
 %}
@@ -104,108 +104,109 @@ while       { return (WHILE); }
 {WHITESPACE}+ {}   /* Eat whitespace */
 
 {ID}        {
-  if (strlen(yytext) > MAX_IDENTIFIER_LENGTH) {
-    // Identifier is too long, throw error
-    ERROR("Identifier is overflowing max length %d", MAX_IDENTIFIER_LENGTH);
-  }
-  yylval->identifier_symbol = yytext;
-  return (IDENTIFIER);
+    if (strlen(yytext) > MAX_IDENTIFIER_LENGTH) {
+        // Identifier is too long, throw error
+        ERROR("Identifier is overflowing max length %d", MAX_IDENTIFIER_LENGTH);
+    }
+    yylval->identifier_symbol = yytext;
+    return (IDENTIFIER);
 }
 
 {DIGIT}+    {
-  yylval->int_value = strtoll(yytext, NULL, 10);
-  return (INTEGER_LITERAL);
+    yylval->int_value = strtoll(yytext, NULL, 10);
+    return (INTEGER_LITERAL);
 }
 
-'.'         { yylval->char_value = yytext[1]; return (CHAR_LITERAL); }
+'.'         {
+    yylval->char_value = yytext[1];
+    return (CHAR_LITERAL);
+}
 '\\.'       {
-  // Handle escape sequences
-  switch (yytext[2]) {
-    case 'n': {   // '\n'
-      yylval->char_value = 10;
-      break;
+    // Handle escape sequences
+    switch (yytext[2]) {
+        case 'n': {   // '\n'
+            yylval->char_value = 10;
+            break;
+        }
+        case '0': {   // '\0'
+            yylval->char_value = 0;
+            break;
+        }
+        default: {    // anything else is the same character
+            yylval->char_value = yytext[2];
+            break;
+        }
     }
-    case '0': {   // '\0'
-      yylval->char_value = 0;
-      break;
-    }
-    default: {    // anything else is the same character
-      yylval->char_value = yytext[2];
-      break;
-    }
-  }
-  return (CHAR_LITERAL);
+    return (CHAR_LITERAL);
 }
 
-<INITIAL>\" {     /* Beginning of string */
-  yylval->string_buffer_index = 0;
-  BEGIN(STR);
+<INITIAL>\" {
+    // Beginning of string
+    yylval->string_buffer_index = 0;
+    BEGIN(STR);
 }
 <STR>\"     {
-  BEGIN(INITIAL);
-  BUFFER_APPEND('\0');
-  return (STRING_LITERAL);
+    // End of string
+    BEGIN(INITIAL);
+    BUFFER_APPEND('\0');
+    return (STRING_LITERAL);
 }
 <STR>\\.    {
-  // Handle escape sequences
-  if (yylval->string_buffer_index + 1 >= MAX_STRING_LENGTH) {
-    // String is overflowing
-    ERROR("String is overflowing max length %d", MAX_STRING_LENGTH);
-  }
-  switch (yytext[1]) {
-    case 'n': {   // '\n'
-      BUFFER_APPEND(10);
-      break;
+    // Handle escape sequences
+    if (yylval->string_buffer_index + 1 >= MAX_STRING_LENGTH) {
+        // String is overflowing
+        ERROR("String is overflowing max length %d", MAX_STRING_LENGTH);
     }
-    case '0': {   // '\0'
-      BUFFER_APPEND(0);
-      break;
+    switch (yytext[1]) {
+        case 'n': {   // '\n'
+            BUFFER_APPEND(10);
+            break;
+        }
+        case '0': {   // '\0'
+            BUFFER_APPEND(0);
+            break;
+        }
+        default: {    // anything else is the same character
+            BUFFER_APPEND(yytext[1]);
+            break;
+        }
     }
-    default: {    // anything else is the same character
-      BUFFER_APPEND(yytext[1]);
-      break;
-    }
-  }
 }
 <STR>\n     {
-  // Strings with line breaks are invalid
-  ERROR_NOARGS("String contains line breaks");
+    // Strings with line breaks are invalid
+    ERROR_NOARGS("String contains line breaks");
 }
 <STR>.      {
-  if (yylval->string_buffer_index + 1 >= MAX_STRING_LENGTH) {
-    // String is overflowing, throw error
-    ERROR("String length is longer than max length %d", MAX_STRING_LENGTH);
-  }
-  BUFFER_APPEND(yytext[0]);
+    if (yylval->string_buffer_index + 1 >= MAX_STRING_LENGTH) {
+        // String is overflowing, throw error
+        ERROR("String is overflowing max length %d", MAX_STRING_LENGTH);
+    }
+    BUFFER_APPEND(yytext[0]);
 }
 
 <INITIAL>\/\/ {
-  BEGIN(LINECMT);
+    BEGIN(LINECMT);
 }
 <LINECMT>\n   {
-  BEGIN(INITIAL);
+    BEGIN(INITIAL);
 }
 <LINECMT>.  {}
 
 <INITIAL>\/\* {
-  BEGIN(CMT);
+    BEGIN(CMT);
 }
 <CMT>\*\/   {
-  BEGIN(INITIAL);
+    BEGIN(INITIAL);
 }
 <CMT>\n     ;
 <CMT>.      ;
 
 .           {
-  /* Error case */
-  ERROR("Unknown character %s", yytext);
+    // Error caseggit
+    ERROR("Unknown character %s", yytext);
 }
 
 <INITIAL><<EOF>>    { return 0; }
-<STR><<EOF>>        {
-  ERROR_NOARGS("Unexpected EOF: unmatched \"");
-}
 <LINECMT><<EOF>>    { return 0; }
-<CMT><<EOF>>        {
-  ERROR_NOARGS("Unexpected EOF: unmatched /*");
-}
+<STR><<EOF>>        { ERROR_NOARGS("Unexpected EOF: unmatched \""); }
+<CMT><<EOF>>        { ERROR_NOARGS("Unexpected EOF: unmatched /*"); }
