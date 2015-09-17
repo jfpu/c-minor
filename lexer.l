@@ -25,17 +25,17 @@ char _global_string_buffer[MAX_STRING_LENGTH];
 #define MAX_IDENTIFIER_LENGTH 256
 
 // Error handling routine
-#define ERROR(f_, ...) {                        \
-    fprintf(stderr, "SCAN ERROR (%d) ", yylineno);\
-    fprintf(stderr, (f_), __VA_ARGS__);           \
-    fprintf(stderr, "\n");                        \
-    exit(1);                                      \
+#define ERROR(f_, ...) {                            \
+    fprintf(stderr, "SCAN ERROR (%d) ", yylineno);  \
+    fprintf(stderr, (f_), __VA_ARGS__);             \
+    fprintf(stderr, "\n");                          \
+    exit(1);                                        \
 }
-#define ERROR_NOARGS(f_) {                      \
-    fprintf(stderr, "SCAN ERROR (%d) ", yylineno);\
-    fprintf(stderr, (f_));                        \
-    fprintf(stderr, "\n");                        \
-    exit(1);                                      \
+#define ERROR_NOARGS(f_) {                          \
+    fprintf(stderr, "SCAN ERROR (%d) ", yylineno);  \
+    fprintf(stderr, (f_));                          \
+    fprintf(stderr, "\n");                          \
+    exit(1);                                        \
 }
 
 %}
@@ -57,54 +57,54 @@ WHITESPACE  [\t\ \n\r]
 
 %%
 
-array       { return (ARRAY); }
-boolean     { return (BOOLEAN); }
-char        { return (CHAR); }
-else        { return (ELSE); }
-false       { return (FALSE); }
-for         { return (FOR); }
-function    { return (FUNCTION); }
-if          { return (IF); }
-integer     { return (INTEGER); }
-print       { return (PRINT); }
-return      { return (RETURN); }
-string      { return (STRING); }
-true        { return (TRUE); }
-void        { return (VOID); }
-while       { return (WHILE); }
+array               { return (ARRAY); }
+boolean             { return (BOOLEAN); }
+char                { return (CHAR); }
+else                { return (ELSE); }
+false               { return (FALSE); }
+for                 { return (FOR); }
+function            { return (FUNCTION); }
+if                  { return (IF); }
+integer             { return (INTEGER); }
+print               { return (PRINT); }
+return              { return (RETURN); }
+string              { return (STRING); }
+true                { return (TRUE); }
+void                { return (VOID); }
+while               { return (WHILE); }
 
-\(          { return (LPAREN); }
-\)          { return (RPAREN); }
-\[          { return (LBRACKET); }
-\]          { return (RBRACKET); }
-\+\+        { return (OP_INC); }
---          { return (OP_DEC); }
-\^          { return (OP_EXP); }
-\*          { return (OP_MULT); }
-\/          { return (OP_DIV); }
-%           { return (OP_MOD); }
-\+          { return (OP_PLUS); }
--           { return (OP_MINUS); }
+\(                  { return (LPAREN); }
+\)                  { return (RPAREN); }
+\[                  { return (LBRACKET); }
+\]                  { return (RBRACKET); }
+\+\+                { return (OP_INC); }
+--                  { return (OP_DEC); }
+\^                  { return (OP_EXP); }
+\*                  { return (OP_MULT); }
+\/                  { return (OP_DIV); }
+%                   { return (OP_MOD); }
+\+                  { return (OP_PLUS); }
+-                   { return (OP_MINUS); }
 
-\<          { return (OP_LT); }
-\<=         { return (OP_LE); }
-\>          { return (OP_GT); }
-\>=         { return (OP_GE); }
-==          { return (OP_EQ); }
-!=          { return (OP_NE); }
-&&          { return (OP_LAND); }
-\|\|        { return (OP_LOR); }
-=           { return (OP_ASSIGN); }
+\<                  { return (OP_LT); }
+\<=                 { return (OP_LE); }
+\>                  { return (OP_GT); }
+\>=                 { return (OP_GE); }
+==                  { return (OP_EQ); }
+!=                  { return (OP_NE); }
+&&                  { return (OP_LAND); }
+\|\|                { return (OP_LOR); }
+=                   { return (OP_ASSIGN); }
 
-\{          { return (LCBRACK); }
-\}          { return (RCBRACK); }
-\;          { return (SEMICOLON); }
-\:          { return (COLON); }
-,           { return (COMMA); }
+\{                  { return (LCBRACK); }
+\}                  { return (RCBRACK); }
+\;                  { return (SEMICOLON); }
+\:                  { return (COLON); }
+,                   { return (COMMA); }
 
-{WHITESPACE}+ {}   /* Eat whitespace */
+{WHITESPACE}+       {}   /* Eat whitespace */
 
-{ID}        {
+{ID}                {
     if (strlen(yytext) > MAX_IDENTIFIER_LENGTH) {
         // Identifier is too long, throw error
         ERROR("Identifier is overflowing max length %d", MAX_IDENTIFIER_LENGTH);
@@ -113,12 +113,12 @@ while       { return (WHILE); }
     return (IDENTIFIER);
 }
 
-{DIGIT}+    {
+{DIGIT}+            {
     yylval->int_value = strtoll(yytext, NULL, 10);
     return (INTEGER_LITERAL);
 }
 
-'.'         {
+'.'                 {
     if (!isascii(yytext[1])) {
         // Illegal character
         ERROR_NOARGS("Illegal character literal");
@@ -126,7 +126,7 @@ while       { return (WHILE); }
     yylval->char_value = yytext[1];
     return (CHAR_LITERAL);
 }
-'\\.'       {
+'\\.'               {
     // Handle escape sequences
     switch (yytext[2]) {
         case 'n': {   // '\n'
@@ -149,18 +149,18 @@ while       { return (WHILE); }
     return (CHAR_LITERAL);
 }
 
-<INITIAL>\" {
+<INITIAL>\"         {
     // Beginning of string
     yylval->string_buffer_index = 0;
     BEGIN(STR);
 }
-<STR>\"     {
+<STR>\"             {
     // End of string
     BEGIN(INITIAL);
     BUFFER_APPEND('\0');
     return (STRING_LITERAL);
 }
-<STR>\\.    {
+<STR>\\.            {
     // Handle escape sequences
     if (yylval->string_buffer_index + 1 >= MAX_STRING_LENGTH) {
         // String is overflowing
@@ -185,11 +185,11 @@ while       { return (WHILE); }
         }
     }
 }
-<STR>\n     {
+<STR>\n             {
     // Strings with line breaks are invalid
     ERROR_NOARGS("String contains line breaks");
 }
-<STR>.      {
+<STR>.              {
     if (yylval->string_buffer_index + 1 >= MAX_STRING_LENGTH) {
         // String is overflowing, throw error
         ERROR("String is overflowing max length %d", MAX_STRING_LENGTH);
@@ -200,25 +200,25 @@ while       { return (WHILE); }
     BUFFER_APPEND(yytext[0]);
 }
 
-<INITIAL>\/\/ {
+<INITIAL>\/\/       {
     BEGIN(LINECMT);
 }
-<LINECMT>\n   {
+<LINECMT>\n         {
     BEGIN(INITIAL);
 }
-<LINECMT>.  {}
+<LINECMT>.          {}
 
 <INITIAL>\/\* {
     BEGIN(CMT);
 }
-<CMT>\*\/   {
+<CMT>\*\/           {
     BEGIN(INITIAL);
 }
-<CMT>\n     {}
-<CMT>.      {}
+<CMT>\n             {}
+<CMT>.              {}
 
-.           {
-    // Error caseggit
+.                   {
+    // Error case
     ERROR("Unknown character %s", yytext);
 }
 
