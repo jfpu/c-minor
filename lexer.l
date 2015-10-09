@@ -4,44 +4,12 @@
 #include <stdlib.h>         // strtoll
 #include <string.h>         // strlen
 #include <ctype.h>          // isascii
-#include "parser.tab.h"     // tokens
-
-// Fake YYSTYPE definition
-typedef union _yystype_fake {
-    long long int int_value;
-    char char_value;
-    char *identifier_symbol;
-    unsigned int string_buffer_index;
-} YYSTYPE;
-
-// Shared character buffer for strings
-#define MAX_STRING_LENGTH 256
-char _global_string_buffer[MAX_STRING_LENGTH];
-
-// String routines
-#define BUFFER_APPEND(c) _global_string_buffer[(yylval->string_buffer_index++)] = (c)
-
-// Make sure matched identifiers are not too long
-#define MAX_IDENTIFIER_LENGTH 256
-
-// Error handling routine
-#define ERROR(f_, ...) {                            \
-    fprintf(stderr, "SCAN ERROR (%d) ", yylineno);  \
-    fprintf(stderr, (f_), __VA_ARGS__);             \
-    fprintf(stderr, "\n");                          \
-    exit(1);                                        \
-}
-#define ERROR_NOARGS(f_) {                          \
-    fprintf(stderr, "SCAN ERROR (%d) ", yylineno);  \
-    fprintf(stderr, (f_));                          \
-    fprintf(stderr, "\n");                          \
-    exit(1);                                        \
-}
-
+#include "utility.h"        // tokens
 %}
 
 %option noyywrap
 %option yylineno
+%option header-file="lex.yy.h"
 
 /* Fake bison to access yylval */
 %option bison-bridge

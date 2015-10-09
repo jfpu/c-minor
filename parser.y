@@ -50,13 +50,27 @@
 %token COLON
 %token COMMA
 
+%union {
+    long long int int_value;
+    char char_value;
+    char *identifier_symbol;
+    unsigned int string_buffer_index;
+}
+
 %{
-    extern char *yytext;
-    extern int yylex();
-    extern int yyerror(char const *);
+#include <stdio.h>
+extern char *yytext;
+extern int yylex();
+void yyerror(char const *str);
 %}
 
 %%
 
 prog: VOID
     ;
+
+%%
+
+void yyerror(char const *str) {
+    fprintf(stderr, "PARSE ERROR: %s\n", str);
+}

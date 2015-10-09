@@ -1,9 +1,10 @@
 #include <stdio.h>      // printf, fopen, fclose
+#include <stdlib.h>     // exit
 #include <unistd.h>     // getopt
 #include <getopt.h>     // getopt
-#include "lex.yy.c"
-
-extern const char *token_manifest_to_string(int token);
+#include "utility.h"
+#include "lex.yy.h"     // yylex
+#include "parser.tab.h" // yyparse
 
 // Redirect lex input to a file
 extern FILE *yyin;

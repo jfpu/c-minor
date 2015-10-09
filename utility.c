@@ -1,23 +1,6 @@
-/* Manifest definition */
-enum {
-    ARRAY = 258,    BOOLEAN = 259,  CHAR = 260,         ELSE = 261,
-    FALSE = 262,    FOR = 263,      FUNCTION = 264,     IF = 265,
-    INTEGER = 266,  PRINT = 267,    RETURN = 268,       STRING = 269,
-    TRUE = 270,     VOID = 271,     WHILE = 272,
-    INTEGER_LITERAL = 273,          BOOLEAN_LITERAL = 274,
-    CHAR_LITERAL = 275,             STRING_LITERAL = 276,
-    IDENTIFIER = 277,
-    LPAREN = 278,   RPAREN = 279,   LBRACKET = 280,     RBRACKET = 281,
-    OP_INC = 282,   OP_DEC = 283,   OP_MINUS = 284,    OP_EXP = 285,
-    OP_MULT = 286,  OP_DIV = 287,   OP_MOD = 288,       OP_PLUS = 289,
-    OP_LT = 290,    OP_LE = 291,    OP_GT = 292,        OP_GE = 293,
-    OP_EQ = 294,    OP_NE = 295,    OP_LAND = 296,      OP_LOR = 297,
-    OP_ASSIGN = 298,
-    LCBRACK = 299,  RCBRACK = 300,  SEMICOLON = 301,    COLON = 302,
-    COMMA = 303,
-};
+#include "utility.h"
 
-const char *token_manifest_to_string(int token) {
+const char *token_manifest_to_string(enum yytokentype token) {
     switch (token) {
         case ARRAY:
             return "ARRAY";
