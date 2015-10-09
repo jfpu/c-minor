@@ -33,6 +33,7 @@
 
 # Project files
 lex.yy.c
+lex.yy.h
 parser.tab.c
 parser.tab.h
 cminor
