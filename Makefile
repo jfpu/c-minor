@@ -1,15 +1,21 @@
 all: cminor
 
-# We're not compiling lex.yy.c into its own object file, as
-# there are issues syncing YYSTYPE without Bison present. Currently
-# the entire lex.yy.c file is being included in main.c
-cminor: main.c lex.yy.c
-	$(CC) main.c -o cminor
+cminor: main.c lex.yy.o parser.tab.o
+	$(CC) main.c lex.yy.o parser.tab.o -o cminor
+
+lex.yy.o: lex.yy.c
+	$(CC) -c lex.yy.c
 
 lex.yy.c: lexer.l token_manifest.h
 	flex lexer.l
 
+parser.tab.o: parser.tab.c
+	$(CC) -c parser.tab.c
+
+parser.tab.c: parser.y
+	bison parser.y
+
 clean:
-	rm -f lex.yy.c cminor
+	rm -f lex.yy.o lex.yy.c parser.tab.o parser.tab.c cminor
 
 .PHONY: all clean
