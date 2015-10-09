@@ -1,21 +1,15 @@
 all: cminor
 
-cminor: main.c lex.yy.o parser.tab.o
-	$(CC) main.c lex.yy.o parser.tab.o -o cminor
+cminor: main.c lex.yy.c parser.tab.c
+	$(CC) -Wall main.c lex.yy.c parser.tab.c -o cminor
 
-lex.yy.o: lex.yy.c
-	$(CC) -c lex.yy.c
-
-lex.yy.c: lexer.l token_manifest.h
+lex.yy.c: lexer.l parser.tab.h
 	flex lexer.l
 
-parser.tab.o: parser.tab.c
-	$(CC) -c parser.tab.c
-
-parser.tab.c: parser.y
+parser.tab.c parser.tab.h: parser.y
 	bison parser.y
 
 clean:
-	rm -f lex.yy.o lex.yy.c parser.tab.o parser.tab.c cminor
+	rm -f lex.yy.c parser.tab.c parser.tab.h cminor
 
 .PHONY: all clean

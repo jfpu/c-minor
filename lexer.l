@@ -4,7 +4,7 @@
 #include <stdlib.h>         // strtoll
 #include <string.h>         // strlen
 #include <ctype.h>          // isascii
-#include "token_manifest.h"
+#include "parser.tab.h"     // tokens
 
 // Fake YYSTYPE definition
 typedef union _yystype_fake {
