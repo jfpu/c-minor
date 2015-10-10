@@ -10,9 +10,9 @@ lex.yy.c lex.yy.h: lexer.l parser.tab.h
 	flex lexer.l
 
 parser.tab.c parser.tab.h: parser.y
-	bison parser.y
+	bison parser.y --report=state
 
 clean:
-	rm -f lex.yy.c lex.yy.h parser.tab.c parser.tab.h *.o cminor
+	rm -f lex.yy.c lex.yy.h parser.tab.c parser.tab.h parser.output *.o cminor
 
 .PHONY: all clean
