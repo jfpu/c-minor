@@ -66,8 +66,139 @@ void yyerror(char const *str);
 
 %%
 
-prog: VOID
-    ;
+prog
+:   /* empty */
+|   decl_list
+;
+
+decl_list
+:   decl decl_list
+|   decl
+;
+
+decl
+:   decl_non_func
+|   decl_func
+;
+
+decl_non_func
+:   IDENTIFIER COLON type SEMICOLON
+|   IDENTIFIER COLON non_array_type OP_ASSIGN expr SEMICOLON
+|   IDENTIFIER COLON array_type OP_ASSIGN LCBRACK expr_list RCBRACK SEMICOLON
+;
+
+decl_func
+:   IDENTIFIER COLON FUNCTION ret_type LPAREN formal_list RPAREN SEMICOLON
+|   IDENTIFIER COLON FUNCTION ret_type LPAREN formal_list RPAREN OP_ASSIGN block
+;
+
+stmt_list
+:   stmt stmt_list
+|   stmt
+;
+
+stmt
+:   block
+|   decl_non_func
+|   IF LPAREN expr RPAREN block
+|   IF LPAREN expr RPAREN block ELSE block
+|   FOR LPAREN expr SEMICOLON expr SEMICOLON RPAREN block
+|   RETURN expr SEMICOLON
+|   PRINT expr_list SEMICOLON
+|   expr SEMICOLON;
+;
+
+block
+:   LCBRACK stmt_list RCBRACK
+;
+
+formal_list
+:   formal COMMA formal_list
+|   formal
+|   /* empty */
+;
+
+formal
+    /* parameter */
+:   IDENTIFIER COLON type
+;
+
+type
+:   non_array_type
+|   array_type
+;
+
+non_array_type
+:   BOOLEAN
+|   INTEGER
+|   CHAR
+|   STRING
+;
+
+array_type
+:   ARRAY LBRACKET RBRACKET non_array_type
+;
+
+ret_type
+:   type
+|   VOID
+;
+
+expr_list
+:   expr COMMA expr_list
+|   expr
+;
+
+expr
+:   CHAR_LITERAL
+|   STRING_LITERAL
+|   arithmetic_expr
+|   boolean_expr
+;
+
+/* arithmetic expression with proper precedence */
+arithmetic_expr
+:   arithmetic_term OP_PLUS arithmetic_expr
+|   arithmetic_term OP_MINUS arithmetic_expr
+|   arithmetic_term
+;
+
+arithmetic_term
+:   arithmetic_factor OP_MULT arithmetic_term
+|   arithmetic_factor OP_DIV arithmetic_term
+|   arithmetic_factor
+;
+
+arithmetic_factor
+:   INTEGER_LITERAL
+|   IDENTIFIER
+|   func_call
+|   LPAREN arithmetic_expr RPAREN
+|   OP_MINUS arithmetic_factor
+;
+
+func_call
+:   IDENTIFIER LPAREN expr_list RPAREN
+|   IDENTIFIER LPAREN RPAREN
+;
+
+/* boolean exprs */
+boolean_expr
+:   boolean_factor OP_LAND boolean_expr
+|   boolean_factor OP_LOR boolean_expr
+|   boolean_factor
+;
+
+boolean_factor
+:   BOOLEAN_LITERAL
+|   LPAREN boolean_expr RPAREN
+|   arithmetic_expr OP_LT arithmetic_expr
+|   arithmetic_expr OP_LE arithmetic_expr
+|   arithmetic_expr OP_GT arithmetic_expr
+|   arithmetic_expr OP_GE arithmetic_expr
+|   arithmetic_expr OP_EQ arithmetic_expr
+|   arithmetic_expr OP_NE arithmetic_expr
+;
 
 %%
 
