@@ -9,6 +9,9 @@
 // Redirect lex input to a file
 extern FILE *yyin;
 
+// Parse procedure
+extern int yyparse();
+
 enum _cminor_options {
     LEX = 1,
     PARSE = 2,
@@ -75,5 +78,5 @@ void _lex() {
 }
 
 void _parse() {
-
+    printf("%d", yyparse());
 }
