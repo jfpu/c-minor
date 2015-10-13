@@ -10,8 +10,6 @@
 %option noyywrap
 %option yylineno
 %option header-file="lex.yy.h"
-
-/* Fake bison to access yylval */
 %option bison-bridge
 
 DIGIT       [0-9]
@@ -62,6 +60,7 @@ while               { return (WHILE); }
 !=                  { return (OP_NE); }
 &&                  { return (OP_LAND); }
 \|\|                { return (OP_LOR); }
+!                   { return (OP_LNOT); }
 =                   { return (OP_ASSIGN); }
 
 \{                  { return (LCBRACK); }

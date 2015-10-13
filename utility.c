@@ -82,6 +82,8 @@ const char *token_manifest_to_string(enum yytokentype token) {
             return "LAND";
         case OP_LOR:
             return "LOR";
+        case OP_LNOT:
+            return "LNOT";
         case OP_ASSIGN:
             return "ASSIGN";
         case LCBRACK:

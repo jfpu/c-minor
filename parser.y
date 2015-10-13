@@ -43,6 +43,7 @@
 %token OP_NE
 %token OP_LAND
 %token OP_LOR
+%token OP_LNOT
 %token OP_ASSIGN
 %token LCBRACK
 %token RCBRACK
