@@ -7,8 +7,17 @@ typedef enum {
     EXPR_ADD,
     EXPR_SUB,
     EXPR_MUL,
-    EXPR_DIV
-    /* many more types to add here */
+    EXPR_DIV,
+    EXPR_LAND,
+    EXPR_LOR,
+    EXPR_LNOT,
+    EXPR_LT,
+    EXPR_LE,
+    EXPR_GT,
+    EXPR_GE,
+    EXPR_EQ,
+    EXPR_NE,
+    EXPR_FCALL
 } expr_t;
 
 struct expr {
@@ -24,14 +33,15 @@ struct expr {
     const char * string_literal;
 };
 
-struct expr * expr_create( expr_t kind, struct expr *left, struct expr *right );
+struct expr *expr_create(expr_t kind, struct expr *left, struct expr *right);
+struct expr *expr_list_prepend(struct expr *first, struct expr *rest);
 
-struct expr * expr_create_name( const char *n );
-struct expr * expr_create_boolean_literal( int c );
-struct expr * expr_create_integer_literal( int c );
-struct expr * expr_create_character_literal( int c );
-struct expr * expr_create_string_literal( const char *str );
+struct expr *expr_create_name(const char *n);
+struct expr *expr_create_boolean_literal(int c);
+struct expr *expr_create_integer_literal(int c);
+struct expr *expr_create_character_literal(int c);
+struct expr *expr_create_string_literal(const char *str);
 
-void expr_print( struct expr *e );
+void expr_print(struct expr *e);
 
 #endif

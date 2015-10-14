@@ -13,7 +13,8 @@ struct param_list {
     struct param_list *next;
 };
 
-struct param_list * param_list_create( char *name, struct type *type, struct param_list *next );
+struct param_list *param_list_create(char *name, struct type *type, struct param_list *next);
+struct param_list *param_list_prepend(struct param_list *first, struct param_list *rest);
 void param_list_print( struct param_list *a );
 
 #endif

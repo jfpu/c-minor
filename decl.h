@@ -15,7 +15,8 @@ struct decl {
     struct decl *next;
 };
 
-struct decl * decl_create( char *name, struct type *t, struct expr *v, struct stmt *c, struct decl *next );
-void decl_print( struct decl *d, int indent );
+struct decl *decl_create(char *name, struct type *t, struct expr *v, struct stmt *c, struct decl *next );
+struct decl *decl_list_prepend(struct decl *first, struct decl *rest);
+void decl_print(struct decl *d, int indent);
 
 #endif
