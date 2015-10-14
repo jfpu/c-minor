@@ -10,14 +10,14 @@ typedef union _lexer_value_t {
     char *identifier_symbol;
     unsigned int string_buffer_index;
 } lexer_value_t;
-lexet_value_t lexer_val;
+lexer_value_t lexer_val;
 
 // Shared character buffer for strings
 #define MAX_STRING_LENGTH 256
 char _global_string_buffer[MAX_STRING_LENGTH];
 
 // String routines
-#define BUFFER_APPEND(c) _global_string_buffer[(yylval->string_buffer_index++)] = (c)
+#define BUFFER_APPEND(c) _global_string_buffer[(lexer_val.string_buffer_index++)] = (c)
 
 // Make sure matched identifiers are not too long
 #define MAX_IDENTIFIER_LENGTH 256
