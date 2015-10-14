@@ -8,6 +8,10 @@ typedef enum {
     EXPR_SUB,
     EXPR_MUL,
     EXPR_DIV,
+    EXPR_EXP,
+    EXPR_MOD,
+    EXPR_INC,
+    EXPR_DEC,
     EXPR_LAND,
     EXPR_LOR,
     EXPR_LNOT,
@@ -37,6 +41,7 @@ struct expr *expr_create(expr_t kind, struct expr *left, struct expr *right);
 struct expr *expr_list_prepend(struct expr *first, struct expr *rest);
 
 struct expr *expr_create_name(const char *n);
+struct expr *expr_create_symbol(struct symbol *symbol);
 struct expr *expr_create_boolean_literal(int c);
 struct expr *expr_create_integer_literal(int c);
 struct expr *expr_create_character_literal(int c);
