@@ -76,12 +76,12 @@ while               { return (WHILE); }
         // Identifier is too long, throw error
         ERROR("Identifier is overflowing max length %d", MAX_IDENTIFIER_LENGTH);
     }
-    yylval->identifier_symbol = yytext;
+    lexer_val.identifier_symbol = yytext;
     return (IDENTIFIER);
 }
 
 {DIGIT}+            {
-    yylval->int_value = strtoll(yytext, NULL, 10);
+    lexer_val.int_value = strtoll(yytext, NULL, 10);
     return (INTEGER_LITERAL);
 }
 
@@ -90,18 +90,18 @@ while               { return (WHILE); }
         // Illegal character
         ERROR_NOARGS("Illegal character literal");
     }
-    yylval->char_value = yytext[1];
+    lexer_val.char_value = yytext[1];
     return (CHAR_LITERAL);
 }
 '\\.'               {
     // Handle escape sequences
     switch (yytext[2]) {
         case 'n': {   // '\n'
-            yylval->char_value = 10;
+            lexer_val.char_value = 10;
             break;
         }
         case '0': {   // '\0'
-            yylval->char_value = 0;
+            lexer_val.char_value = 0;
             break;
         }
         default: {    // anything else is the same character
@@ -109,7 +109,7 @@ while               { return (WHILE); }
                 // Illegal character
                 ERROR_NOARGS("Illegal character literal");
             }
-            yylval->char_value = yytext[2];
+            lexer_val.char_value = yytext[2];
             break;
         }
     }
@@ -118,7 +118,7 @@ while               { return (WHILE); }
 
 <INITIAL>\"         {
     // Beginning of string
-    yylval->string_buffer_index = 0;
+    lexer_val.string_buffer_index = 0;
     BEGIN(STR);
 }
 <STR>\"             {
@@ -129,7 +129,7 @@ while               { return (WHILE); }
 }
 <STR>\\.            {
     // Handle escape sequences
-    if (yylval->string_buffer_index + 1 >= MAX_STRING_LENGTH) {
+    if (lexer_val.string_buffer_index + 1 >= MAX_STRING_LENGTH) {
         // String is overflowing
         ERROR("String is overflowing max length %d", MAX_STRING_LENGTH);
     }
@@ -157,7 +157,7 @@ while               { return (WHILE); }
     ERROR_NOARGS("String contains line breaks");
 }
 <STR>.              {
-    if (yylval->string_buffer_index + 1 >= MAX_STRING_LENGTH) {
+    if (lexer_val.string_buffer_index + 1 >= MAX_STRING_LENGTH) {
         // String is overflowing, throw error
         ERROR("String is overflowing max length %d", MAX_STRING_LENGTH);
     } else if (!isascii(yytext[0])) {

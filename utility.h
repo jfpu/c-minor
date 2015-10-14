@@ -3,6 +3,15 @@
 
 const char *token_manifest_to_string(enum yytokentype token);
 
+// Type definition for lexer
+typedef union _lexer_value_t {
+    long long int int_value;
+    char char_value;
+    char *identifier_symbol;
+    unsigned int string_buffer_index;
+} lexer_value_t;
+lexet_value_t lexer_val;
+
 // Shared character buffer for strings
 #define MAX_STRING_LENGTH 256
 char _global_string_buffer[MAX_STRING_LENGTH];

@@ -51,13 +51,6 @@
 %token COLON
 %token COMMA
 
-%union {
-    long long int int_value;
-    char char_value;
-    char *identifier_symbol;
-    unsigned int string_buffer_index;
-}
-
 %{
 #include <stdio.h>
 extern char *yytext;
