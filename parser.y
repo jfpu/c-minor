@@ -52,6 +52,9 @@
 
 %{
 #include <stdio.h>
+#include <string.h> // strdup
+#include "utility.h"
+
 extern char *yytext;
 extern int yylex();
 void yyerror(char const *str);
@@ -70,23 +73,23 @@ void yyerror(char const *str);
     struct expr *expr;
     struct param_list *formal;
     struct type *type;
-    struct symbol *symbol;
+    char *name;
 }
 
 %type <decl> prog decl_list decl
 %type <stmt> stmt_list stmt block stmt_non_if_else stmt_if_else_matched stmt_if_else_open
-%type <expr> expr_list expr expr_opt arithmetic_expr arithmetic_term arithmetic_factor_with_exponentiation arithmetic_factor func_call boolean_expr boolean_factor
+%type <expr> expr_list expr expr_opt arithmetic_expr arithmetic_term arithmetic_factor_with_exponentiation arithmetic_factor_with_negation arithmetic_factor func_call boolean_expr boolean_factor
 %type <formal> formal_list nonempty_formal_list formal
 %type <type> type non_array_type array_type ret_type func_type
-%type <symbol> symbol
+%type <name> identifier
 
 %%
 
 prog
 :   /* empty */
-    { $$ = NULL; return 0; }
+    { program = NULL; return 0; }
 |   decl_list
-    { $$ = $1; return 0; }
+    { program = $1; return 0; }
 ;
 
 decl_list
@@ -97,13 +100,13 @@ decl_list
 ;
 
 decl
-:   symbol COLON type SEMICOLON
+:   identifier COLON type SEMICOLON
     { $$ = decl_create($1, $3, NULL, NULL, NULL); }
-|   symbol COLON non_array_type OP_ASSIGN expr SEMICOLON
+|   identifier COLON non_array_type OP_ASSIGN expr SEMICOLON
     { $$ = decl_create($1, $3, $5, NULL, NULL); }
-|   symbol COLON array_type OP_ASSIGN LCBRACK expr_list RCBRACK SEMICOLON
+|   identifier COLON array_type OP_ASSIGN LCBRACK expr_list RCBRACK SEMICOLON
     { $$ = decl_create($1, $3, $6, NULL, NULL); }
-|   symbol COLON func_type OP_ASSIGN block
+|   identifier COLON func_type OP_ASSIGN block
     { $$ = decl_create($1, $3, NULL, $5, NULL); }
 ;
 
@@ -126,6 +129,9 @@ stmt_if_else_matched
     { $$ = stmt_create(STMT_IF_ELSE, NULL, NULL, $3, NULL, $5, $7); }
 |   stmt_non_if_else
     { $$ = $1; }
+|   FOR LPAREN expr_opt SEMICOLON expr_opt SEMICOLON expr_opt RPAREN stmt_if_else_matched
+    /* This is because the `stmt` in the end may cause ambiguity around a dangling else */
+    { $$ = stmt_create(STMT_FOR, NULL, $3, $5, $7, $9, NULL); }
 ;
 
 stmt_if_else_open
@@ -133,6 +139,9 @@ stmt_if_else_open
     { $$ = stmt_create(STMT_IF_ELSE, NULL, NULL, $3, NULL, $5, NULL); }
 |   IF LPAREN expr RPAREN stmt_if_else_matched ELSE stmt_if_else_open
     { $$ = stmt_create(STMT_IF_ELSE, NULL, NULL, $3, NULL, $5, $7); }
+|   FOR LPAREN expr_opt SEMICOLON expr_opt SEMICOLON expr_opt RPAREN stmt_if_else_open
+    /* This is because the `stmt` in the end may cause ambiguity around a dangling else */
+    { $$ = stmt_create(STMT_FOR, NULL, $3, $5, $7, $9, NULL); }
 ;
 
 stmt_non_if_else
@@ -140,8 +149,6 @@ stmt_non_if_else
     { $$ = stmt_create(STMT_BLOCK, NULL, NULL, NULL, NULL, $1, NULL); }
 |   decl
     { $$ = stmt_create(STMT_DECL, $1, NULL, NULL, NULL, NULL, NULL); }
-|   FOR LPAREN expr_opt SEMICOLON expr_opt SEMICOLON expr_opt RPAREN stmt
-    { $$ = stmt_create(STMT_FOR, NULL, $3, $5, $7, $9, NULL); }
 |   RETURN expr SEMICOLON
     { $$ = stmt_create(STMT_RETURN, NULL, NULL, $2, NULL, NULL, NULL); }
 |   PRINT expr_list SEMICOLON
@@ -170,7 +177,7 @@ nonempty_formal_list
 
 formal
     /* parameter */
-:   symbol COLON type
+:   identifier COLON type
     { $$ = param_list_create($1, $3, NULL); }
 ;
 
@@ -195,7 +202,6 @@ non_array_type
 ;
 
 array_type
-    /* QUESTION: do we support nested arrays? */
 :   ARRAY LBRACKET expr_opt RBRACKET type
     { $$ = type_create(TYPE_ARRAY, NULL, $5); }
 ;
@@ -259,34 +265,37 @@ arithmetic_term
 ;
 
 arithmetic_factor_with_exponentiation
-:   arithmetic_factor OP_EXP arithmetic_factor_with_exponentiation
+:   arithmetic_factor_with_negation OP_EXP arithmetic_factor_with_exponentiation
     { $$ = expr_create(EXPR_EXP, $1, $3); }
-|   arithmetic_factor
+|   arithmetic_factor_with_negation
     { $$ = $1; }
+;
+
+arithmetic_factor_with_negation
+:   OP_MINUS arithmetic_factor
+    { $$ = expr_create(EXPR_SUB, NULL, $2); }
 ;
 
 arithmetic_factor
 :   INTEGER_LITERAL
     { $$ = expr_create_integer_literal(lexer_val.int_value); }
-|   symbol
-    { $$ = expr_create_symbol($1); }
+|   identifier
+    { $$ = expr_create_name($1); }
 |   func_call
     { $$ = $1; }
 |   LPAREN arithmetic_expr RPAREN
     { $$ = $2; }
-|   OP_MINUS arithmetic_factor
-    { $$ = expr_create(EXPR_SUB, NULL, $2); }
-|   symbol OP_INC
+|   arithmetic_factor OP_INC
     { $$ = expr_create(EXPR_INC, NULL, $1); }
-|   symbol OP_DEC
+|   arithmetic_factor OP_DEC
     { $$ = expr_create(EXPR_DEC, NULL, $1); }
 ;
 
 func_call
     /* need to fix all of these */
-:   symbol LPAREN expr_list RPAREN
+:   identifier LPAREN expr_list RPAREN
     { $$ = NULL; }
-|   symbol LPAREN RPAREN
+|   identifier LPAREN RPAREN
     { $$ = NULL; }
 ;
 
@@ -310,7 +319,7 @@ boolean_factor
 |   LPAREN boolean_expr RPAREN
     { $$ = $2; }
 |   arithmetic_expr OP_LT arithmetic_expr
-    { $$ = expr_create(EXPR_LT $1, $3); }
+    { $$ = expr_create(EXPR_LT, $1, $3); }
 |   arithmetic_expr OP_LE arithmetic_expr
     { $$ = expr_create(EXPR_LE, $1, $3); }
 |   arithmetic_expr OP_GT arithmetic_expr
@@ -323,10 +332,11 @@ boolean_factor
     { $$ = expr_create(EXPR_NE, $1, $3); }
 ;
 
-symbol
+identifier
 :   IDENTIFIER
-    /* need to fix the creation (scope, type, name) */
-    { $$ = symbol_create(SYMBOL_GLOBAL, NULL, lexer_val.identifier_symbol); }
+    /* We're not creating a symbol here; instead we're returning
+     * the string value as name */
+    { $$ = strdup(lexer_val.identifier_symbol); }
 ;
 
 %%

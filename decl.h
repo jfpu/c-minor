@@ -6,6 +6,8 @@
 #include "expr.h"
 #include <stdio.h>
 
+struct decl *program;
+
 struct decl {
     char *name;
     struct type *type;
