@@ -34,8 +34,6 @@ const char *token_manifest_to_string(enum yytokentype token) {
             return "WHILE";
         case INTEGER_LITERAL:
             return "INTEGER_LITERAL";
-        case BOOLEAN_LITERAL:
-            return "BOOLEAN_LITERAL";
         case CHAR_LITERAL:
             return "CHAR_LITERAL";
         case STRING_LITERAL:
