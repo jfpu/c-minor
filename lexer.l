@@ -89,6 +89,9 @@ while               { return (WHILE); }
     if (!isascii(yytext[1])) {
         // Illegal character
         ERROR_NOARGS("Illegal character literal");
+    } else if (yytext[1] == '\\') {
+        // Matched '\' which should be an error
+        ERROR_NOARGS("Illegal character literal");
     }
     lexer_val.char_value = yytext[1];
     return (CHAR_LITERAL);
