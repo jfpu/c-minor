@@ -229,7 +229,7 @@ expr
 :   CHAR_LITERAL
     { $$ = expr_create_character_literal(lexer_val.char_value); }
 |   STRING_LITERAL
-    { $$ = expr_create_string_literal(_global_string_buffer); }
+    {   $$ = expr_create_string_literal(strdup(_global_string_buffer)); }
 |   arithmetic_expr
     { $$ = $1; }
 |   boolean_expr
