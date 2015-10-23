@@ -66,9 +66,9 @@ void _lex() {
         // Process token
         printf("%s", token_manifest_to_string(token));
         if (token == INTEGER_LITERAL) {
-            printf(" %lld", yylval.int_value);
+            printf(" %lld", lexer_val.int_value);
         } else if (token == CHAR_LITERAL) {
-            printf(" %c", yylval.char_value);
+            printf(" %c", lexer_val.char_value);
         } else if (token == STRING_LITERAL) {
             printf(" %s", _global_string_buffer);
         }
