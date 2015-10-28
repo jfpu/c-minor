@@ -40,10 +40,10 @@ void stmt_print(struct stmt *s, int indent) {
             printf("if (");
             expr_print(s->expr);
             printf(") {\n");
-            stmt_print(s->body, indent + 4);
+            stmt_print(s->body, indent + 1);
             if (s->else_body) {
                 printf("} else {\n");
-                stmt_print(s->else_body, indent + 4);
+                stmt_print(s->else_body, indent + 1);
             }
             _print_indent(indent);
             printf("}\n");
@@ -58,7 +58,7 @@ void stmt_print(struct stmt *s, int indent) {
             printf("; ");
             if (s->next_expr) expr_print(s->next_expr);
             printf(") {\n");
-            stmt_print(s->body, indent + 4);
+            stmt_print(s->body, indent + 1);
             _print_indent(indent);
             printf("}\n");
             break;

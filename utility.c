@@ -104,5 +104,5 @@ const char *token_manifest_to_string(enum yytokentype token) {
 
 void _print_indent(int indent) {
     int i;
-    for (i = 0; i < indent; ++i) { printf(" "); }
+    for (i = 0; i < indent; ++i) { printf("\t"); }
 }
