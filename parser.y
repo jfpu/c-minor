@@ -203,7 +203,7 @@ non_array_type
 
 array_type
 :   ARRAY LBRACKET expr_opt RBRACKET type
-    { $$ = type_create(TYPE_ARRAY, NULL, $5); }
+    { $$ = type_create_array($3, $5); }
 ;
 
 func_type

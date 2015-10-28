@@ -12,6 +12,12 @@ struct type *type_create(type_kind_t kind, struct param_list *params, struct typ
     return t;
 }
 
+struct type *type_create_array(struct expr *size, struct type *subtype) {
+    struct type *t = type_create(TYPE_ARRAY, NULL, subtype);
+    t->size = size;
+    return t;
+}
+
 void type_print(struct type *t) {
 
 }
