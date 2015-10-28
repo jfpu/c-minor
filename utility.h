@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 /* Token to string utility */
 #include "parser.tab.h"
 
@@ -35,3 +37,6 @@ char _global_string_buffer[MAX_STRING_LENGTH];
     fprintf(stderr, "\n");                          \
     exit(1);                                        \
 }
+
+/* Print indentation */
+void _print_indent(int indent);
