@@ -77,8 +77,8 @@ void yyerror(char const *str);
 }
 
 %type <decl> prog decl_list decl
-%type <stmt> stmt_list stmt block stmt_non_if_else stmt_if_else_matched stmt_if_else_open
-%type <expr> expr_list expr expr_opt arithmetic_expr arithmetic_term arithmetic_factor_with_exponentiation arithmetic_factor_with_negation arithmetic_factor func_call boolean_expr boolean_factor
+%type <stmt> stmt_list stmt stmt_non_if_else stmt_if_else_matched stmt_if_else_open
+%type <expr> expr_list expr expr_opt arithmetic_expr arithmetic_expr_no_assign arithmetic_term arithmetic_factor_with_exponentiation arithmetic_factor_with_negation arithmetic_factor func_call boolean_expr boolean_factor
 %type <formal> formal_list nonempty_formal_list formal
 %type <type> type non_array_type array_type ret_type func_type
 %type <name> identifier
@@ -106,8 +106,8 @@ decl
     { $$ = decl_create($1, $3, $5, NULL, NULL); }
 |   identifier COLON array_type OP_ASSIGN LCBRACK expr_list RCBRACK SEMICOLON
     { $$ = decl_create($1, $3, $6, NULL, NULL); }
-|   identifier COLON func_type OP_ASSIGN block
-    { $$ = decl_create($1, $3, NULL, $5, NULL); }
+|   identifier COLON func_type OP_ASSIGN LCBRACK stmt_list RCBRACK
+    { $$ = decl_create($1, $3, NULL, $6, NULL); }
 ;
 
 stmt_list
@@ -129,9 +129,6 @@ stmt_if_else_matched
     { $$ = stmt_create(STMT_IF_ELSE, NULL, NULL, $3, NULL, $5, $7); }
 |   stmt_non_if_else
     { $$ = $1; }
-|   FOR LPAREN expr_opt SEMICOLON expr_opt SEMICOLON expr_opt RPAREN stmt_if_else_matched
-    /* This is because the `stmt` in the end may cause ambiguity around a dangling else */
-    { $$ = stmt_create(STMT_FOR, NULL, $3, $5, $7, $9, NULL); }
 ;
 
 stmt_if_else_open
@@ -139,14 +136,11 @@ stmt_if_else_open
     { $$ = stmt_create(STMT_IF_ELSE, NULL, NULL, $3, NULL, $5, NULL); }
 |   IF LPAREN expr RPAREN stmt_if_else_matched ELSE stmt_if_else_open
     { $$ = stmt_create(STMT_IF_ELSE, NULL, NULL, $3, NULL, $5, $7); }
-|   FOR LPAREN expr_opt SEMICOLON expr_opt SEMICOLON expr_opt RPAREN stmt_if_else_open
-    /* This is because the `stmt` in the end may cause ambiguity around a dangling else */
-    { $$ = stmt_create(STMT_FOR, NULL, $3, $5, $7, $9, NULL); }
 ;
 
 stmt_non_if_else
-:   block
-    { $$ = stmt_create(STMT_BLOCK, NULL, NULL, NULL, NULL, $1, NULL); }
+:   LCBRACK stmt_list RCBRACK
+    { $$ = $2; }
 |   decl
     { $$ = stmt_create(STMT_DECL, $1, NULL, NULL, NULL, NULL, NULL); }
 |   RETURN expr SEMICOLON
@@ -155,11 +149,8 @@ stmt_non_if_else
     { $$ = stmt_create(STMT_PRINT, NULL, NULL, $2, NULL, NULL, NULL); }
 |   expr SEMICOLON
     { $$ = stmt_create(STMT_EXPR, NULL, NULL, $1, NULL, NULL, NULL); }
-;
-
-block
-:   LCBRACK stmt_list RCBRACK
-    { $$ = $2; }
+|   FOR LPAREN expr_opt SEMICOLON expr_opt SEMICOLON expr_opt RPAREN stmt
+    { $$ = stmt_create(STMT_FOR, NULL, $3, $5, $7, $9, NULL); }
 ;
 
 formal_list
@@ -245,6 +236,13 @@ expr_opt
 
 /* arithmetic expression with proper precedence */
 arithmetic_expr
+:   arithmetic_expr_no_assign OP_ASSIGN arithmetic_expr_no_assign
+    { $$ = expr_create(EXPR_ASSIGN, $1, $3); }
+|   arithmetic_expr_no_assign
+    { $$ = $1; }
+;
+
+arithmetic_expr_no_assign
 :   arithmetic_term OP_PLUS arithmetic_expr
     { $$ = expr_create(EXPR_ADD, $1, $3); }
 |   arithmetic_term OP_MINUS arithmetic_expr
@@ -274,6 +272,8 @@ arithmetic_factor_with_exponentiation
 arithmetic_factor_with_negation
 :   OP_MINUS arithmetic_factor
     { $$ = expr_create(EXPR_SUB, NULL, $2); }
+|   arithmetic_factor
+    { $$ = $1; }
 ;
 
 arithmetic_factor
