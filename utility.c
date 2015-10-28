@@ -94,6 +94,8 @@ const char *token_manifest_to_string(enum yytokentype token) {
             return "COLON";
         case COMMA:
             return "COMMA";
+        case TOKEN_EOF:
+            return "EOF";
         default:
             // This should never happen
             return "ERROR_INVALID_CHARACTER";
