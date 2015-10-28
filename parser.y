@@ -283,22 +283,24 @@ arithmetic_factor
     { $$ = expr_create_integer_literal(lexer_val.int_value); }
 |   identifier
     { $$ = expr_create_name($1); }
+|   identifier LBRACKET expr RBRACKET
+    { $$ = expr_create_array_deref($1, $3); }
 |   func_call
     { $$ = $1; }
 |   LPAREN arithmetic_expr RPAREN
     { $$ = $2; }
-|   arithmetic_factor OP_INC
-    { $$ = expr_create(EXPR_INC, NULL, $1); }
-|   arithmetic_factor OP_DEC
-    { $$ = expr_create(EXPR_DEC, NULL, $1); }
+|   identifier OP_INC
+    { $$ = expr_create_incdec(EXPR_INC, $1); }
+|   identifier OP_DEC
+    { $$ = expr_create_incdec(EXPR_DEC, $1); }
 ;
 
 func_call
-    /* need to fix all of these */
+    /* need to fix these: what's the right way to invoke a function? */
 :   identifier LPAREN expr_list RPAREN
-    { $$ = NULL; }
+    { $$ = expr_create_function_call($1, $3); }
 |   identifier LPAREN RPAREN
-    { $$ = NULL; }
+    { $$ = expr_create_function_call($1, NULL); }
 ;
 
 /* boolean exprs */
@@ -336,8 +338,7 @@ boolean_factor
 
 identifier
 :   IDENTIFIER
-    /* We're not creating a symbol here; instead we're returning
-     * the string value as name */
+    /* We're not creating a symbol here; instead we're returning the string value as name */
     { $$ = strdup(lexer_val.identifier_symbol); }
 ;
 
