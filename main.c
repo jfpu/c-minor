@@ -11,6 +11,10 @@ extern FILE *yyin;
 
 // Parse procedure
 extern int yyparse();
+int yydebug = 1;
+
+// Parse result
+#include "decl.h"
 
 enum _cminor_options {
     LEX = 1,
@@ -78,5 +82,7 @@ void _lex() {
 }
 
 void _parse() {
-    printf("%d", yyparse());
+    program = NULL;
+    printf("%d\n", yyparse());
+    decl_print(program, 0);
 }

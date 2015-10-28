@@ -1,6 +1,7 @@
 /* Parser for c-minor */
 
 %defines
+%debug
 
 /* Token types taken from previous token manifest */
 %token ARRAY
