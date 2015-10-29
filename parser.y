@@ -80,7 +80,7 @@ void yyerror(char const *str);
 
 %type <decl> prog decl_list decl
 %type <stmt> stmt_list stmt stmt_non_if_else stmt_if_else_matched stmt_if_else_open
-%type <expr> expr_list expr expr_opt arithmetic_expr arithmetic_expr_no_assign arithmetic_term arithmetic_factor_with_exponentiation arithmetic_factor_with_negation arithmetic_factor func_call boolean_expr boolean_factor
+%type <expr> expr_list expr_list_opt expr expr_opt arithmetic_expr arithmetic_expr_no_assign arithmetic_term arithmetic_factor_with_exponentiation arithmetic_factor_with_negation arithmetic_factor func_call boolean_expr boolean_factor
 %type <formal> formal_list nonempty_formal_list formal
 %type <type> type non_array_type array_type ret_type func_type
 %type <name> identifier
@@ -147,7 +147,7 @@ stmt_non_if_else
     { $$ = stmt_create(STMT_DECL, $1, NULL, NULL, NULL, NULL, NULL); }
 |   RETURN expr SEMICOLON
     { $$ = stmt_create(STMT_RETURN, NULL, NULL, $2, NULL, NULL, NULL); }
-|   PRINT expr_list SEMICOLON
+|   PRINT expr_list_opt SEMICOLON
     { $$ = stmt_create(STMT_PRINT, NULL, NULL, $2, NULL, NULL, NULL); }
 |   expr SEMICOLON
     { $$ = stmt_create(STMT_EXPR, NULL, NULL, $1, NULL, NULL, NULL); }
@@ -216,6 +216,13 @@ expr_list
     { $$ = expr_list_prepend($1, $3); }
 |   expr
     { $$ = $1; }
+;
+
+expr_list_opt
+:   expr_list
+    { $$ = $1; }
+|
+    { $$ = NULL; }
 ;
 
 expr
