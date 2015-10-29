@@ -6,10 +6,10 @@ cminor: main.c lex.yy.o lex.yy.h parser.tab.o parser.tab.h decl.o expr.o param_l
 %.o: %.c
 	$(CC) -Wall -c $< -o $@
 
-lex.yy.c lex.yy.h: lexer.l parser.tab.h
+lex lex.yy.c lex.yy.h: lexer.l parser.tab.h
 	flex lexer.l
 
-parser.tab.c parser.tab.h: parser.y
+parse parser.tab.c parser.tab.h: parser.y
 	bison parser.y --report=state
 
 clean:
