@@ -1,7 +1,7 @@
 all: cminor
 
-cminor: main.c lex.yy.o lex.yy.h parser.tab.o parser.tab.h decl.o expr.o param_list.o stmt.o type.o utility.o
-	$(CC) -Wall main.c lex.yy.o parser.tab.o decl.o expr.o param_list.o stmt.o type.o utility.o -o cminor
+cminor: main.o lex.yy.o lex.yy.h parser.tab.o parser.tab.h decl.o expr.o param_list.o stmt.o type.o utility.o
+	$(CC) -Wall main.o lex.yy.o parser.tab.o decl.o expr.o param_list.o stmt.o type.o utility.o -o cminor
 
 %.o: %.c
 	$(CC) -Wall -c $< -o $@
