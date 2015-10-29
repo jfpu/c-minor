@@ -238,7 +238,7 @@ expr_opt
 
 /* arithmetic expression with proper precedence */
 arithmetic_expr
-:   identifier OP_ASSIGN arithmetic_expr
+:   arithmetic_factor OP_ASSIGN arithmetic_expr
     { $$ = expr_create(EXPR_ASSIGN, $1, $3); }
 |   arithmetic_expr_no_assign
     { $$ = $1; }
