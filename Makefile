@@ -15,4 +15,4 @@ parse parser.tab.c parser.tab.h: parser.y
 clean:
 	rm -f lex.yy.c lex.yy.h parser.tab.c parser.tab.h parser.output *.o cminor
 
-.PHONY: all clean
+.PHONY: all clean lex parse
