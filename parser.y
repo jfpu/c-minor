@@ -147,7 +147,7 @@ stmt_matched
     { $$ = $2; }
 |   decl
     { $$ = stmt_create(STMT_DECL, $1, NULL, NULL, NULL, NULL, NULL); }
-|   RETURN expr SEMICOLON
+|   RETURN expr_opt SEMICOLON
     { $$ = stmt_create(STMT_RETURN, NULL, NULL, $2, NULL, NULL, NULL); }
 |   PRINT expr_list_opt SEMICOLON
     { $$ = stmt_create(STMT_PRINT, NULL, NULL, $2, NULL, NULL, NULL); }
