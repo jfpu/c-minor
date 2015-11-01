@@ -1,0 +1,14 @@
+// Test case 0
+// Higher-order functions and array with variable length
+// This should parse but wouldn't translate into actual code
+
+map: function array [] integer (f: function integer (x: integer),
+                                arr: array [] integer,
+                                len: integer) = {
+  i: integer;
+  b: array [len] integer;
+  for (i = 0; i < len; i++)
+    b[i] = f(arr[i]);
+
+  return b;
+}
