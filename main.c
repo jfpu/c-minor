@@ -11,7 +11,7 @@ extern FILE *yyin;
 
 // Parse procedure
 extern int yyparse();
-int yydebug = 1;
+int yydebug = 0;
 
 // Parse result
 #include "decl.h"
@@ -83,6 +83,6 @@ void _lex() {
 
 void _parse() {
     program = NULL;
-    printf("%d\n", yyparse());
+    yyparse();
     decl_print(program, 0);
 }
