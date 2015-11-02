@@ -1,0 +1,11 @@
+// Test case 1
+// Chained assignment expression
+
+main: function integer () = {
+  a: integer;
+  b: integer;
+  c: integer;
+  d: integer;
+  a = b = c = d = 5;
+  return 0;
+}
