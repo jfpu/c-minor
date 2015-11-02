@@ -120,75 +120,66 @@ void expr_print(struct expr *e) {
             break;
 
         case EXPR_ADD:
-            expr_print(e->left);
+            printf("("); expr_print(e->left); printf(")");
             printf("+");
-            expr_print(e->right);
+            printf("("); expr_print(e->right); printf(")");
             break;
 
         case EXPR_SUB:
-            expr_print(e->left);
+            printf("("); expr_print(e->left); printf(")");
             printf("-");
-            expr_print(e->right);
+            printf("("); expr_print(e->right); printf(")");
             break;
 
         case EXPR_MUL:
-            printf("(");
-            expr_print(e->left);
-            printf(")*(");
-            expr_print(e->right);
-            printf(")");
+            printf("("); expr_print(e->left); printf(")");
+            printf("*");
+            printf("("); expr_print(e->right); printf(")");
             break;
 
         case EXPR_DIV:
-            printf("(");
-            expr_print(e->left);
-            printf(")/(");
-            expr_print(e->right);
-            printf(")");
+            printf("("); expr_print(e->left); printf(")");
+            printf("/");
+            printf("("); expr_print(e->right); printf(")");
             break;
 
         case EXPR_EXP:
-            expr_print(e->left);
+            printf("("); expr_print(e->left); printf(")");
             printf("^");
-            expr_print(e->right);
+            printf("("); expr_print(e->right); printf(")");
             break;
 
         case EXPR_MOD:
-            printf("(");
-            expr_print(e->left);
-            printf(")%%(");
-            expr_print(e->right);
-            printf(")");
+            printf("("); expr_print(e->left); printf(")");
+            printf("%%");
+            printf("("); expr_print(e->right); printf(")");
             break;
 
         case EXPR_INC:
-            printf("%s++", e->name);
+            expr_print(e->right);
+            printf("++");
             break;
 
         case EXPR_DEC:
-            printf("%s--", e->name);
+            expr_print(e->right);
+            printf("--");
             break;
 
         case EXPR_LAND:
-            printf("(");
             expr_print(e->left);
-            printf(")&&(");
+            printf("&&");
             expr_print(e->right);
-            printf(")");
             break;
 
         case EXPR_LOR:
-            printf("(");
             expr_print(e->left);
-            printf(")||(");
+            printf("||");
             expr_print(e->right);
-            printf(")");
             break;
 
         case EXPR_LNOT:
-            printf("!(");
-            expr_print(e->right);
-            printf(")");
+            printf("!");
+            printf("("); expr_print(e->right); printf(")");
             break;
 
         case EXPR_LT:
