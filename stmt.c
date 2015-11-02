@@ -66,15 +66,21 @@ void stmt_print(struct stmt *s, int indent) {
 
         case STMT_PRINT:
             _print_indent(indent);
-            printf("print ");
-            expr_print(s->expr);
+            printf("print");
+            if (s->expr) {
+                printf(" ");
+                expr_print(s->expr);
+            }
             printf(";\n");
             break;
 
         case STMT_RETURN:
             _print_indent(indent);
-            printf("return ");
-            expr_print(s->expr);
+            printf("return");
+            if (s->expr) {
+                printf(" ");
+                expr_print(s->expr);
+            }
             printf(";\n");
             break;
 
