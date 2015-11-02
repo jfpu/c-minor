@@ -80,7 +80,7 @@ void yyerror(char const *str);
 
 %type <decl> prog decl_list decl
 %type <stmt> stmt_list stmt stmt_matched stmt_block
-%type <expr> expr_list expr_list_opt expr expr_opt arithmetic_expr arithmetic_expr_no_assign arithmetic_term arithmetic_factor_with_exponentiation arithmetic_factor_with_negation arithmetic_factor func_call boolean_expr boolean_factor
+%type <expr> expr_list expr_list_opt expr expr_opt expr_assign expr_lor expr_land expr_comp expr_add expr_mul expr_exp expr_negnot expr_incdec expr_atom func_call
 %type <formal> formal_list nonempty_formal_list formal
 %type <type> type non_array_type array_type ret_type func_type
 %type <name> identifier
@@ -230,17 +230,6 @@ expr_list_opt
     { $$ = NULL; }
 ;
 
-expr
-:   CHAR_LITERAL
-    { $$ = expr_create_character_literal(lexer_val.char_value); }
-|   STRING_LITERAL
-    {   $$ = expr_create_string_literal(strdup(_global_string_buffer)); }
-|   arithmetic_expr
-    { $$ = $1; }
-|   boolean_expr
-    { $$ = $1; }
-;
-
 expr_opt
 :   expr
     { $$ = $1; }
@@ -248,104 +237,120 @@ expr_opt
     { $$ = NULL; }
 ;
 
-/* arithmetic expression with proper precedence */
-arithmetic_expr
-:   arithmetic_factor OP_ASSIGN arithmetic_expr
+expr
+:   expr_assign
+    { $$ = $1; }
+;
+
+expr_assign
+:   expr_lor OP_ASSIGN expr_assign
     { $$ = expr_create(EXPR_ASSIGN, $1, $3); }
-|   arithmetic_expr_no_assign
+|   expr_lor
     { $$ = $1; }
 ;
 
-arithmetic_expr_no_assign
-:   arithmetic_term OP_PLUS arithmetic_expr
+expr_lor
+:   expr_land OP_LOR expr_lor
+    { $$ = expr_create(EXPR_LOR, $1, $3); }
+|   expr_land
+    { $$ = $1; }
+;
+
+expr_land
+:   expr_comp OP_LAND expr_land
+    { $$ = expr_create(EXPR_LAND, $1, $3); }
+|   expr_comp
+    { $$ = $1; }
+;
+
+expr_comp
+:   expr_add OP_LT expr_comp
+    { $$ = expr_create(EXPR_LT, $1, $3); }
+|   expr_add OP_LE expr_comp
+    { $$ = expr_create(EXPR_LE, $1, $3); }
+|   expr_add OP_GT expr_comp
+    { $$ = expr_create(EXPR_GT, $1, $3); }
+|   expr_add OP_GE expr_comp
+    { $$ = expr_create(EXPR_GE, $1, $3); }
+|   expr_add OP_EQ expr_comp
+    { $$ = expr_create(EXPR_EQ, $1, $3); }
+|   expr_add OP_NE expr_comp
+    { $$ = expr_create(EXPR_NE, $1, $3); }
+|   expr_add
+    { $$ = $1; }
+;
+
+expr_add
+:   expr_mul OP_PLUS expr_add
     { $$ = expr_create(EXPR_ADD, $1, $3); }
-|   arithmetic_term OP_MINUS arithmetic_expr
+|   expr_mul OP_MINUS expr_add
     { $$ = expr_create(EXPR_SUB, $1, $3); }
-|   arithmetic_term
+|   expr_mul
     { $$ = $1; }
 ;
 
-arithmetic_term
-:   arithmetic_factor_with_exponentiation OP_MULT arithmetic_term
+expr_mul
+:   expr_exp OP_MULT expr_mul
     { $$ = expr_create(EXPR_MUL, $1, $3); }
-|   arithmetic_factor_with_exponentiation OP_DIV arithmetic_term
+|   expr_exp OP_DIV expr_mul
     { $$ = expr_create(EXPR_DIV, $1, $3); }
-|   arithmetic_factor_with_exponentiation OP_MOD arithmetic_term
+|   expr_exp OP_MOD expr_mul
     { $$ = expr_create(EXPR_MOD, $1, $3); }
-|   arithmetic_factor_with_exponentiation
+|   expr_exp
     { $$ = $1; }
 ;
 
-arithmetic_factor_with_exponentiation
-:   arithmetic_factor_with_negation OP_EXP arithmetic_factor_with_exponentiation
+expr_exp
+:   expr_negnot OP_EXP expr_exp
     { $$ = expr_create(EXPR_EXP, $1, $3); }
-|   arithmetic_factor_with_negation
-    { $$ = $1; }
+|   expr_negnot
+    { $$ = $1 }
 ;
 
-arithmetic_factor_with_negation
-:   OP_MINUS arithmetic_factor
+expr_negnot
+:   OP_MINUS expr_incdec
     { $$ = expr_create(EXPR_SUB, NULL, $2); }
-|   arithmetic_factor
+|   OP_LNOT expr_incdec
+    { $$ = expr_create(EXPR_SUB, NULL, $2); }
+|   expr_incdec
     { $$ = $1; }
 ;
 
-arithmetic_factor
+expr_incdec
+:   identifier OP_INC
+    { $$ = expr_create_incdec(EXPR_INC, $1); }
+|   identifier OP_DEC
+    { $$ = expr_create_incdec(EXPR_DEC, $1); }
+|   expr_atom
+    { $$ = $1; }
+;
+
+expr_atom
 :   INTEGER_LITERAL
     { $$ = expr_create_integer_literal(lexer_val.int_value); }
+|   CHAR_LITERAL
+    { $$ = expr_create_character_literal(lexer_val.char_value); }
+|   STRING_LITERAL
+    { $$ = expr_create_string_literal(strdup(_global_string_buffer)); }
+|   TRUE
+    { $$ = expr_create_boolean_literal(1); }
+|   FALSE
+    { $$ = expr_create_boolean_literal(0); }
 |   identifier
     { $$ = expr_create_name($1); }
 |   identifier LBRACKET expr RBRACKET
     { $$ = expr_create_array_deref($1, $3); }
 |   func_call
     { $$ = $1; }
-|   LPAREN arithmetic_expr RPAREN
+|   LPAREN expr RPAREN
     { $$ = $2; }
-|   identifier OP_INC
-    { $$ = expr_create_incdec(EXPR_INC, $1); }
-|   identifier OP_DEC
-    { $$ = expr_create_incdec(EXPR_DEC, $1); }
 ;
 
 func_call
-    /* need to fix these: what's the right way to invoke a function? */
 :   identifier LPAREN expr_list RPAREN
     { $$ = expr_create_function_call($1, $3); }
 |   identifier LPAREN RPAREN
     { $$ = expr_create_function_call($1, NULL); }
-;
-
-/* boolean exprs */
-boolean_expr
-:   boolean_factor OP_LAND boolean_expr
-    { $$ = expr_create(EXPR_LAND, $1, $3); }
-|   boolean_factor OP_LOR boolean_expr
-    { $$ = expr_create(EXPR_LOR, $1, $3); }
-|   boolean_factor
-    { $$ = $1; }
-;
-
-boolean_factor
-:   TRUE
-    { $$ = expr_create_boolean_literal(1); }
-|   FALSE
-    { $$ = expr_create_boolean_literal(0); }
-|   OP_LNOT boolean_factor
-    { $$ = expr_create(EXPR_LNOT, NULL, $2); }
-|   LPAREN boolean_expr RPAREN
-    { $$ = $2; }
-|   arithmetic_expr OP_LT arithmetic_expr
-    { $$ = expr_create(EXPR_LT, $1, $3); }
-|   arithmetic_expr OP_LE arithmetic_expr
-    { $$ = expr_create(EXPR_LE, $1, $3); }
-|   arithmetic_expr OP_GT arithmetic_expr
-    { $$ = expr_create(EXPR_GT, $1, $3); }
-|   arithmetic_expr OP_GE arithmetic_expr
-    { $$ = expr_create(EXPR_GE, $1, $3); }
-|   arithmetic_expr OP_EQ arithmetic_expr
-    { $$ = expr_create(EXPR_EQ, $1, $3); }
-|   arithmetic_expr OP_NE arithmetic_expr
-    { $$ = expr_create(EXPR_NE, $1, $3); }
 ;
 
 identifier
