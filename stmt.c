@@ -39,15 +39,21 @@ void stmt_print(struct stmt *s, int indent) {
             _print_indent(indent);
             printf("if (");
             expr_print(s->expr);
-            printf(") {\n");
-            stmt_print(s->body, indent + 1);
+            printf(")\n");
+            if (s->body && s->body->kind == STMT_BLOCK) {
+                stmt_print(s->body, indent);
+            } else if (s->body) {
+                stmt_print(s->body, indent + 1);
+            }
             if (s->else_body) {
                 _print_indent(indent);
-                printf("} else {\n");
-                stmt_print(s->else_body, indent + 1);
+                printf("else\n");
+                if (s->else_body->kind == STMT_BLOCK) {
+                    stmt_print(s->else_body, indent);
+                } else {
+                    stmt_print(s->else_body, indent + 1);
+                }
             }
-            _print_indent(indent);
-            printf("}\n");
             break;
 
         case STMT_FOR:
@@ -58,10 +64,12 @@ void stmt_print(struct stmt *s, int indent) {
             if (s->expr) expr_print(s->expr);
             printf("; ");
             if (s->next_expr) expr_print(s->next_expr);
-            printf(") {\n");
-            stmt_print(s->body, indent + 1);
-            _print_indent(indent);
-            printf("}\n");
+            printf(")\n");
+            if (s->body && s->body->kind == STMT_BLOCK) {
+                stmt_print(s->body, indent);
+            } else if (s->body) {
+                stmt_print(s->body, indent + 1);
+            }
             break;
 
         case STMT_PRINT:
@@ -85,7 +93,11 @@ void stmt_print(struct stmt *s, int indent) {
             break;
 
         case STMT_BLOCK:
-            stmt_print(s->body, indent);
+            _print_indent(indent);
+            printf("{\n");
+            stmt_print(s->body, indent + 1);
+            _print_indent(indent);
+            printf("}\n");
             break;
 
         default:
