@@ -243,6 +243,7 @@ expr
 ;
 
 expr_assign
+    // = is right-associative
 :   expr_lor OP_ASSIGN expr_assign
     { $$ = expr_create(EXPR_ASSIGN, $1, $3); }
 |   expr_lor
@@ -250,57 +251,63 @@ expr_assign
 ;
 
 expr_lor
-:   expr_land OP_LOR expr_lor
+    // || is left-associative
+:   expr_lor OP_LOR expr_land
     { $$ = expr_create(EXPR_LOR, $1, $3); }
 |   expr_land
     { $$ = $1; }
 ;
 
 expr_land
-:   expr_comp OP_LAND expr_land
+    // && is left-associative
+:   expr_land OP_LAND expr_comp
     { $$ = expr_create(EXPR_LAND, $1, $3); }
 |   expr_comp
     { $$ = $1; }
 ;
 
 expr_comp
-:   expr_add OP_LT expr_comp
+    // these are non-associative
+:   expr_add OP_LT expr_add
     { $$ = expr_create(EXPR_LT, $1, $3); }
-|   expr_add OP_LE expr_comp
+|   expr_add OP_LE expr_add
     { $$ = expr_create(EXPR_LE, $1, $3); }
-|   expr_add OP_GT expr_comp
+|   expr_add OP_GT expr_add
     { $$ = expr_create(EXPR_GT, $1, $3); }
-|   expr_add OP_GE expr_comp
+|   expr_add OP_GE expr_add
     { $$ = expr_create(EXPR_GE, $1, $3); }
-|   expr_add OP_EQ expr_comp
+|   expr_add OP_EQ expr_add
     { $$ = expr_create(EXPR_EQ, $1, $3); }
-|   expr_add OP_NE expr_comp
+|   expr_add OP_NE expr_add
     { $$ = expr_create(EXPR_NE, $1, $3); }
 |   expr_add
     { $$ = $1; }
 ;
 
 expr_add
-:   expr_mul OP_PLUS expr_add
+    // + and - are left-associative
+:   expr_add OP_PLUS expr_mul
     { $$ = expr_create(EXPR_ADD, $1, $3); }
-|   expr_mul OP_MINUS expr_add
+|   expr_add OP_MINUS expr_mul
     { $$ = expr_create(EXPR_SUB, $1, $3); }
 |   expr_mul
     { $$ = $1; }
 ;
 
 expr_mul
-:   expr_exp OP_MULT expr_mul
+    // *, /, and % are left-associative
+:   expr_mul OP_MULT expr_exp
     { $$ = expr_create(EXPR_MUL, $1, $3); }
-|   expr_exp OP_DIV expr_mul
+|   expr_mul OP_DIV expr_exp
     { $$ = expr_create(EXPR_DIV, $1, $3); }
-|   expr_exp OP_MOD expr_mul
+|   expr_mul OP_MOD expr_exp
     { $$ = expr_create(EXPR_MOD, $1, $3); }
 |   expr_exp
     { $$ = $1; }
 ;
 
 expr_exp
+    // ^ is right-associative
 :   expr_negnot OP_EXP expr_exp
     { $$ = expr_create(EXPR_EXP, $1, $3); }
 |   expr_negnot
@@ -308,6 +315,7 @@ expr_exp
 ;
 
 expr_negnot
+    // - and ! are unary
 :   OP_MINUS expr_incdec
     { $$ = expr_create(EXPR_SUB, NULL, $2); }
 |   OP_LNOT expr_incdec
@@ -317,10 +325,11 @@ expr_negnot
 ;
 
 expr_incdec
-:   identifier OP_INC
-    { $$ = expr_create_incdec(EXPR_INC, $1); }
-|   identifier OP_DEC
-    { $$ = expr_create_incdec(EXPR_DEC, $1); }
+    // ++ and -- are unary
+:   expr_atom OP_INC
+    { $$ = expr_create(EXPR_INC, NULL, $1); }
+|   expr_atom OP_DEC
+    { $$ = expr_create(EXPR_DEC, NULL, $1); }
 |   expr_atom
     { $$ = $1; }
 ;
