@@ -19,6 +19,8 @@ struct type *type_create_array(struct expr *size, struct type *subtype) {
 }
 
 void type_print(struct type *t) {
+    if (!t) return;
+
     switch (t->kind) {
         case TYPE_BOOLEAN:
             printf("boolean");

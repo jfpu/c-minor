@@ -24,6 +24,8 @@ struct stmt *stmt_list_prepend(struct stmt *first, struct stmt *rest) {
 }
 
 void stmt_print(struct stmt *s, int indent) {
+    if (!s) return;
+
     switch (s->kind) {
         case STMT_DECL:
             decl_print(s->decl, indent);
