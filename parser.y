@@ -319,7 +319,7 @@ expr_negnot
 :   OP_MINUS expr_incdec
     { $$ = expr_create(EXPR_SUB, NULL, $2); }
 |   OP_LNOT expr_incdec
-    { $$ = expr_create(EXPR_SUB, NULL, $2); }
+    { $$ = expr_create(EXPR_LNOT, NULL, $2); }
 |   expr_incdec
     { $$ = $1; }
 ;
