@@ -84,5 +84,6 @@ void _lex() {
 void _parse() {
     program = NULL;
     yyparse();
+    if (!program) exit(1);
     decl_print(program, 0);
 }
