@@ -9,7 +9,8 @@ typedef enum {
     STMT_IF_ELSE,
     STMT_FOR,
     STMT_PRINT,
-    STMT_RETURN
+    STMT_RETURN,
+    STMT_BLOCK
 } stmt_kind_t;
 
 struct stmt {

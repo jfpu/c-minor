@@ -79,7 +79,7 @@ void yyerror(char const *str);
 }
 
 %type <decl> prog decl_list decl
-%type <stmt> stmt_list stmt stmt_matched
+%type <stmt> stmt_list stmt stmt_matched stmt_block
 %type <expr> expr_list expr_list_opt expr expr_opt arithmetic_expr arithmetic_expr_no_assign arithmetic_term arithmetic_factor_with_exponentiation arithmetic_factor_with_negation arithmetic_factor func_call boolean_expr boolean_factor
 %type <formal> formal_list nonempty_formal_list formal
 %type <type> type non_array_type array_type ret_type func_type
@@ -120,8 +120,8 @@ stmt_list
 ;
 
 stmt
-:   LCBRACK stmt_list RCBRACK
-    { $$ = $2; }
+:   stmt_block
+    { $$ = $1; }
 |   decl
     { $$ = stmt_create(STMT_DECL, $1, NULL, NULL, NULL, NULL, NULL); }
 |   RETURN expr_opt SEMICOLON
@@ -143,8 +143,8 @@ stmt_matched
     { $$ = stmt_create(STMT_IF_ELSE, NULL, NULL, $3, NULL, $5, $7); }
 |   FOR LPAREN expr_opt SEMICOLON expr_opt SEMICOLON expr_opt RPAREN stmt_matched
     { $$ = stmt_create(STMT_FOR, NULL, $3, $5, $7, $9, NULL); }
-|   LCBRACK stmt_list RCBRACK
-    { $$ = $2; }
+|   stmt_block
+    { $$ = $1 }
 |   decl
     { $$ = stmt_create(STMT_DECL, $1, NULL, NULL, NULL, NULL, NULL); }
 |   RETURN expr_opt SEMICOLON
@@ -153,6 +153,11 @@ stmt_matched
     { $$ = stmt_create(STMT_PRINT, NULL, NULL, $2, NULL, NULL, NULL); }
 |   expr SEMICOLON
     { $$ = stmt_create(STMT_EXPR, NULL, NULL, $1, NULL, NULL, NULL); }
+;
+
+stmt_block
+:   LCBRACK stmt_list RCBRACK
+    { $$ = stmt_create(STMT_BLOCK, NULL, NULL, NULL, NULL, $2, NULL); }
 ;
 
 formal_list
