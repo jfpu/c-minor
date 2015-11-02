@@ -80,7 +80,7 @@ void yyerror(char const *str);
 
 %type <decl> prog decl_list decl
 %type <stmt> stmt_list stmt stmt_matched stmt_block
-%type <expr> expr_list expr_list_opt expr expr_opt expr_assign expr_lor expr_land expr_comp expr_add expr_mul expr_exp expr_negnot expr_incdec expr_atom func_call
+%type <expr> expr_list expr_list_opt expr expr_opt expr_assign expr_lor expr_land expr_comp expr_add expr_mul expr_exp expr_negnot expr_incdec expr_atom expr_fcall
 %type <formal> formal_list nonempty_formal_list formal
 %type <type> type non_array_type array_type ret_type func_type
 %type <name> identifier
@@ -349,13 +349,13 @@ expr_atom
     { $$ = expr_create_name($1); }
 |   identifier LBRACKET expr RBRACKET
     { $$ = expr_create_array_deref($1, $3); }
-|   func_call
+|   expr_fcall
     { $$ = $1; }
 |   LPAREN expr RPAREN
     { $$ = $2; }
 ;
 
-func_call
+expr_fcall
 :   identifier LPAREN expr_list RPAREN
     { $$ = expr_create_function_call($1, $3); }
 |   identifier LPAREN RPAREN
