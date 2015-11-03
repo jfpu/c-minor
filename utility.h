@@ -1,7 +1,5 @@
 #include <stdio.h>
-
-/* Token to string utility */
-#include "parser.tab.h"
+#include "parser.tab.h"     // Token to string
 
 const char *token_to_string(enum yytokentype token);
 
@@ -38,5 +36,5 @@ char _global_string_buffer[MAX_STRING_LENGTH];
     exit(1);                                        \
 }
 
-/* Print indentation */
+// Print indentation
 void _print_indent(int indent);
