@@ -46,7 +46,6 @@ struct expr {
     struct symbol *symbol;
     int literal_value;
     const char *string_literal;
-    struct expr *params;
 };
 
 struct expr *expr_create(expr_t kind, struct expr *left, struct expr *right);
@@ -57,7 +56,6 @@ struct expr *expr_create_boolean_literal(int c);
 struct expr *expr_create_integer_literal(int c);
 struct expr *expr_create_character_literal(int c);
 struct expr *expr_create_string_literal(const char *str);
-struct expr *expr_create_function_call(const char *name, struct expr *params);
 struct expr *expr_create_incdec(expr_t kind, const char *name);
 
 void expr_print(struct expr *e);

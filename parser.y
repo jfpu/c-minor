@@ -356,10 +356,10 @@ expr_atom
 ;
 
 expr_fcall
-:   identifier LPAREN expr_list RPAREN
-    { $$ = expr_create_function_call($1, $3); }
-|   identifier LPAREN RPAREN
-    { $$ = expr_create_function_call($1, NULL); }
+:   expr_atom LPAREN expr_list RPAREN
+    { $$ = expr_create(EXPR_FCALL, $1, $3); }
+|   expr_atom LPAREN RPAREN
+    { $$ = expr_create(EXPR_FCALL, $1, NULL); }
 ;
 
 identifier
