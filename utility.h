@@ -3,7 +3,7 @@
 /* Token to string utility */
 #include "parser.tab.h"
 
-const char *token_manifest_to_string(enum yytokentype token);
+const char *token_to_string(enum yytokentype token);
 
 // Type definition for lexer
 typedef union _lexer_value_t {

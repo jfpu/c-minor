@@ -1,6 +1,6 @@
 #include "utility.h"
 
-const char *token_manifest_to_string(enum yytokentype token) {
+const char *token_to_string(enum yytokentype token) {
     switch (token) {
         case ARRAY:
             return "ARRAY";

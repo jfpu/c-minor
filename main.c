@@ -68,7 +68,7 @@ void _lex() {
     YYSTYPE yylval;
     while ((token = yylex(&yylval)) != 0) {
         // Process token
-        printf("%s", token_manifest_to_string(token));
+        printf("%s", token_to_string(token));
         if (token == INTEGER_LITERAL) {
             printf(" %lld", lexer_val.int_value);
         } else if (token == CHAR_LITERAL) {
