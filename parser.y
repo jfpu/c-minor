@@ -317,7 +317,7 @@ expr_exp
 expr_negnot
     // - and ! are unary
 :   OP_MINUS expr_incdec
-    { $$ = expr_create(EXPR_SUB, NULL, $2); }
+    { $$ = expr_create(EXPR_NEG, NULL, $2); }
 |   OP_LNOT expr_incdec
     { $$ = expr_create(EXPR_LNOT, NULL, $2); }
 |   expr_incdec

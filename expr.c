@@ -165,6 +165,11 @@ void expr_print(struct expr *e) {
             printf("--");
             break;
 
+        case EXPR_NEG:
+            printf("-");
+            expr_print(e->right);
+            break;
+
         case EXPR_LAND:
             expr_print(e->left);
             printf("&&");

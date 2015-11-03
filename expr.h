@@ -18,6 +18,7 @@ typedef enum {
     EXPR_MOD,
     EXPR_INC,
     EXPR_DEC,
+    EXPR_NEG,
     EXPR_LAND,
     EXPR_LOR,
     EXPR_LNOT,
