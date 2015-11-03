@@ -6,6 +6,6 @@ main: function integer () = {
   b: integer;
   c: integer;
   d: integer;
-  a = b = c = d = 5;
+  a = b = c = -d = 5;
   return 0;
 }
