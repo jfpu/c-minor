@@ -347,8 +347,8 @@ expr_atom
     { $$ = expr_create_boolean_literal(0); }
 |   identifier
     { $$ = expr_create_name($1); }
-|   identifier LBRACKET expr RBRACKET
-    { $$ = expr_create_array_deref($1, $3); }
+|   expr_atom LBRACKET expr RBRACKET
+    { $$ = expr_create(EXPR_ARRAY_DEREF, $1, $3); }
 |   expr_fcall
     { $$ = $1; }
 |   LPAREN expr RPAREN

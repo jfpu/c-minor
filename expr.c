@@ -63,13 +63,6 @@ struct expr *expr_create_function_call(const char *name, struct expr *params) {
     return e;
 }
 
-struct expr *expr_create_array_deref(const char *name, struct expr *index) {
-    struct expr *e = expr_create(EXPR_ARRAY_DEREF, NULL, NULL);
-    e->name = name;
-    e->params = index;
-    return e;
-}
-
 struct expr *expr_create_incdec(expr_t kind, const char *name) {
     struct expr *e = expr_create(kind, NULL, NULL);
     e->name = name;
@@ -186,9 +179,8 @@ void expr_print(struct expr *e) {
             break;
 
         case EXPR_ARRAY_DEREF:
-            printf("%s[", e->name);
-            expr_print(e->params);
-            printf("]");
+            expr_print(e->left);
+            printf("["); expr_print(e->right); printf("]");
             break;
 
         case EXPR_ADD:

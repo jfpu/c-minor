@@ -58,7 +58,6 @@ struct expr *expr_create_integer_literal(int c);
 struct expr *expr_create_character_literal(int c);
 struct expr *expr_create_string_literal(const char *str);
 struct expr *expr_create_function_call(const char *name, struct expr *params);
-struct expr *expr_create_array_deref(const char *name, struct expr *index);
 struct expr *expr_create_incdec(expr_t kind, const char *name);
 
 void expr_print(struct expr *e);
