@@ -1,0 +1,63 @@
+// Test case 0
+// Declarations
+
+a: integer;
+b: boolean;
+c: char;
+d: string;
+
+a: integer = 0;
+b: boolean = true;
+b: boolean = false;
+c: char = 'a';
+d: string = "abcde";
+
+a: integer = true;
+b: boolean = 'a';
+b: boolean = "abc";
+c: char = false;
+d: string = 123;
+
+a: array [10] integer;
+b: array [10] boolean;
+c: array [10] char;
+d: array [10] string;
+
+a: array [10] integer = {1, 2, 3};
+b: array [10] boolean = {1, 2, 3};
+c: array [10] char = {1, 2, 3};
+d: array [10] string = {1, 2, 3};
+
+a: function integer ();
+b: function boolean ();
+c: function char ();
+d: function string ();
+
+a: function integer (a: integer, b: char, c: array [] boolean);
+b: function boolean (a: integer, b: char, c: array [] boolean);
+c: function char (a: integer, b: char, c: array [] boolean);
+d: function string (a: integer, b: char, c: array [] boolean);
+e: function void (a: integer, b: char, c: array [] boolean);
+
+a: function integer (a: integer, b: char) = {
+  return;
+}
+b: function boolean (a: integer, b: char) = {
+  return;
+}
+c: function char (a: integer, b: char) = {
+  return;
+}
+d: function string (a: integer, b: char) = {
+  return;
+}
+e: function void (a: integer, b: char, c: array [] boolean) = {
+  return;
+}
+
+// Odd cases
+a: array [10] array [15] string;
+a: array [] function void ();
+a: function function void () (a: integer);
+a: function void (c: function void ());
+a: function array [] function void () ();
