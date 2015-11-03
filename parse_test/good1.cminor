@@ -1,11 +1,60 @@
 // Test case 1
-// Chained assignment expression
+// Expressions
 
 main: function integer () = {
   a: integer;
   b: integer;
   c: integer;
   d: integer;
+  e: char;
+  f: boolean;
+  g: string;
+  h: array [10] integer = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+  // assignment
   a = b = c = -d = 5;
+
+  // logical or / logical and
+  f = e <= 'c' && e >= 'c' || e <= 'c' && e >= 'c';
+
+  // comparison operators
+  f = e == 'c';
+  f = g == "hello";
+  f = d < 1 && d > 2 && d <= 12 && d >= 10 && d == 5 && d != 4;
+  f = d == 3 + 2 - 3 + 4;
+
+  // add / sub
+  a = 2 + 3;
+  b = 2 - 3;
+  c = a + b;
+
+  // mul / div / mod
+  a = 2 * 3;
+  b = 4 / 2;
+  c = a % b;
+  d = a * b / c % a;
+
+  // exp
+  a = 2 ^ 4;
+  b = a ^ 2 * 4;
+
+  // negation / logical not
+  a = -a;
+  f = !f;
+  f = !f != true;
+
+  // increment / decrement
+  a = a++ + a++;
+  b = b-- - b--;
+
+  // array subscript
+  a = h[0];
+  a = h[1][2][3];
+
+  // function call
+  a = (test(h[0]) + 2) * 3;
+  a = test(h[0]) + (2 * 3);
+  b = test2(a, b, c);
+
   return 0;
 }

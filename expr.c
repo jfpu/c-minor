@@ -130,9 +130,9 @@ void expr_print(struct expr *e) {
 
         case EXPR_CHARACTER:
             if (e->literal_value == '\0') {
-                printf("\\0");
+                printf("'\\0'");
             } else if (e->literal_value == '\n') {
-                printf("\\n");
+                printf("'\\n'");
             } else {
                 printf("'%c'", e->literal_value);
             }
