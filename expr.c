@@ -56,12 +56,6 @@ struct expr *expr_create_string_literal(const char *str) {
     return e;
 }
 
-struct expr *expr_create_incdec(expr_t kind, const char *name) {
-    struct expr *e = expr_create(kind, NULL, NULL);
-    e->name = name;
-    return e;
-}
-
 int expr_precedence(struct expr *e) {
     switch (e->kind) {
         case EXPR_NAME:
