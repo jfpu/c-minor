@@ -13,6 +13,14 @@ main: function integer () = {
 
   // assignment
   a = b = c = -d = 5;
+  e = 'c';
+  e = '\n';
+  e = '\0';
+  f = true;
+  f = false;
+  g = "abc\ndef\0g";
+  h[0] = 1;
+  h[0] = 2;
 
   // logical or / logical and
   f = e <= 'c' && e >= 'c' || e <= 'c' && e >= 'c';
