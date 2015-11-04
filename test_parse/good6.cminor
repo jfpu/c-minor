@@ -1,4 +1,5 @@
 // Test case 6
 // Function with empty body should print out an empty body
 
+main: function void ();
 main: function void () = {}
