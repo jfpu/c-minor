@@ -40,7 +40,7 @@ d: function string (a: integer, b: char, c: array [] boolean);
 e: function void (a: integer, b: char, c: array [] boolean);
 
 a: function integer (a: integer, b: char) = {
-  return;
+  print;
 }
 b: function boolean (a: integer, b: char) = {
   return;
