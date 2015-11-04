@@ -2,6 +2,8 @@
 // Edge cases for statements
 
 main: function void () = {
+  {}
+  {{{}}}
   for (;;)
     if (true)
       for (;;) {
