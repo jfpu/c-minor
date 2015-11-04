@@ -1,0 +1,17 @@
+// Test case 4
+// Edge cases for statements
+
+main: function void () = {
+  for (;;)
+    if (true)
+      for (;;) {
+        {}
+      }
+
+  if (true)
+    if (true)
+      for (;;)
+        if (true) {}
+        else {}
+
+}
