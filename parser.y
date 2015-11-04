@@ -82,7 +82,7 @@ void yyerror(char const *str);
 %type <stmt> stmt_list stmt stmt_matched stmt_block
 %type <expr> expr_list expr_list_opt expr expr_opt expr_assign expr_lor expr_land expr_comp expr_add expr_mul expr_exp expr_negnot expr_incdec expr_atom expr_fcall
 %type <formal> formal_list nonempty_formal_list formal
-%type <type> type non_array_type array_type ret_type func_type
+%type <type> type non_array_type array_type func_type
 %type <name> identifier
 
 %%
@@ -197,6 +197,8 @@ non_array_type
     { $$ = type_create(TYPE_CHARACTER, NULL, NULL); }
 |   STRING
     { $$ = type_create(TYPE_STRING, NULL, NULL); }
+|   VOID
+    { $$ = type_create(TYPE_VOID, NULL, NULL); }
 ;
 
 array_type
@@ -205,15 +207,8 @@ array_type
 ;
 
 func_type
-:   FUNCTION ret_type LPAREN formal_list RPAREN
+:   FUNCTION type LPAREN formal_list RPAREN
     { $$ = type_create(TYPE_FUNCTION, $4, $2); }
-;
-
-ret_type
-:   type
-    { $$ = $1; }
-|   VOID
-    { $$ = type_create(TYPE_VOID, NULL, NULL); }
 ;
 
 expr_list
