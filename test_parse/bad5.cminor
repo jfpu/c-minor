@@ -1,0 +1,4 @@
+// Test case 5
+// Mixing formal parameter with declaration
+
+a: function void (a: boolean = true);

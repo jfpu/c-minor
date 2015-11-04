@@ -1,0 +1,4 @@
+// Test case 1
+// Mixing block with declarations
+
+a: function void () = {1, 2, 3};

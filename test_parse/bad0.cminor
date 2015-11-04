@@ -1,0 +1,6 @@
+// Test case 0
+// Mixing block with declarations
+
+a: array [10] integer = {
+  return 1;
+};
