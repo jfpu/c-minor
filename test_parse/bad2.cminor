@@ -1,0 +1,7 @@
+// Test case 2
+// Mixing initialization with assignment
+
+main: function void () = {
+  a: array [3] integer = {1, 2, 3};
+  a = {1, 2, 3};
+}
