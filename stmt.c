@@ -102,6 +102,9 @@ void stmt_print(struct stmt *s, int indent) {
             printf("}\n");
             break;
 
+        case STMT_EMPTY:
+            break;
+
         default:
             _print_indent(indent);
             printf("Statement!\n");

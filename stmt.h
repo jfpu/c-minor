@@ -10,7 +10,8 @@ typedef enum {
     STMT_FOR,
     STMT_PRINT,
     STMT_RETURN,
-    STMT_BLOCK
+    STMT_BLOCK,
+    STMT_EMPTY      // dummy node terminating stmt_list
 } stmt_kind_t;
 
 struct stmt {

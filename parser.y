@@ -116,7 +116,7 @@ stmt_list
 :   stmt stmt_list
     { $$ = stmt_list_prepend($1, $2); }
 |
-    { $$ = NULL; }
+    { $$ = stmt_create(STMT_EMPTY, NULL, NULL, NULL, NULL, NULL, NULL); }
 ;
 
 stmt
