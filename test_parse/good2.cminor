@@ -20,7 +20,8 @@ main: function integer () = {
   // print
   print;
   print a;
-  print a, b, c, d;
+  print a, b, c, d, 0, 'c', "abc";
+  print 1+2*3/4^2;
 
   // expressions
   2 + 3 - 4 + 5 - 6;
