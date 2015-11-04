@@ -49,7 +49,11 @@ void type_print(struct type *t) {
             printf("function ");
             type_print(t->subtype);
             printf(" (");
-            param_list_print(t->params);
+            if (t->params) {
+                printf(" ");
+                param_list_print(t->params);
+                printf(" ");
+            }
             printf(")");
             break;
 
