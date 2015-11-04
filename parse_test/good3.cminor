@@ -1,25 +1,24 @@
 // Test case 3
-// Declarations
+// Types
 
 a: integer;
 b: string;
 c: char;
 d: boolean;
 
-a: integer = 1;
-b: string = "abcdefg";
-c: char = 'a';
-d: boolean = true;
-
 a: array [1] integer;
-a: array [1] integer = {1};
-a: array [2] integer = {1, 2};
+a: array [1] array [1] array [1] integer;
 
 a: function integer (b: integer);
-a: function integer (b: integer) = {
-  return b;
-}
+a: function void (b: integer);
+a: function void ();
 
-main: function integer () = {
-  return 0;
-}
+a: function function void () ();
+a: array [1]
+      function
+        array [1]
+          function void ()
+      ();
+
+a: function void (a: function void ());
+a: function void (a: array [] function void ());
