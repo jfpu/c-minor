@@ -9,4 +9,4 @@ a: function void (a: boolean);
 a: function void (a: array [] integer);
 a: function void (a: integer, b: integer);
 
-a: function void (a: array [1] function array [1] function void ()());
+a: function void (a: array [] array [] integer);
