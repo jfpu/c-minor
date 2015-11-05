@@ -12,13 +12,5 @@ a: array [1] array [1] array [1] integer;
 a: function integer (b: integer);
 a: function void (b: integer);
 a: function void ();
-
-a: function function void () ();
-a: array [1]
-      function
-        array [1]
-          function void ()
-      ();
-
-a: function void (a: function void ());
-a: function void (a: array [] function void ());
+a: array [1] array [1] integer;
+a: function void (a: array [] integer);
