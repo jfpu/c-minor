@@ -1,0 +1,7 @@
+// Test case 8
+// More complex array subscript
+
+main: function integer () = {
+  a: array [10] integer;
+  return a[a[(b[1 + 3 * 4] + 2)]];
+}
