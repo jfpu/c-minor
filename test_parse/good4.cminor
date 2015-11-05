@@ -6,13 +6,13 @@ main: function void () = {
   {{{}}}
   for (;;)
     if (true)
-      for (;;) {
+      for (;true;) {
         {}
       }
 
   if (true)
     if (true)
-      for (;;)
+      for (;;true)
         if (true) {}
         else {}
 
