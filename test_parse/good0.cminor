@@ -57,7 +57,4 @@ e: function void (a: integer, b: char, c: array [] boolean) = {
 
 // Odd cases
 a: array [10] array [15] string;
-a: array [] function void ();
-a: function function void () (a: integer);
-a: function void (c: function void ());
-a: function array [] function void () ();
+a: function array [] integer ();

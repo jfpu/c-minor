@@ -1,0 +1,6 @@
+// Test case 7
+// Parentheses can't be empty
+
+main: function void () = {
+  if (() = (3)) {}
+}

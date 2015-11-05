@@ -1,0 +1,5 @@
+// Test case 9
+// Function takes a block not a statement
+
+main: function void () =
+  for (;;) {}

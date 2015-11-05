@@ -1,0 +1,8 @@
+// Test case 6
+// Prefix increment/decrement are not allowed
+
+main: function void () = {
+  a: integer = 0;
+  ++a;
+  return 0;
+}

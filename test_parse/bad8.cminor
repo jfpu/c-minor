@@ -1,0 +1,6 @@
+// Test case 8
+// Return takes an expression, not a list
+
+main: function void () = {
+  return 1, 2, 3;
+}

@@ -1,0 +1,5 @@
+// Test case 3
+
+main: function integer () = {
+  if ( if () {} ) {}
+}
