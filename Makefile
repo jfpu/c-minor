@@ -1,9 +1,10 @@
 FLAGS=-Wall -g
+OBJS=lex.yy.o parser.tab.o decl.o expr.o param_list.o stmt.o type.o utility.o symbol.o scope.o hash_table.o
 
 all: cminor
 
-cminor: main.o lex.yy.o parser.tab.o decl.o expr.o param_list.o stmt.o type.o utility.o
-	$(CC) $(FLAGS) main.o lex.yy.o parser.tab.o decl.o expr.o param_list.o stmt.o type.o utility.o -o cminor
+cminor: main.o $(OBJS)
+	$(CC) $(FLAGS) main.o $(OBJS) -o cminor
 
 main.o: main.c parser.tab.h lex.yy.h
 	$(CC) $(FLAGS) -c main.c -o $@
