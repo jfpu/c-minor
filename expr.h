@@ -59,4 +59,7 @@ struct expr *expr_create_string_literal(const char *str);
 
 void expr_print(struct expr *e);
 
+// for type checking
+int expr_is_constant(struct expr *e);
+
 #endif

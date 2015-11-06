@@ -283,3 +283,11 @@ void expr_print(struct expr *e) {
         expr_print(e->next);
     }
 }
+
+int expr_is_constant(struct expr *e) {
+    // we don't allow folding for now
+    return (e->kind == EXPR_BOOLEAN
+        || e->kind == EXPR_INTEGER
+        || e->kind == EXPR_CHARACTER
+        || e->kind == EXPR_STRING);
+}
