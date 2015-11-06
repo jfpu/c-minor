@@ -23,19 +23,24 @@ int yydebug = 0;
 // Parse result
 #include "decl.h"
 
+// Name resolution
+#include "scope.h"
+struct table_node *scope_table_list = NULL;
+
 // Type check result
 #include "type.h"
+int __print_name_resolution_result = 0;
 unsigned int type_error_count = 0;
 
 enum _cminor_options {
     LEX = 1,
     PARSE = 2,
-    TYPECHECK = 3,
+    RESOLVE = 3,
 };
 
 void _lex_manual();
 void _parse();
-void _typecheck();
+void _resolve_name();
 
 int main(int argc, char* argv[]) {
 
@@ -48,7 +53,7 @@ int main(int argc, char* argv[]) {
     struct option options_spec[3];
     SETUP_OPT_STRUCT(options_spec, 0, "scan", LEX);
     SETUP_OPT_STRUCT(options_spec, 1, "print", PARSE);
-    SETUP_OPT_STRUCT(options_spec, 2, "resolve", TYPECHECK);
+    SETUP_OPT_STRUCT(options_spec, 2, "resolve", RESOLVE);
 
     // process flags
     while ((i = getopt_long_only(argc, argv, optstring, options_spec, NULL)) != -1) {
@@ -88,8 +93,9 @@ int main(int argc, char* argv[]) {
             _parse();
             decl_print(program, 0);
             break;
-        case TYPECHECK:
-            _typecheck();
+        case RESOLVE:
+            __print_name_resolution_result = 1;
+            _resolve_name();
             break;
     }
 
@@ -122,10 +128,14 @@ void _parse() {
     if (yyparse() != 0) exit(1);
 }
 
-void _typecheck() {
+void _resolve_name() {
     _parse();
     type_error_count = 0;
-    decl_typecheck(program);
+
+    // create global scope
+    scope_table_list = table_node_push(scope_table_list, SYMBOL_GLOBAL);
+
+    decl_resolve(program, -1);
     if (type_error_count > 0) {
         // we have type errors
         if (type_error_count == 1) fprintf(stderr, "encountered 1 type error\n");
