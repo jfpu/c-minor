@@ -192,7 +192,5 @@ while               { return (WHILE); }
     ERROR("Unknown character %s", yytext);
 }
 
-<INITIAL><<EOF>>    { return (TOKEN_EOF); }
-<LINECMT><<EOF>>    { return (TOKEN_EOF); }
 <STR><<EOF>>        { ERROR_NOARGS("Unexpected EOF: unmatched \""); }
 <CMT><<EOF>>        { ERROR_NOARGS("Unexpected EOF: unmatched /*"); }

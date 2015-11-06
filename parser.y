@@ -50,7 +50,6 @@
 %token SEMICOLON
 %token COLON
 %token COMMA
-%token TOKEN_EOF
 
 %{
 #include <stdio.h>
@@ -88,10 +87,10 @@ void yyerror(char const *str);
 %%
 
 prog
-:   TOKEN_EOF
-    { program = NULL; return 0; }
-|   decl_list TOKEN_EOF
+:   decl_list
     { program = $1; return 0; }
+|
+    { program = NULL; return 0; }
 ;
 
 decl_list
