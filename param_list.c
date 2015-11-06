@@ -29,6 +29,18 @@ void param_list_print(struct param_list *a) {
 }
 
 // for type checking
+unsigned int param_list_length(struct param_list *p) {
+    struct param_list *p_ptr = p;
+    unsigned int length = 0;
+
+    while (p_ptr) {
+        ++length;
+        p_ptr = p_ptr->next;
+    }
+
+    return length;
+}
+
 struct param_list *param_list_copy(struct param_list *p) {
     if (!p) return NULL;
     struct param_list *new_param_list = param_list_create(strdup(p->name), type_copy(p->type), param_list_copy(p->next));

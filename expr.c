@@ -284,6 +284,19 @@ void expr_print(struct expr *e) {
     }
 }
 
+// for type checking
+unsigned int expr_list_length(struct expr *e) {
+    struct expr *e_ptr = e;
+    unsigned int length = 0;
+
+    while (e_ptr) {
+        ++length;
+        e_ptr = e_ptr->next;
+    }
+
+    return length;
+}
+
 int expr_is_constant(struct expr *e) {
     // we don't allow folding for now
     return (e->kind == EXPR_BOOLEAN

@@ -60,6 +60,7 @@ struct expr *expr_create_string_literal(const char *str);
 void expr_print(struct expr *e);
 
 // for type checking
+unsigned int expr_list_length(struct expr *e);
 int expr_is_constant(struct expr *e);
 
 #endif

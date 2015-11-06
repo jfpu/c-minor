@@ -18,6 +18,7 @@ struct param_list *param_list_prepend(struct param_list *first, struct param_lis
 void param_list_print(struct param_list *a);
 
 // for type checking
+unsigned int param_list_length(struct param_list *p);
 struct param_list *param_list_copy(struct param_list *p);
 void param_list_delete(struct param_list *p);
 
