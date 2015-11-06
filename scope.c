@@ -114,7 +114,7 @@ void decl_resolve(struct decl *d, int which) {
         function_param_resolve(d->type);
 
         // resolve funciton body
-        stmt_resolve(d->code);
+        stmt_resolve(d->code, 0);
 
         // exit function scope
         scope_exit();
@@ -124,8 +124,49 @@ void decl_resolve(struct decl *d, int which) {
     decl_resolve(d->next, which);
 }
 
-void stmt_resolve(struct stmt *s) {
+void stmt_resolve(struct stmt *s, int which) {
     if (!s) return;
+
+    switch (s->kind) {
+        case STMT_DECL:
+            decl_resolve(s->decl, which);
+            ++which;
+            break;
+
+        case STMT_EXPR:
+            expr_resolve(s->expr);
+            break;
+
+        case STMT_IF_ELSE:
+            expr_resolve(s->expr);
+            stmt_resolve(s->body, which);
+            stmt_resolve(s->else_body, which);
+            break;
+
+        case STMT_FOR:
+            expr_resolve(s->init_expr);
+            expr_resolve(s->expr);
+            expr_resolve(s->next_expr);
+            stmt_resolve(s->body, which);
+            break;
+
+        case STMT_PRINT:
+        case STMT_RETURN:
+            expr_resolve(s->expr);
+            break;
+
+        case STMT_BLOCK:
+            // enter new scope and resolve body in new scope
+            scope_enter();
+            stmt_resolve(s->body, 0);
+            scope_exit();
+            break;
+
+        case STMT_EMPTY:
+            break;
+    }
+
+    stmt_resolve(s->next, which);
 }
 
 void expr_resolve(struct expr *e) {

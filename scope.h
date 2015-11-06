@@ -28,7 +28,7 @@ struct symbol *scope_lookup_current(const char *name);
 // name resolution
 extern int __print_name_resolution_result;
 void decl_resolve(struct decl *d, int which);
-void stmt_resolve(struct stmt *s);
+void stmt_resolve(struct stmt *s, int which);
 void expr_resolve(struct expr *e);
 void function_param_resolve(struct type *t);
 
