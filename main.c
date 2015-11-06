@@ -73,6 +73,8 @@ int main(int argc, char* argv[]) {
     if (optind >= argc) {
         fprintf(stderr, "cminor: no file given\n");
         exit(1);
+    } else if (optind != argc - 1) {
+        fprintf(stderr, "cminor: multiple files given, processing only the first file\n");
     }
 
     // use file
