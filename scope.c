@@ -81,7 +81,7 @@ void decl_resolve(struct decl *d, int which) {
     struct symbol *looked_up = scope_lookup_current(d->name);
     if (looked_up) {
         // if the name already exists in current scope, error
-        ++error_count_type;
+        ++error_count_name;
 
         if (type_is_equal(looked_up->type, d->type)) {
             printf("name error: duplicate declaration for name %s\n", d->name);
@@ -171,6 +171,37 @@ void stmt_resolve(struct stmt *s, int which) {
 
 void expr_resolve(struct expr *e) {
     if (!e) return;
+
+    switch (e->kind) {
+        case EXPR_BOOLEAN:
+        case EXPR_INTEGER:
+        case EXPR_CHARACTER:
+        case EXPR_STRING:
+            // we don't need to resolve literals
+            break;
+
+        case EXPR_NAME: {
+            // name resolution
+            struct symbol *resolved = scope_lookup(e->name);
+            if (!resolved) {
+                printf("name error: %s is not defined in the current scope", e->name);
+                ++error_count_name;
+            }
+            if (__print_name_resolution_result) print_name_resolution(resolved);
+            e->symbol = resolved;
+            break;
+        }
+
+        default: {
+            // otherwise we resolve both sides
+            expr_resolve(e->left);
+            expr_resolve(e->right);
+            return;
+        }
+    }
+
+    // if it's a list, we resolve the next one
+    if (e->next) expr_resolve(e->next);
 }
 
 void function_param_resolve(struct type *t) {

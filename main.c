@@ -30,6 +30,7 @@ struct table_node *scope_table_list = NULL;
 // Type check result
 #include "type.h"
 int __print_name_resolution_result = 0;
+unsigned int error_count_name = 0;
 unsigned int error_count_type = 0;
 
 enum _cminor_options {
