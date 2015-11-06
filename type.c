@@ -334,5 +334,36 @@ void decl_typecheck(struct decl *d) {
 }
 
 void param_list_typecheck(struct param_list *p, struct expr *e) {
-#warning Unimplemented
+    // this is invoked for each function invocation
+    // we compare each item in the param list with the given expression list
+
+    struct param_list *p_ptr = p;
+    struct expr *e_ptr = e;
+
+    while (p_ptr && e_ptr) {
+        // comparing each pair
+        struct type *expected_type = p->type;
+        struct type *received_type = expr_typecheck(e);
+        if (!type_is_equal(expected_type, received_type)) {
+            // error
+            ++type_error_count;
+            fprintf(stderr, "type error: param list type mismatch; expected ");
+            type_print(expected_type);
+            fprintf(stderr, ", received ");
+            type_print(received_type);
+        }
+        TYPE_FREE(received_type);
+
+        // move on
+        p_ptr = p_ptr->next;
+        e_ptr = e_ptr->next;
+    }
+
+    // ensure lengths are the same
+    if (p_ptr != NULL || e_ptr != NULL) {
+        ++type_error_count;
+        fprintf(stderr, "type error: param list length mismatch; expected %u parameters, received %u arguments",
+            param_list_length(p),
+            expr_list_length(e));
+    }
 }
