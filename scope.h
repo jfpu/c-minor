@@ -23,6 +23,7 @@ void scope_enter();
 void scope_exit();
 void scope_bind(const char *name, struct symbol *s);
 struct symbol *scope_lookup(const char *name);
+struct symbol *scope_lookup_current(const char *name);
 
 // name resolution
 extern int __print_name_resolution_result;

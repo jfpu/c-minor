@@ -68,6 +68,11 @@ struct symbol *scope_lookup(const char *name) {
     return NULL;
 }
 
+struct symbol *scope_lookup_current(const char *name) {
+    // looks up a name only from the current scope
+    return (struct symbol *)hash_table_lookup(scope_table_list->table, name);
+}
+
 // name resolution
 void decl_resolve(struct decl *d, int which) {
     // `which` indicates the `which` value for local declarations, and is -1 for global
@@ -136,7 +141,7 @@ void function_param_resolve(struct type *t) {
     int param_count = 0;
     struct param_list *p_ptr = t->params;
     while (p_ptr) {
-        if (scope_lookup(p_ptr->name)) {
+        if (scope_lookup_current(p_ptr->name)) {
             // if the name already exists in current scope, error
             ++type_error_count;
             printf("name error: duplicate parameter name %s\n", p_ptr->name);
