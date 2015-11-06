@@ -128,11 +128,11 @@ struct type *expr_typecheck(struct expr *e) {
             type_left = expr_typecheck(e->left);
             type_right = expr_typecheck(e->right);
             if (!type_is_equal(type_left, type_right)) {
-                fprintf(stderr, "type error: cannot assign expression of type ");
+                printf("type error: cannot assign expression of type ");
                 type_print(type_right);
-                fprintf(stderr, " to expression of type ");
+                printf(" to expression of type ");
                 type_print(type_left);
-                fprintf(stderr, "\n");
+                printf("\n");
             }
             TYPE_FREE(type_left);
             return type_right;
@@ -151,11 +151,11 @@ struct type *expr_typecheck(struct expr *e) {
                 || type_right->kind != TYPE_INTEGER) {
                 // error
                 ++type_error_count;
-                fprintf(stderr, "type error: cannot perform arithmetic operator on expression of type ");
+                printf("type error: cannot perform arithmetic operator on expression of type ");
                 type_print(type_left);
-                fprintf(stderr, " with expression of type ");
+                printf(" with expression of type ");
                 type_print(type_right);
-                fprintf(stderr, "\n");
+                printf("\n");
             }
             TYPE_FREE(type_left);
             TYPE_FREE(type_right);
@@ -169,9 +169,9 @@ struct type *expr_typecheck(struct expr *e) {
             if (type_right->kind != TYPE_INTEGER) {
                 // error
                 ++type_error_count;
-                fprintf(stderr, "type error: cannot perform arithmetic operator on expression of type ");
+                printf("type error: cannot perform arithmetic operator on expression of type ");
                 type_print(type_right);
-                fprintf(stderr, "\n");
+                printf("\n");
             }
             TYPE_FREE(type_right);
             return type_create(TYPE_INTEGER, NULL, NULL);
@@ -185,9 +185,9 @@ struct type *expr_typecheck(struct expr *e) {
             if (type_right->kind != TYPE_BOOLEAN) {
                 // error
                 ++type_error_count;
-                fprintf(stderr, "type error: cannot perform boolean operator on expression of type ");
+                printf("type error: cannot perform boolean operator on expression of type ");
                 type_print(type_right);
-                fprintf(stderr, "\n");
+                printf("\n");
             }
             TYPE_FREE(type_right);
             return type_create(TYPE_BOOLEAN, NULL, NULL);
@@ -204,11 +204,11 @@ struct type *expr_typecheck(struct expr *e) {
                 || type_right->kind != TYPE_INTEGER) {
                 // error
                 ++type_error_count;
-                fprintf(stderr, "type error: cannot perform comparison operator on expression of type ");
+                printf("type error: cannot perform comparison operator on expression of type ");
                 type_print(type_left);
-                fprintf(stderr, " with expression of type ");
+                printf(" with expression of type ");
                 type_print(type_right);
-                fprintf(stderr, "\n");
+                printf("\n");
             }
             TYPE_FREE(type_left);
             TYPE_FREE(type_right);
@@ -222,11 +222,11 @@ struct type *expr_typecheck(struct expr *e) {
             type_right = expr_typecheck(e->right);
             if (type_left->kind != type_right->kind) {
                 ++type_error_count;
-                fprintf(stderr, "type error: cannot compare expressions of type ");
+                printf("type error: cannot compare expressions of type ");
                 type_print(type_left);
-                fprintf(stderr, " and of type ");
+                printf(" and of type ");
                 type_print(type_right);
-                fprintf(stderr, "\n");
+                printf("\n");
             }
             TYPE_FREE(type_left);
             TYPE_FREE(type_right);
@@ -239,15 +239,15 @@ struct type *expr_typecheck(struct expr *e) {
             type_right = expr_typecheck(e->right);
             if (type_left->kind != TYPE_ARRAY) {
                 ++type_error_count;
-                fprintf(stderr, "type error: cannot dereference an expressions of type ");
+                printf("type error: cannot dereference an expression of type ");
                 type_print(type_left);
-                fprintf(stderr, "\n");
+                printf("\n");
             }
             if (type_right->kind != TYPE_INTEGER) {
                 ++type_error_count;
-                fprintf(stderr, "type error: array subscript cannot be of type ");
+                printf("type error: array subscript cannot be of type ");
                 type_print(type_right);
-                fprintf(stderr, "\n");
+                printf("\n");
             }
 
             // compute return type
