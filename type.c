@@ -139,13 +139,21 @@ struct type *expr_typecheck(struct expr *e) {
         }
 
         // +, -, *, /, ^, %, ++, -- only work on integers
-        case EXPR_ADD: {
+        case EXPR_ADD:
+        case EXPR_SUB:
+        case EXPR_MUL:
+        case EXPR_DIV:
+        case EXPR_EXP:
+        case EXPR_MOD: {
             type_left = expr_typecheck(e->left);
             type_right = expr_typecheck(e->right);
-            if (type_left->kind != TYPE_INTEGER || type_right->kind != TYPE_INTEGER) {
-                fprintf(stderr, "type error: cannot add expression of type ");
+            if (type_left->kind != TYPE_INTEGER
+                || type_right->kind != TYPE_INTEGER) {
+                // error
+                ++type_error_count;
+                fprintf(stderr, "type error: cannot perform arithmetic operator on expression of type ");
                 type_print(type_left);
-                fprintf(stderr, " to expression of type ");
+                fprintf(stderr, " with expression of type ");
                 type_print(type_right);
                 fprintf(stderr, "\n");
             }
@@ -153,17 +161,17 @@ struct type *expr_typecheck(struct expr *e) {
             TYPE_FREE(type_right);
             return type_create(TYPE_INTEGER, NULL, NULL);
         }
-        case EXPR_SUB:
-        case EXPR_MUL:
-        case EXPR_DIV:
-        case EXPR_EXP:
-        case EXPR_MOD:
+
         case EXPR_INC:
         case EXPR_DEC:
         case EXPR_NEG: {
             type_right = expr_typecheck(e->right);
             if (type_right->kind != TYPE_INTEGER) {
                 // error
+                ++type_error_count;
+                fprintf(stderr, "type error: cannot perform arithmetic operator on expression of type ");
+                type_print(type_right);
+                fprintf(stderr, "\n");
             }
             TYPE_FREE(type_right);
             return type_create(TYPE_INTEGER, NULL, NULL);
@@ -172,41 +180,84 @@ struct type *expr_typecheck(struct expr *e) {
         // &&, ||, ! work on booleans
         case EXPR_LAND:
         case EXPR_LOR:
-        case EXPR_LNOT:
+        case EXPR_LNOT: {
+            type_right = expr_typecheck(e->right);
+            if (type_right->kind != TYPE_BOOLEAN) {
+                // error
+                ++type_error_count;
+                fprintf(stderr, "type error: cannot perform boolean operator on expression of type ");
+                type_print(type_right);
+                fprintf(stderr, "\n");
+            }
+            TYPE_FREE(type_right);
+            return type_create(TYPE_BOOLEAN, NULL, NULL);
+        }
 
         // <, <=, >, >= work on only integers
         case EXPR_LT:
         case EXPR_LE:
         case EXPR_GT:
-        case EXPR_GE:
-
-        // EQ and NE work on any type except arrays and functions
-        case EXPR_EQ: {
+        case EXPR_GE: {
             type_left = expr_typecheck(e->left);
             type_right = expr_typecheck(e->right);
-            if (type_left->kind != TYPE_INTEGER || type_right->kind != TYPE_INTEGER) {
-                fprintf(stderr, "type error: cannot add expression (");
-                expr_print(e->left);
-                fprintf(stderr, ") of type ");
+            if (type_left->kind != TYPE_INTEGER
+                || type_right->kind != TYPE_INTEGER) {
+                // error
+                ++type_error_count;
+                fprintf(stderr, "type error: cannot perform comparison operator on expression of type ");
                 type_print(type_left);
-                fprintf(stderr, " to expression (");
-                expr_print(e->right);
-                fprintf(stderr, ")of type ");
+                fprintf(stderr, " with expression of type ");
                 type_print(type_right);
                 fprintf(stderr, "\n");
             }
             TYPE_FREE(type_left);
             TYPE_FREE(type_right);
-            return type_create(TYPE_INTEGER, NULL, NULL);
+            return type_create(TYPE_BOOLEAN, NULL, NULL);
         }
-        case EXPR_NE: {
 
+        // EQ and NE work on any type except arrays and functions
+        case EXPR_EQ:
+        case EXPR_NE: {
+            type_left = expr_typecheck(e->left);
+            type_right = expr_typecheck(e->right);
+            if (type_left->kind != type_right->kind) {
+                ++type_error_count;
+                fprintf(stderr, "type error: cannot compare expressions of type ");
+                type_print(type_left);
+                fprintf(stderr, " and of type ");
+                type_print(type_right);
+                fprintf(stderr, "\n");
+            }
+            TYPE_FREE(type_left);
+            TYPE_FREE(type_right);
+            return type_create(TYPE_BOOLEAN, NULL, NULL);
         }
 
         // a[b]: a must be an array and b must be an integer
         case EXPR_ARRAY_DEREF: {
+            type_left = expr_typecheck(e->left);
+            type_right = expr_typecheck(e->right);
+            if (type_left->kind != TYPE_ARRAY) {
+                ++type_error_count;
+                fprintf(stderr, "type error: cannot dereference an expressions of type ");
+                type_print(type_left);
+                fprintf(stderr, "\n");
+            }
+            if (type_right->kind != TYPE_INTEGER) {
+                ++type_error_count;
+                fprintf(stderr, "type error: array subscript cannot be of type ");
+                type_print(type_right);
+                fprintf(stderr, "\n");
+            }
 
+            // compute return type
+            struct type *array_subtype = type_copy(type_left->subtype);
+            TYPE_FREE(type_left);
+            TYPE_FREE(type_right);
+
+            return array_subtype;
         }
+
         default: {
             // this should never happen
             fprintf(stderr, "fatal error: unknown type\n");
