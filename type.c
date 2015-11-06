@@ -82,7 +82,16 @@ void type_delete(struct type *t) {
 }
 
 int type_is_equal(struct type *a, struct type *b) {
-#warning Unimplemented
+    if (!a || !b) {
+        // ideally this should never happen
+        fprintf(stderr, "type_is_equal received NULL types\n");
+        return 0;
+    }
+
+    if (a->kind != b->kind) return 0;
+    if ((a->kind == TYPE_ARRAY || a->kind == TYPE_FUNCTION)
+        && !type_is_equal(a->subtype, b->subtype)) return 0;
+
     return 1;
 }
 
