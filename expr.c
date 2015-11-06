@@ -298,6 +298,8 @@ unsigned int expr_list_length(struct expr *e) {
 }
 
 int expr_is_constant(struct expr *e) {
+    if (!e) return 0;
+
     // we don't allow folding for now
     return (e->kind == EXPR_BOOLEAN
         || e->kind == EXPR_INTEGER

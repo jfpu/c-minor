@@ -321,7 +321,7 @@ void decl_typecheck(struct decl *d) {
         // error
     }
 
-    if (/*d is global*/1 && !expr_is_constant(d->value)) {
+    if (/*d is global*/1 && d->value && !expr_is_constant(d->value)) {
         // error
     }
 
