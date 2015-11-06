@@ -207,6 +207,7 @@ void function_param_resolve(struct type *t) {
 }
 
 void print_name_resolution(struct symbol *s) {
+    if (!s) return;
     printf("%s resolves to ", s->name);
     switch (s->kind) {
         case SYMBOL_LOCAL:
