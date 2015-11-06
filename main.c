@@ -6,6 +6,13 @@
 #include "lex.yy.h"     // yylex
 #include "parser.tab.h" // yyparse
 
+// Macro to setup options for getopt
+#define SETUP_OPT_STRUCT(__struct_name, __idx, __name, __val)   \
+    (__struct_name)[(__idx)].name = (__name);                   \
+    (__struct_name)[(__idx)].has_arg = 0;                       \
+    (__struct_name)[(__idx)].flag = NULL;                       \
+    (__struct_name)[(__idx)].val = (__val);
+
 // Redirect lex input to a file
 extern FILE *yyin;
 
@@ -19,51 +26,76 @@ int yydebug = 0;
 enum _cminor_options {
     LEX = 1,
     PARSE = 2,
+    TYPECHECK = 3,
 };
 
-void _lex();
+void _lex_manual();
 void _parse();
+void _typecheck();
 
 int main(int argc, char* argv[]) {
 
     // handle command line arguments
-    int opt;
+    int i = 0;
+    int opt = -1;
     const char *optstring = "";
 
     // setup long arguments
-    struct option options_spec[2];
-    options_spec[0].name = "scan";
-    options_spec[0].has_arg = 1;
-    options_spec[0].flag = NULL;
-    options_spec[0].val = LEX;
+    struct option options_spec[3];
+    SETUP_OPT_STRUCT(options_spec, 0, "scan", LEX);
+    SETUP_OPT_STRUCT(options_spec, 1, "print", PARSE);
+    SETUP_OPT_STRUCT(options_spec, 2, "resolve", TYPECHECK);
 
-    options_spec[1].name = "parse";
-    options_spec[1].has_arg = 1;
-    options_spec[1].flag = NULL;
-    options_spec[1].val = PARSE;
-
-    while ((opt = getopt_long_only(argc, argv, optstring, options_spec, NULL)) != -1) {
-        if (opt == LEX || opt == PARSE) {
-            // Use file
-            FILE *source_file = fopen(optarg, "r");
-            if (!source_file) {
-                fprintf(stderr, "Cannot open file %s\n", optarg);
-                exit(1);
-            }
-            yyin = source_file;
-
-            if (opt == LEX) _lex();
-            else if (opt == PARSE) _parse();
-
-            fclose(source_file);
+    // process flags
+    while ((i = getopt_long_only(argc, argv, optstring, options_spec, NULL)) != -1) {
+        if (opt != -1) {
+            fprintf(stderr, "cminor: received multiple flags\n");
+            exit(1);
         }
+        if (i == '?') exit(1);
+        opt = i;
     }
+    if (opt == -1) {
+        fprintf(stderr, "cminor: must pass in at least one flag\n");
+        exit(1);
+    }
+
+    // consider only the first file requested
+    if (optind >= argc) {
+        fprintf(stderr, "cminor: no file given\n");
+        exit(1);
+    }
+
+    // use file
+    const char *filename = argv[optind];
+    FILE *source_file = fopen(filename, "r");
+    if (!source_file) {
+        fprintf(stderr, "cminor: cannot open file %s\n", filename);
+        exit(1);
+    }
+    yyin = source_file;
+
+    // perform action
+    switch (opt) {
+        case LEX:
+            _lex_manual();
+            break;
+        case PARSE:
+            _parse();
+            decl_print(program, 0);
+            break;
+        case TYPECHECK:
+            _typecheck();
+            break;
+    }
+
+    fclose(source_file);
 
     return 0;
 }
 
 
-void _lex() {
+void _lex_manual() {
     int token;
     YYSTYPE yylval;
     while ((token = yylex(&yylval)) != 0) {
@@ -84,5 +116,8 @@ void _lex() {
 void _parse() {
     program = NULL;
     if (yyparse() != 0) exit(1);
-    decl_print(program, 0);
+}
+
+void _typecheck() {
+    _parse();
 }
