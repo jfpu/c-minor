@@ -81,7 +81,7 @@ void decl_resolve(struct decl *d, int which) {
     struct symbol *looked_up = scope_lookup_current(d->name);
     if (looked_up) {
         // if the name already exists in current scope, error
-        ++type_error_count;
+        ++error_count_type;
 
         if (type_is_equal(looked_up->type, d->type)) {
             printf("name error: duplicate declaration for name %s\n", d->name);
@@ -184,7 +184,7 @@ void function_param_resolve(struct type *t) {
     while (p_ptr) {
         if (scope_lookup_current(p_ptr->name)) {
             // if the name already exists in current scope, error
-            ++type_error_count;
+            ++error_count_type;
             printf("name error: duplicate parameter name %s\n", p_ptr->name);
 
             // move on to next parameter

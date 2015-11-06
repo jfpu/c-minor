@@ -150,7 +150,7 @@ struct type *expr_typecheck(struct expr *e) {
             if (type_left->kind != TYPE_INTEGER
                 || type_right->kind != TYPE_INTEGER) {
                 // error
-                ++type_error_count;
+                ++error_count_type;
                 printf("type error: cannot perform arithmetic operator on expression of type ");
                 type_print(type_left);
                 printf(" with expression of type ");
@@ -168,7 +168,7 @@ struct type *expr_typecheck(struct expr *e) {
             type_right = expr_typecheck(e->right);
             if (type_right->kind != TYPE_INTEGER) {
                 // error
-                ++type_error_count;
+                ++error_count_type;
                 printf("type error: cannot perform arithmetic operator on expression of type ");
                 type_print(type_right);
                 printf("\n");
@@ -184,7 +184,7 @@ struct type *expr_typecheck(struct expr *e) {
             type_right = expr_typecheck(e->right);
             if (type_right->kind != TYPE_BOOLEAN) {
                 // error
-                ++type_error_count;
+                ++error_count_type;
                 printf("type error: cannot perform boolean operator on expression of type ");
                 type_print(type_right);
                 printf("\n");
@@ -203,7 +203,7 @@ struct type *expr_typecheck(struct expr *e) {
             if (type_left->kind != TYPE_INTEGER
                 || type_right->kind != TYPE_INTEGER) {
                 // error
-                ++type_error_count;
+                ++error_count_type;
                 printf("type error: cannot perform comparison operator on expression of type ");
                 type_print(type_left);
                 printf(" with expression of type ");
@@ -221,7 +221,7 @@ struct type *expr_typecheck(struct expr *e) {
             type_left = expr_typecheck(e->left);
             type_right = expr_typecheck(e->right);
             if (type_left->kind != type_right->kind) {
-                ++type_error_count;
+                ++error_count_type;
                 printf("type error: cannot compare expressions of type ");
                 type_print(type_left);
                 printf(" and of type ");
@@ -238,13 +238,13 @@ struct type *expr_typecheck(struct expr *e) {
             type_left = expr_typecheck(e->left);
             type_right = expr_typecheck(e->right);
             if (type_left->kind != TYPE_ARRAY) {
-                ++type_error_count;
+                ++error_count_type;
                 printf("type error: cannot dereference an expression of type ");
                 type_print(type_left);
                 printf("\n");
             }
             if (type_right->kind != TYPE_INTEGER) {
-                ++type_error_count;
+                ++error_count_type;
                 printf("type error: array subscript cannot be of type ");
                 type_print(type_right);
                 printf("\n");
@@ -346,7 +346,7 @@ void param_list_typecheck(struct param_list *p, struct expr *e) {
         struct type *received_type = expr_typecheck(e);
         if (!type_is_equal(expected_type, received_type)) {
             // error
-            ++type_error_count;
+            ++error_count_type;
             fprintf(stderr, "type error: param list type mismatch; expected ");
             type_print(expected_type);
             fprintf(stderr, ", received ");
@@ -361,7 +361,7 @@ void param_list_typecheck(struct param_list *p, struct expr *e) {
 
     // ensure lengths are the same
     if (p_ptr != NULL || e_ptr != NULL) {
-        ++type_error_count;
+        ++error_count_type;
         fprintf(stderr, "type error: param list length mismatch; expected %u parameters, received %u arguments",
             param_list_length(p),
             expr_list_length(e));

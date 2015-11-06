@@ -35,7 +35,7 @@ void type_delete(struct type *t);
 int type_is_equal(struct type *a, struct type *b);
 
 // actual type checking functions
-extern unsigned int type_error_count;
+extern unsigned int error_count_type;
 
 struct type *expr_typecheck(struct expr *e);
 void stmt_typecheck(struct stmt *s, struct type *expected);

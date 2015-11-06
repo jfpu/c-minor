@@ -30,7 +30,7 @@ struct table_node *scope_table_list = NULL;
 // Type check result
 #include "type.h"
 int __print_name_resolution_result = 0;
-unsigned int type_error_count = 0;
+unsigned int error_count_type = 0;
 
 enum _cminor_options {
     LEX = 1,
@@ -132,16 +132,16 @@ void _parse() {
 
 void _resolve_name() {
     _parse();
-    type_error_count = 0;
+    error_count_type = 0;
 
     // create global scope
     scope_table_list = table_node_push(scope_table_list, SYMBOL_GLOBAL);
 
     decl_resolve(program, -1);
-    if (type_error_count > 0) {
+    if (error_count_type > 0) {
         // we have type errors
-        if (type_error_count == 1) fprintf(stderr, "encountered 1 type error\n");
-        else fprintf(stderr, "encountered %u type errors\n", type_error_count);
+        if (error_count_type == 1) fprintf(stderr, "encountered 1 type error\n");
+        else fprintf(stderr, "encountered %u type errors\n", error_count_type);
 
         exit(1);
     }
