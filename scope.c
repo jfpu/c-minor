@@ -78,7 +78,7 @@ void decl_resolve(struct decl *d, int which) {
     // `which` indicates the `which` value for local declarations, and is -1 for global
     if (!d) return;
 
-    struct symbol *looked_up = scope_lookup(d->name);
+    struct symbol *looked_up = scope_lookup_current(d->name);
     if (looked_up) {
         // if the name already exists in current scope, error
         ++type_error_count;
