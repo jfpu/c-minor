@@ -3,6 +3,10 @@
 
 #include "param_list.h"
 #include "expr.h"
+#include "stmt.h"
+#include "decl.h"
+#include "param_list.h"
+#include "type.h"
 
 typedef enum {
     TYPE_BOOLEAN,
@@ -28,5 +32,14 @@ void type_print(struct type *t);
 // for type checking
 struct type *type_copy(struct type *t);
 void type_delete(struct type *t);
+int type_is_equal(struct type *a, struct type *b);
+
+// actual type checking functions
+extern unsigned int type_error_count;
+
+struct type *expr_typecheck(struct expr *e);
+void stmt_typecheck(struct stmt *s, struct type *expected);
+void decl_typecheck(struct decl *d);
+void param_list_typecheck(struct param_list *p, struct expr *e);
 
 #endif

@@ -23,6 +23,10 @@ int yydebug = 0;
 // Parse result
 #include "decl.h"
 
+// Type check result
+#include "type.h"
+unsigned int type_error_count = 0;
+
 enum _cminor_options {
     LEX = 1,
     PARSE = 2,
@@ -120,4 +124,13 @@ void _parse() {
 
 void _typecheck() {
     _parse();
+    type_error_count = 0;
+    decl_typecheck(program);
+    if (type_error_count > 0) {
+        // we have type errors
+        if (type_error_count == 1) fprintf(stderr, "encountered 1 type error\n");
+        else fprintf(stderr, "encountered %u type errors\n", type_error_count);
+
+        exit(1);
+    }
 }
