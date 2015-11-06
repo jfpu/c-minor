@@ -17,4 +17,8 @@ struct param_list *param_list_create(char *name, struct type *type, struct param
 struct param_list *param_list_prepend(struct param_list *first, struct param_list *rest);
 void param_list_print(struct param_list *a);
 
+// for type checking
+struct param_list *param_list_copy(struct param_list *p);
+void param_list_delete(struct param_list *p);
+
 #endif

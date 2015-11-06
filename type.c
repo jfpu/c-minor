@@ -62,3 +62,17 @@ void type_print(struct type *t) {
             break;
     }
 }
+
+// for type checking
+struct type *type_copy(struct type *t) {
+    if (!t) return NULL;
+    struct type *new_type = type_create(t->kind, param_list_copy(t->params), type_copy(t->subtype));
+    return new_type;
+}
+
+void type_delete(struct type *t) {
+    if (!t) return;
+    param_list_delete(t->params);
+    type_delete(t->subtype);
+    free(t);
+}

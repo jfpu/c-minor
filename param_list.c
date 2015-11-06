@@ -1,5 +1,5 @@
 #include <stdlib.h> // malloc
-#include <string.h> // memset
+#include <string.h> // memset, strdup
 #include "param_list.h"
 #include "type.h"
 
@@ -26,4 +26,23 @@ void param_list_print(struct param_list *a) {
         printf(", ");
         param_list_print(a->next);
     }
+}
+
+// for type checking
+struct param_list *param_list_copy(struct param_list *p) {
+    if (!p) return NULL;
+    struct param_list *new_param_list = param_list_create(strdup(p->name), type_copy(p->type), param_list_copy(p->next));
+    return new_param_list;
+}
+
+void param_list_delete(struct param_list *p) {
+    if (!p) return;
+
+    // delete from end of list
+    param_list_delete(p->next);
+
+    // free node
+    free(p->name);
+    type_delete(p->type);
+    free(p);
 }
