@@ -34,14 +34,16 @@ unsigned int error_count_name = 0;
 unsigned int error_count_type = 0;
 
 enum _cminor_options {
-    LEX = 1,
-    PARSE = 2,
-    RESOLVE = 3,
+    LEX,
+    PARSE,
+    RESOLVE,
+    CHECK
 };
 
 void _lex_manual();
 void _parse();
 void _resolve_name();
+void _typecheck();
 
 int main(int argc, char* argv[]) {
 
@@ -51,10 +53,11 @@ int main(int argc, char* argv[]) {
     const char *optstring = "";
 
     // setup long arguments
-    struct option options_spec[3];
+    struct option options_spec[4];
     SETUP_OPT_STRUCT(options_spec, 0, "scan", LEX);
     SETUP_OPT_STRUCT(options_spec, 1, "print", PARSE);
     SETUP_OPT_STRUCT(options_spec, 2, "resolve", RESOLVE);
+    SETUP_OPT_STRUCT(options_spec, 3, "typecheck", CHECK);
 
     // process flags
     while ((i = getopt_long_only(argc, argv, optstring, options_spec, NULL)) != -1) {
@@ -100,6 +103,9 @@ int main(int argc, char* argv[]) {
             __print_name_resolution_result = 1;
             _resolve_name();
             break;
+        case CHECK:
+            _typecheck();
+            break;
     }
 
     fclose(source_file);
@@ -133,12 +139,22 @@ void _parse() {
 
 void _resolve_name() {
     _parse();
-    error_count_type = 0;
+    error_count_name = 0;
 
     // create global scope
     scope_table_list = table_node_push(scope_table_list, SYMBOL_GLOBAL);
-
     decl_resolve(program, -1);
+    if (error_count_name > 0) {
+        // we have type errors
+        if (error_count_name == 1) fprintf(stderr, "encountered 1 name error\n");
+        else fprintf(stderr, "encountered %u name errors\n", error_count_name);
+        exit(1);
+    }
+}
+
+void _typecheck() {
+    _resolve_name();
+    decl_typecheck(program);
     if (error_count_type > 0) {
         // we have type errors
         if (error_count_type == 1) fprintf(stderr, "encountered 1 type error\n");
