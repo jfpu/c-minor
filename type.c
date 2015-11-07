@@ -442,11 +442,10 @@ void decl_typecheck(struct decl *d) {
         // global initialization must use constant value
         if (d->symbol->kind == SYMBOL_GLOBAL
             && !expr_is_constant(d->value)) {
-            // error
             ++error_count_type;
-            printf("type error: initializing variable `%s` with non-constant expression (", d->name);
+            printf("type error: initializing variable `%s` with non-constant expression `", d->name);
             expr_print(d->value);
-            printf(")\n");
+            printf("`\n");
         }
 
     }
