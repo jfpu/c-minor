@@ -148,7 +148,6 @@ void _resolve_name() {
         // we have type errors
         if (error_count_name == 1) printf("encountered 1 name error\n");
         else printf("encountered %u name errors\n", error_count_name);
-        exit(1);
     }
 }
 
