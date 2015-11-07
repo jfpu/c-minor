@@ -38,7 +38,7 @@ int type_is_equal(struct type *a, struct type *b);
 extern unsigned int error_count_type;
 
 struct type *expr_typecheck(struct expr *e);
-void stmt_typecheck(struct stmt *s, struct type *expected);
+void stmt_typecheck(struct stmt *s, const char *name, struct type *expected);
 void decl_typecheck(struct decl *d);
 void param_list_typecheck(struct param_list *p, struct expr *e);
 

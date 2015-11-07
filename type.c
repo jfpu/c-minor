@@ -266,21 +266,30 @@ struct type *expr_typecheck(struct expr *e) {
     }
 }
 
-void stmt_typecheck(struct stmt *s, struct type *expected) {
+void stmt_typecheck(struct stmt *s, const char *name, struct type *expected) {
     if (!s) return;
 
     switch (s->kind) {
-        case STMT_DECL:
-        case STMT_EXPR:
+        case STMT_DECL: {
+            decl_typecheck(s->decl);
+            break;
+        }
+        case STMT_EXPR: {
+            expr_typecheck(s->expr);
+            break;
+        }
         case STMT_IF_ELSE: {
             struct type *type_expr = expr_typecheck(s->expr);
             if (type_expr->kind != TYPE_BOOLEAN) {
-                // error
+                ++error_count_type;
+                printf("type error: if statement received expression of type ");
+                type_print(type_expr);
+                printf(", expected boolean\n");
             }
-
-            stmt_typecheck(s->body, expected);
-            stmt_typecheck(s->else_body, expected);
+            stmt_typecheck(s->body, name, expected);
+            stmt_typecheck(s->else_body, name, expected);
             TYPE_FREE(type_expr);
+            break;
         }
         case STMT_FOR: {
             struct type *type_expr = NULL;
@@ -294,24 +303,49 @@ void stmt_typecheck(struct stmt *s, struct type *expected) {
             // type check current body
             type_expr = expr_typecheck(s->expr);
             if (type_expr->kind != TYPE_BOOLEAN) {
-                // error
+                ++error_count_type;
+                printf("type error: for statement received expression of type ");
+                type_print(type_expr);
+                printf(", expected boolean\n");
             }
-            stmt_typecheck(s->body, expected);
+            stmt_typecheck(s->body, name, expected);
             TYPE_FREE(type_expr);
+            break;
         }
-        case STMT_PRINT:
+        case STMT_PRINT: {
+            // type check each item in expr list
+            struct type *type_expr = NULL;
+            struct expr *e_ptr = s->expr;
+            while (e_ptr) {
+                type_expr = expr_typecheck(s->expr);
+                TYPE_FREE(type_expr);
+            }
+            break;
+        }
         case STMT_RETURN: {
+            // function must return the expected type
             struct type *type_expr = expr_typecheck(s->expr);
             if (!type_is_equal(type_expr, expected)) {
-                // error
+                ++error_count_type;
+                printf("type error: function `%s` with return type ", name);
+                type_print(expected);
+                printf(" returns expression of type ");
+                type_print(type_expr);
+                printf("\n");
             }
             TYPE_FREE(type_expr);
+            break;
         }
-        case STMT_BLOCK:
+        case STMT_BLOCK: {
+            stmt_typecheck(s->body, name, expected);
+            break;
+        }
         case STMT_EMPTY:
             // dummy node, ignore
-            return;
+            break;
     }
+
+    stmt_typecheck(s->next, name, expected);
 }
 
 void decl_typecheck(struct decl *d) {
@@ -419,7 +453,7 @@ void decl_typecheck(struct decl *d) {
 
     // function: check body
     if (d->code) {
-        stmt_typecheck(d->code, d->type->subtype);
+        stmt_typecheck(d->code, d->name, d->type->subtype);
     }
 
     // clean up
