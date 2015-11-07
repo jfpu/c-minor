@@ -319,10 +319,22 @@ void decl_typecheck(struct decl *d) {
     struct type *value_type = expr_typecheck(d->value);
     if (!type_is_equal(d->type, value_type)) {
         // error
+        ++error_count_type;
+        printf("type error: initializaing variable %s with type ", d->name);
+        type_print(value_type);
+        printf(", expecting ");
+        type_print(d->type);
+        printf("\n");
     }
 
-    if (/*d is global*/1 && d->value && !expr_is_constant(d->value)) {
+    if (d->symbol->kind == SYMBOL_GLOBAL
+        && d->value
+        && !expr_is_constant(d->value)) {
         // error
+        ++error_count_type;
+        printf("type error: initializing variable %s with non-constant expression (", d->name);
+        expr_print(d->value);
+        printf(")\n");
     }
 
     if (d->code) {
