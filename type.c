@@ -359,10 +359,11 @@ void param_list_typecheck(struct param_list *p, struct expr *e) {
         if (!type_is_equal(expected_type, received_type)) {
             // error
             ++error_count_type;
-            fprintf(stderr, "type error: param list type mismatch; expected ");
+            printf("type error: parameter %d type mismatch; expected ", p_ptr->symbol->which);
             type_print(expected_type);
-            fprintf(stderr, ", received ");
+            printf(", received ");
             type_print(received_type);
+            printf("\n");
         }
         TYPE_FREE(received_type);
 
@@ -374,7 +375,7 @@ void param_list_typecheck(struct param_list *p, struct expr *e) {
     // ensure lengths are the same
     if (p_ptr != NULL || e_ptr != NULL) {
         ++error_count_type;
-        fprintf(stderr, "type error: param list length mismatch; expected %u parameters, received %u arguments",
+        printf("type error: param list length mismatch; expected %u parameters, received %u arguments",
             param_list_length(p),
             expr_list_length(e));
     }
