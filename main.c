@@ -146,8 +146,8 @@ void _resolve_name() {
     decl_resolve(program, -1);
     if (error_count_name > 0) {
         // we have type errors
-        if (error_count_name == 1) fprintf(stderr, "encountered 1 name error\n");
-        else fprintf(stderr, "encountered %u name errors\n", error_count_name);
+        if (error_count_name == 1) printf("encountered 1 name error\n");
+        else printf("encountered %u name errors\n", error_count_name);
         exit(1);
     }
 }
@@ -157,8 +157,8 @@ void _typecheck() {
     decl_typecheck(program);
     if (error_count_type > 0) {
         // we have type errors
-        if (error_count_type == 1) fprintf(stderr, "encountered 1 type error\n");
-        else fprintf(stderr, "encountered %u type errors\n", error_count_type);
+        if (error_count_type == 1) printf("encountered 1 type error\n");
+        else printf("encountered %u type errors\n", error_count_type);
 
         exit(1);
     }
