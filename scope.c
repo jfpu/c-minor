@@ -184,7 +184,7 @@ void expr_resolve(struct expr *e) {
             // name resolution
             struct symbol *resolved = scope_lookup(e->name);
             if (!resolved) {
-                printf("name error: %s is not defined in the current scope", e->name);
+                printf("name error: %s is not defined in the current scope\n", e->name);
                 ++error_count_name;
             }
             if (__print_name_resolution_result) print_name_resolution(resolved);
