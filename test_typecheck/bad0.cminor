@@ -1,0 +1,44 @@
+// Test case 0
+// Declarations
+
+// Names must be unique per scope
+a: integer;
+a: string;
+// how do we handle this situation? should we set the symbol for the second one (and get a possible incorrect message) or should we skip it (and how do we do it?)
+
+main: function void () = {
+
+  // void is not a valid type for variables
+  { a: void; }
+  { a: void = 1; }
+
+  // Initialization must type check
+  { a: integer = true; }
+  { a: integer = 'c'; }
+  { a: integer = "abc"; }
+  { a: boolean = 1; }
+  { a: boolean = 'c'; }
+  { a: boolean = "abc"; }
+  { a: char = 1; }
+  { a: char = true; }
+  { a: char = "abc"; }
+  { a: string = 1; }
+  { a: string = true; }
+  { a: string = 'c'; }
+
+  // Array declaration must have const size
+  { a: array [] integer; }
+  { a: array [1 + 2] integer; }
+  { b: integer = 3; a: array [b] integer; }
+
+  // Array initialization must have the correct type
+  { a: array [3] integer = {true, 2, 3}; }
+  { a: array [3] integer = {1, true, 3}; }
+  { a: array [3] integer = {'c', 2, 3}; }
+  { a: array [3] integer = {"s", 2, 3}; }
+
+  // Array initialization must have the correct length
+  { a: array [0] integer = {1, 2, 3}; }
+  { a: array [4] integer = {1, 2, 3}; }
+}
+
