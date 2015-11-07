@@ -366,9 +366,9 @@ void decl_typecheck(struct decl *d) {
             printf("type error: declaring array `%s` without size\n", d->name);
         } else if (!expr_is_constant(d->type->size)) {
             ++error_count_type;
-            printf("type error: declaring array `%s` with non-constant size ", d->name);
+            printf("type error: declaring array `%s` with non-constant size `", d->name);
             expr_print(d->type->size);
-            printf("\n");
+            printf("`\n");
         }
 
         // array subtype cannot be void or function
