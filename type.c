@@ -360,25 +360,7 @@ void decl_typecheck(struct decl *d) {
         printf("\n");
 
     } else if (d->type->kind == TYPE_ARRAY) {
-        // array length must be present and constant
-        if (!d->type->size) {
-            ++error_count_type;
-            printf("type error: declaring array `%s` without size\n", d->name);
-        } else if (!expr_is_constant(d->type->size)) {
-            ++error_count_type;
-            printf("type error: declaring array `%s` with non-constant size `", d->name);
-            expr_print(d->type->size);
-            printf("`\n");
-        }
-
-        // array subtype cannot be void or function
-        if (d->type->subtype->kind == TYPE_VOID
-            || d->type->subtype->kind == TYPE_FUNCTION) {
-            ++error_count_type;
-            printf("type error: declaring array `%s` of type ", d->name);
-            type_print(d->type->subtype);
-            printf("\n");
-        }
+        array_type_typecheck(d->type, d->name);
 
     } else if (d->type->kind == TYPE_FUNCTION) {
         // function cannot return arrays or functions
@@ -459,6 +441,30 @@ void decl_typecheck(struct decl *d) {
 
     // check next
     decl_typecheck(d->next);
+}
+
+void array_type_typecheck(struct type *t, const char * const name) {
+    // array length must be present and constant
+    if (!t->size) {
+        ++error_count_type;
+        printf("type error: declaring array `%s` without size\n", name);
+    } else if (!expr_is_constant(t->size)) {
+        ++error_count_type;
+        printf("type error: declaring array `%s` with non-constant size `", name);
+        expr_print(t->size);
+        printf("`\n");
+    }
+
+    // array subtype cannot be void or function
+    if (t->subtype->kind == TYPE_VOID
+        || t->subtype->kind == TYPE_FUNCTION) {
+        ++error_count_type;
+        printf("type error: declaring array `%s` of type ", name);
+        type_print(t->subtype);
+        printf("\n");
+    } else if (t->subtype->kind == TYPE_ARRAY) {
+        array_type_typecheck(t->subtype, name);
+    }
 }
 
 void param_list_typecheck(struct param_list *p, struct expr *e) {
