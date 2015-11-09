@@ -254,6 +254,10 @@ struct type *expr_typecheck(struct expr *e) {
                 printf("type error: cannot dereference an expression of type ");
                 type_print(type_left);
                 printf("\n");
+
+                // prematurely return an appropriate type to avoid comparing null types
+                TYPE_FREE(type_left);
+                return type_right;
             }
             if (type_right->kind != TYPE_INTEGER) {
                 ++error_count_type;
