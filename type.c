@@ -126,8 +126,20 @@ struct type *expr_typecheck(struct expr *e) {
         // = works on any type except arrays
         case EXPR_ASSIGN: {
             type_left = expr_typecheck(e->left);
+
+            // we can only assign to an lvalue
+            if (!expr_is_lvalue_type(e->left)) {
+                ++error_count_type;
+                printf("type error: expression `");
+                expr_print(e->left);
+                printf("` of type ");
+                type_print(type_left);
+                printf(" is not an lvalue\n");
+            }
+
             type_right = expr_typecheck(e->right);
             if (!type_is_equal(type_left, type_right)) {
+                ++error_count_type;
                 printf("type error: cannot assign expression of type ");
                 type_print(type_right);
                 printf(" to expression of type ");
