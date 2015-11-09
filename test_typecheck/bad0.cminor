@@ -4,7 +4,6 @@
 // Names must be unique per scope
 a: integer;
 a: string;
-// how do we handle this situation? should we set the symbol for the second one (and get a possible incorrect message) or should we skip it (and how do we do it?)
 
 main: function void () = {
 
@@ -41,4 +40,3 @@ main: function void () = {
   { a: array [0] integer = {1, 2, 3}; }
   { a: array [4] integer = {1, 2, 3}; }
 }
-

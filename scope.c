@@ -93,32 +93,33 @@ void decl_resolve(struct decl *d, int which) {
             printf(")\n");
         }
 
-        return;
-    }
+        // bind the symbol to avoid issues in type checking
+        d->symbol = looked_up;
+    } else {
+        // all good: create a new symbol and bind to current scope
+        // we don't copy d->type here, because we need to resolve parameters / size later
+        struct symbol *s = symbol_create(scope_table_list->scope, which, d->type, d->name);
+        scope_bind(d->name, s);
+        d->symbol = s;
+        if (__print_name_resolution_result) {
+            printf("create symbol: ");
+            print_name_resolution(s);
+        }
 
-    // all good: create a new symbol and bind to current scope
-    // we don't copy d->type here, because we need to resolve parameters / size later
-    struct symbol *s = symbol_create(scope_table_list->scope, which, d->type, d->name);
-    scope_bind(d->name, s);
-    d->symbol = s;
-    if (__print_name_resolution_result) {
-        printf("create symbol: ");
-        print_name_resolution(s);
-    }
+        // if declaration is a function, process function parameters and body
+        if (d->code) {
+            // enter new scope for function
+            scope_enter();
 
-    // if declaration is a function, process function parameters and body
-    if (d->code) {
-        // enter new scope for function
-        scope_enter();
+            // resolve parameters
+            function_param_resolve(d->type);
 
-        // resolve parameters
-        function_param_resolve(d->type);
+            // resolve funciton body
+            stmt_resolve(d->code, 0);
 
-        // resolve funciton body
-        stmt_resolve(d->code, 0);
-
-        // exit function scope
-        scope_exit();
+            // exit function scope
+            scope_exit();
+        }
     }
 
     // resolve next declaration
