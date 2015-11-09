@@ -82,19 +82,15 @@ void decl_resolve(struct decl *d, int which) {
     if (looked_up) {
         // if the name already exists in current scope, error
         ++error_count_name;
-
-        if (type_is_equal(looked_up->type, d->type)) {
-            printf("name error: duplicate declaration for name %s\n", d->name);
-        } else {
-            printf("name error: incompatible duplicate declaration for name %s with type ", d->name);
-            type_print(d->type);
-            printf(" (previously declared as ");
-            type_print(looked_up->type);
-            printf(")\n");
-        }
+        printf("name error: duplicate declaration for name `%s` with type ", d->name);
+        type_print(d->type);
+        printf(" (previously declared as ");
+        type_print(looked_up->type);
+        printf(")\n");
 
         // bind the symbol to avoid issues in type checking
         d->symbol = looked_up;
+
     } else {
         // all good: create a new symbol and bind to current scope
         // we don't copy d->type here, because we need to resolve parameters / size later
