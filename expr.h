@@ -62,5 +62,6 @@ void expr_print(struct expr *e);
 // for type checking
 unsigned int expr_list_length(struct expr *e);
 int expr_is_constant(struct expr *e);
+int expr_is_lvalue_type(struct expr *e);
 
 #endif

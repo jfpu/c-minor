@@ -306,3 +306,9 @@ int expr_is_constant(struct expr *e) {
         || e->kind == EXPR_CHARACTER
         || e->kind == EXPR_STRING);
 }
+
+int expr_is_lvalue_type(struct expr *e) {
+    if (!e) return 0;
+    return (e->kind == EXPR_NAME
+        || e->kind == EXPR_ARRAY_DEREF);
+}
