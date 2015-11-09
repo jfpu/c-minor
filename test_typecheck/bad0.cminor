@@ -32,11 +32,15 @@ main: function void () = {
 
   // Array initialization must have the correct type
   { a: array [3] integer = {true, 2, 3}; }
-  { a: array [3] integer = {1, true, 3}; }
+  { a: array [3] integer = {1, true, 'c'}; }
   { a: array [3] integer = {'c', 2, 3}; }
   { a: array [3] integer = {"s", 2, 3}; }
 
   // Array initialization must have the correct length
   { a: array [0] integer = {1, 2, 3}; }
   { a: array [4] integer = {1, 2, 3}; }
+
+  // Complex array declaration should work too
+  { a: array [1] array [b] integer; }
+  { a: array [1] array [2] void; }
 }
