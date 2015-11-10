@@ -140,9 +140,13 @@ struct type *expr_typecheck(struct expr *e) {
             type_right = expr_typecheck(e->right);
             if (!type_is_equal(type_left, type_right)) {
                 ++error_count_type;
-                printf("type error: cannot assign expression of type ");
+                printf("type error: cannot assign expression `");
+                expr_print(e->right);
+                printf("` of type ");
                 type_print(type_right);
-                printf(" to expression of type ");
+                printf(" to expression `");
+                expr_print(e->left);
+                printf("` of type ");
                 type_print(type_left);
                 printf("\n");
             }
