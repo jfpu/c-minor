@@ -117,8 +117,12 @@ struct type *expr_typecheck(struct expr *e) {
             return type_create(TYPE_STRING, NULL, NULL);
 
         case EXPR_FCALL: {
-            // name resolution
-            // type check the formal parameter list
+            // if the funciton name isn't correctly resolved, move on
+            if (!e->left->symbol) {
+                return type_create(TYPE_VOID, NULL, NULL);
+            }
+
+            // otherwise, type check the formal parameter list
             param_list_typecheck(e->left->symbol->type->params, e->right, e->left->name);
             return type_copy(e->left->symbol->type->subtype);
         }
