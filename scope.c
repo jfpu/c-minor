@@ -102,20 +102,15 @@ void decl_resolve(struct decl *d, int which) {
             print_name_resolution(s);
         }
 
-        // if declaration is a function, process function parameters and body
+        // ensure parameter names in function prototypes are properly resolved
+        // enter new scope for function and resolve parameters
+        scope_enter();
+        function_param_resolve(d->type);
         if (d->code) {
-            // enter new scope for function
-            scope_enter();
-
-            // resolve parameters
-            function_param_resolve(d->type);
-
-            // resolve funciton body
+            // if declaration is a function, resolve funciton body
             stmt_resolve(d->code, 0);
-
-            // exit function scope
-            scope_exit();
         }
+        scope_exit();
     }
 
     // resolve next declaration
