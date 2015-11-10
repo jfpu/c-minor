@@ -22,6 +22,7 @@ int yydebug = 0;
 
 // Parse result
 #include "decl.h"
+extern struct decl *program;
 
 // Name resolution
 #include "scope.h"
