@@ -496,8 +496,8 @@ void param_list_typecheck(struct param_list *p, struct expr *e, const char * con
 
     while (p_ptr && e_ptr) {
         // comparing each pair
-        struct type *expected_type = p->type;
-        struct type *received_type = expr_typecheck(e);
+        struct type *expected_type = p_ptr->type;
+        struct type *received_type = expr_typecheck(e_ptr);
         if (!type_is_equal(expected_type, received_type)) {
             // error
             ++error_count_type;
