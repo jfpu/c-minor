@@ -25,10 +25,11 @@ main: function void () = {
   { a: string = true; }
   { a: string = 'c'; }
 
-  // Array declaration must have const size
+  // Array declaration must have positive const size
   { a: array [] integer; }
   { a: array [1 + 2] integer; }
   { b: integer = 3; a: array [b] integer; }
+  { a: array [0] integer; }
 
   // Array initialization must have the correct type
   { a: array [3] integer = {true, 2, 3}; }

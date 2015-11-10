@@ -468,7 +468,7 @@ void decl_typecheck(struct decl *d) {
 }
 
 void array_type_typecheck(struct type *t, const char * const name) {
-    // array length must be present and constant
+    // array length must be present and constant and positive
     if (!t->size) {
         ++error_count_type;
         printf("type error: declaring array `%s` without size\n", name);
@@ -477,6 +477,9 @@ void array_type_typecheck(struct type *t, const char * const name) {
         printf("type error: declaring array `%s` with non-constant size `", name);
         expr_print(t->size);
         printf("`\n");
+    } else if (t->size->literal_value <= 0) {
+        ++error_count_type;
+        printf("type error: declaring array `%s` with non-positive size %d\n", name, t->size->literal_value);
     }
 
     // array subtype cannot be void or function
