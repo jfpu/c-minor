@@ -41,6 +41,6 @@ struct type *expr_typecheck(struct expr *e);
 void stmt_typecheck(struct stmt *s, const char *name, struct type *expected);
 void decl_typecheck(struct decl *d);
 void array_type_typecheck(struct type *t, const char * const name);
-void param_list_typecheck(struct param_list *p, struct expr *e);
+void param_list_typecheck(struct param_list *p, struct expr *e, const char * const name);
 
 #endif

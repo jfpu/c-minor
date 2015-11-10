@@ -119,7 +119,7 @@ struct type *expr_typecheck(struct expr *e) {
         case EXPR_FCALL: {
             // name resolution
             // type check the formal parameter list
-            param_list_typecheck(e->left->symbol->type->params, e->right);
+            param_list_typecheck(e->left->symbol->type->params, e->right, e->left->name);
             return type_copy(e->left->symbol->type->subtype);
         }
 
@@ -487,7 +487,7 @@ void array_type_typecheck(struct type *t, const char * const name) {
     }
 }
 
-void param_list_typecheck(struct param_list *p, struct expr *e) {
+void param_list_typecheck(struct param_list *p, struct expr *e, const char * const name) {
     // this is invoked for each function invocation
     // we compare each item in the param list with the given expression list
 
@@ -501,7 +501,9 @@ void param_list_typecheck(struct param_list *p, struct expr *e) {
         if (!type_is_equal(expected_type, received_type)) {
             // error
             ++error_count_type;
-            printf("type error: parameter %d type mismatch; expected ", p_ptr->symbol->which);
+            printf("type error: function `%s` parameter %d type mismatch; expected ",
+                name,
+                p_ptr->symbol->which);
             type_print(expected_type);
             printf(", received ");
             type_print(received_type);
@@ -517,7 +519,8 @@ void param_list_typecheck(struct param_list *p, struct expr *e) {
     // ensure lengths are the same
     if (p_ptr != NULL || e_ptr != NULL) {
         ++error_count_type;
-        printf("type error: param list length mismatch; expected %u parameters, received %u arguments",
+        printf("type error: function `%s` expected %u parameters, received %u arguments\n",
+            name,
             param_list_length(p),
             expr_list_length(e));
     }
