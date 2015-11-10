@@ -35,7 +35,7 @@ unsigned int error_count_name = 0;
 unsigned int error_count_type = 0;
 
 enum _cminor_options {
-    LEX,
+    LEX = 1,
     PARSE,
     RESOLVE,
     CHECK
@@ -54,11 +54,12 @@ int main(int argc, char* argv[]) {
     const char *optstring = "";
 
     // setup long arguments
-    struct option options_spec[4];
+    struct option options_spec[5];
     SETUP_OPT_STRUCT(options_spec, 0, "scan", LEX);
     SETUP_OPT_STRUCT(options_spec, 1, "print", PARSE);
     SETUP_OPT_STRUCT(options_spec, 2, "resolve", RESOLVE);
     SETUP_OPT_STRUCT(options_spec, 3, "typecheck", CHECK);
+    SETUP_OPT_STRUCT(options_spec, 4, 0, 0);
 
     // process flags
     while ((i = getopt_long_only(argc, argv, optstring, options_spec, NULL)) != -1) {
