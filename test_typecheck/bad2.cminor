@@ -41,6 +41,13 @@ main: function void () = {
   s = f_c();
   s = f_s();
 
+  // non-function calls should error out
+  a();
+  c();
+  b();
+  s();
+  arr();
+
   // function call shouldn't take fewer arguments
   a = f_a_arg(1, true, 'c');
 

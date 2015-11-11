@@ -117,8 +117,13 @@ struct type *expr_typecheck(struct expr *e) {
             return type_create(TYPE_STRING, NULL, NULL);
 
         case EXPR_FCALL: {
-            // if the funciton name isn't correctly resolved, move on
-            if (!e->left->symbol) {
+            // if the function name isn't correctly resolved or if the name isn't a function, move on
+            if (!e->left->symbol
+                || e->left->symbol->type->kind != TYPE_FUNCTION) {
+                ++error_count_type;
+                printf("type error: expression `");
+                expr_print(e->left);
+                printf("` is not callable\n");
                 return type_create(TYPE_VOID, NULL, NULL);
             }
 
