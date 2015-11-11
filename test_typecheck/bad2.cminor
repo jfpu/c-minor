@@ -1,0 +1,55 @@
+// Test case 2
+// Expressions: function calls
+
+f_a: function integer ();
+f_a_arg: function integer (a: integer, b: boolean, c: char, s: string);
+f_b: function boolean ();
+f_b_arg: function boolean (a: integer, b: boolean, c: char, s: string);
+f_c: function char ();
+f_c_arg: function char (a: integer, b: boolean, c: char, s: string);
+f_s: function string ();
+f_s_arg: function string (a: integer, b: boolean, c: char, s: string);
+f_v: function void ();
+f_v_arg: function void (a: integer, b: boolean, c: char, s: string);
+
+// array and function are not valid return types
+f_arr: function array [] integer ();
+f_func: function function void () ();
+
+main: function void () = {
+  a: integer;
+  c: char;
+  b: boolean;
+  s: string;
+  arr: array [3] integer;
+
+  // function call returns the return type
+  a = f_a();
+  a = f_b();
+  a = f_c();
+  a = f_s();
+  c = f_a();
+  c = f_b();
+  c = f_c();
+  c = f_s();
+  b = f_a();
+  b = f_b();
+  b = f_c();
+  b = f_s();
+  s = f_a();
+  s = f_b();
+  s = f_c();
+  s = f_s();
+
+  // function call shouldn't take fewer arguments
+  a = f_a_arg(1, true, 'c');
+
+  // function call shouldn't take more arguments
+  b = f_b_arg(1, true, 'c', "abc", 1);
+
+  // function call parameters should type check
+  c = f_c_arg(true, 'c', "abc", 1);
+
+  // invalid function name should not crash the program
+  s = f_s_invalid(true);
+}

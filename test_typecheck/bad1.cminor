@@ -1,0 +1,51 @@
+// Test case 1
+// Expressions: assignment
+
+f_a: function integer ();
+f_c: function char ();
+f_b: function boolean ();
+f_s: function string ();
+
+main: function void () = {
+  a: integer;
+  a1: integer; a2: integer; a3: integer;
+  c: char;
+  b: boolean;
+  s: string;
+  arr: array [3] integer;
+
+  // basic assignment should match types
+  a = 'c';
+  a = "abc";
+  a = true;
+  c = 1;
+  c = "abc";
+  c = true;
+  b = 1;
+  b = 'c';
+  b = "abc";
+  s = 1;
+  s = 'c';
+  s = true;
+
+  // function call should match types
+  a = f_c();
+  a = f_b();
+  a = f_s();
+  c = f_a();
+  c = f_b();
+  c = f_s();
+  b = f_a();
+  b = f_c();
+  b = f_s();
+  s = f_a();
+  s = f_c();
+  s = f_b();
+
+  // assignment requires an lvalue
+  1 = 2;
+  1 + 2 = 3;
+
+  // chained assignment with an rvalue in between shouldn't typecheck
+  a1 = 1 = -a3 = a;
+}
