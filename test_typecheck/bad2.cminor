@@ -49,6 +49,7 @@ main: function void () = {
 
   // function call parameters should type check
   c = f_c_arg(true, 'c', "abc", 1);
+  c = f_c_arg(b, c, s, a);
 
   // invalid function name should not crash the program
   s = f_s_invalid(true);
