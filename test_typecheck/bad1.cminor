@@ -27,6 +27,9 @@ main: function void () = {
   s = 1;
   s = 'c';
   s = true;
+  c = arr[0];
+  b = arr[0];
+  s = arr[0];
 
   // function call should match types
   a = f_c();

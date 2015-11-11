@@ -19,6 +19,7 @@ main: function void () = {
   c = 'c';
   b = true;
   s = "abc";
+  a = arr[0];
 
   // function call returns the return type
   a = f_a();
