@@ -1,0 +1,37 @@
+// Test case 2
+// Expressions: function calls
+
+f_a: function integer ();
+f_a_arg: function integer (a: integer, b: boolean, c: char, s: string);
+f_b: function boolean ();
+f_b_arg: function boolean (a: integer, b: boolean, c: char, s: string);
+f_c: function char ();
+f_c_arg: function char (a: integer, b: boolean, c: char, s: string);
+f_s: function string ();
+f_s_arg: function string (a: integer, b: boolean, c: char, s: string);
+f_v: function void ();
+f_v_arg: function void (a: integer, b: boolean, c: char, s: string);
+
+main: function void () = {
+  a: integer;
+  c: char;
+  b: boolean;
+  s: string;
+
+  // function call takes the exact number of proper arguments
+  a = f_a();
+  a = f_a_arg(1, true, 'c', "abc");
+  a = f_a_arg(a, b, c, s);
+  b = f_b();
+  b = f_b_arg(1, true, 'c', "abc");
+  b = f_b_arg(a, b, c, s);
+  c = f_c();
+  c = f_c_arg(1, true, 'c', "abc");
+  c = f_c_arg(a, b, c, s);
+  s = f_s();
+  s = f_s_arg(1, true, 'c', "abc");
+  s = f_s_arg(a, b, c, s);
+  f_v();
+  f_v_arg(1, true, 'c', "abc");
+  f_v_arg(a, b, c, s);
+}

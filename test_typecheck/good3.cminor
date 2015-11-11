@@ -1,0 +1,68 @@
+// Test case 3
+// Expressions: operators
+
+main: function void () = {
+  a: integer;
+  b: boolean;
+  c: char;
+  s: string;
+  a1: integer;
+  a2: integer;
+  a3: integer;
+  a4: integer;
+
+  a_arr: array [3] integer;
+  c_arr: array [3] char;
+  s_arr: array [3] string;
+  b_arr: array [3] boolean;
+
+  // +, -, *, /, ^, % work on integers only
+  a = 1 + 2;
+  a = 1 - 2;
+  a = 1 * 2;
+  a = 1 / 2;
+  a = 1 ^ 2;
+  a = 1 % 2;
+
+  a = a1 + a2;
+  a = a1 - a2;
+  a = a1 * a2;
+  a = a1 / a2;
+  a = a1 ^ a2;
+  a = a1 % a2;
+
+  // unary - works on integers only
+  a = -1;
+  a = -a1;
+
+  // ++ and -- work on integers only
+  a++;
+  a--;
+
+  // <, <=, >, >= work on integers only
+  b = a1 < a2;
+  b = a1 <= a2;
+  b = a1 > a2;
+  b = a1 >= a2;
+
+  // == and != works on any type except array and function
+  b = a1 == a2;
+  b = a1 != a2;
+  b = c == c;
+  b = c != c;
+  b = s == s;
+  b = s != s;
+  b = b == b;
+  b = b != b;
+
+  // array dereference should return the proper type
+  a = a_arr[0];
+  b = b_arr[0];
+  c = c_arr[0];
+  s = s_arr[0];
+
+  a = a_arr[a1];
+  b = b_arr[a1];
+  c = c_arr[a1];
+  s = s_arr[a1];
+}
