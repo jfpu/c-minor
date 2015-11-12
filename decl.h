@@ -20,4 +20,7 @@ struct decl *decl_create(char *name, struct type *t, struct expr *v, struct stmt
 struct decl *decl_list_prepend(struct decl *first, struct decl *rest);
 void decl_print(struct decl *d, int indent);
 
+// type checking
+void decl_typecheck(struct decl *d);
+
 #endif
