@@ -1,0 +1,4 @@
+// Test case 4
+// Names must be unique per scope
+a: integer;
+a: string;

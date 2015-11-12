@@ -1,11 +1,8 @@
 // Test case 0
 // Declarations
 
-// Names must be unique per scope
-a: integer;
-a: string;
-
 // Global declarations must be initialized with constant values
+a: integer;
 a1: integer = a;
 a_arr: array [3] integer = {a1, a1, a1};
 

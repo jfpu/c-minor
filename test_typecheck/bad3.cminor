@@ -1,0 +1,89 @@
+// Test case 3
+// Expressions: operators
+
+main: function void () = {
+  a: integer;
+  b: boolean;
+  c: char;
+  s: string;
+  a1: integer;
+  a2: integer;
+  a3: integer;
+  a4: integer;
+
+  a_arr: array [3] integer;
+  c_arr: array [3] char;
+  s_arr: array [3] string;
+  b_arr: array [3] boolean;
+
+  // +, -, *, /, ^, % work on integers only
+  a = 1 + 'a';
+  a = 1 - 'a';
+  a = 1 * 'a';
+  a = 1 / 'a';
+  a = 1 ^ 'a';
+  a = 1 % 'a';
+
+  a = 'a' + 1;
+  a = 'a' - 1;
+  a = 'a' * 1;
+  a = 'a' / 1;
+  a = 'a' ^ 1;
+  a = 'a' % 1;
+
+  a = a1 + b;
+  a = a1 - b;
+  a = a1 * b;
+  a = a1 / b;
+  a = a1 ^ b;
+  a = a1 % b;
+  a = a1 + c;
+  a = a1 - c;
+  a = a1 * c;
+  a = a1 / c;
+  a = a1 ^ c;
+  a = a1 % c;
+  a = a1 + s;
+  a = a1 - s;
+  a = a1 * s;
+  a = a1 / s;
+  a = a1 ^ s;
+  a = a1 % s;
+
+  // unary - works on integers only
+  a = -c;
+  a = -b;
+  a = -s;
+
+  // ++ and -- work on integers only
+  c++;
+  b++;
+  s++;
+  c--;
+  b--;
+  s--;
+
+  // <, <=, >, >= work on integers only
+  b = a1 < c;
+  b = a1 <= c;
+  b = a1 > c;
+  b = a1 >= c;
+  b = a1 < b;
+  b = a1 <= b;
+  b = a1 > b;
+  b = a1 >= b;
+  b = a1 < s;
+  b = a1 <= s;
+  b = a1 > s;
+  b = a1 >= s;
+
+  // == and != works on any type except array and function
+  b = a1 == c;
+  b = a1 != c;
+  b = c == a1;
+  b = c != a1;
+  b = s == b;
+  b = s != b;
+  b = b == s;
+  b = b != s;
+}
