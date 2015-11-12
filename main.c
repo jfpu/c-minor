@@ -147,9 +147,10 @@ void _resolve_name() {
     scope_table_list = table_node_push(scope_table_list, SYMBOL_GLOBAL);
     decl_resolve(program, -1);
     if (error_count_name > 0) {
-        // we have type errors
+        // we have name errors
         if (error_count_name == 1) printf("encountered 1 name error\n");
         else printf("encountered %u name errors\n", error_count_name);
+        exit(1);
     }
 }
 
@@ -160,7 +161,6 @@ void _typecheck() {
         // we have type errors
         if (error_count_type == 1) printf("encountered 1 type error\n");
         else printf("encountered %u type errors\n", error_count_type);
-
         exit(1);
     }
 }
