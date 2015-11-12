@@ -74,41 +74,6 @@ struct symbol *scope_lookup_current(const char *name) {
 }
 
 // name resolution
-void expr_resolve(struct expr *e) {
-    if (!e) return;
-
-    switch (e->kind) {
-        case EXPR_BOOLEAN:
-        case EXPR_INTEGER:
-        case EXPR_CHARACTER:
-        case EXPR_STRING:
-            // we don't need to resolve literals
-            break;
-
-        case EXPR_NAME: {
-            // name resolution
-            struct symbol *resolved = scope_lookup(e->name);
-            if (!resolved) {
-                printf("name error: %s is not defined in the current scope\n", e->name);
-                ++error_count_name;
-            }
-            if (__print_name_resolution_result) print_name_resolution(resolved);
-            e->symbol = resolved;
-            break;
-        }
-
-        default: {
-            // otherwise we resolve both sides
-            expr_resolve(e->left);
-            expr_resolve(e->right);
-            return;
-        }
-    }
-
-    // if it's a list, we resolve the next one
-    if (e->next) expr_resolve(e->next);
-}
-
 void function_param_resolve(struct type *t) {
     // only for functions
     if (!t) return;

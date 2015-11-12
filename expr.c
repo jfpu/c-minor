@@ -1,6 +1,7 @@
 #include <stdlib.h> // malloc
 #include <string.h> // memset
 #include "expr.h"
+#include "scope.h"
 
 #define PRINT_WITH_PRECEDENCE(expr, base)                       \
     if (expr_precedence((expr)) < expr_precedence((base))) {    \
@@ -320,6 +321,42 @@ int expr_is_lvalue_type(struct expr *e) {
     if (!e) return 0;
     return (e->kind == EXPR_NAME
         || e->kind == EXPR_ARRAY_DEREF);
+}
+
+void expr_resolve(struct expr *e) {
+    if (!e) return;
+
+    struct expr *e_ptr = e;
+    while (e_ptr) {
+        switch (e_ptr->kind) {
+            case EXPR_BOOLEAN:
+            case EXPR_INTEGER:
+            case EXPR_CHARACTER:
+            case EXPR_STRING:
+                // we don't need to resolve literals
+                break;
+
+            case EXPR_NAME: {
+                // name resolution
+                struct symbol *resolved = scope_lookup(e_ptr->name);
+                if (!resolved) {
+                    printf("name error: %s is not defined in the current scope\n", e_ptr->name);
+                    ++error_count_name;
+                }
+                if (__print_name_resolution_result) print_name_resolution(resolved);
+                e_ptr->symbol = resolved;
+                break;
+            }
+
+            default: {
+                // otherwise we resolve both sides
+                expr_resolve(e_ptr->left);
+                expr_resolve(e_ptr->right);
+                return;
+            }
+        }
+        e_ptr = e_ptr->next;
+    }
 }
 
 struct type *expr_typecheck(struct expr *e) {
