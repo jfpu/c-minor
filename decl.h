@@ -20,6 +20,9 @@ struct decl *decl_create(char *name, struct type *t, struct expr *v, struct stmt
 struct decl *decl_list_prepend(struct decl *first, struct decl *rest);
 void decl_print(struct decl *d, int indent);
 
+// name resolution
+void decl_resolve(struct decl *d, int which);
+
 // type checking
 void decl_typecheck(struct decl *d);
 void decl_typecheck_individual(struct decl *d);

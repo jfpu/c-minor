@@ -4,6 +4,7 @@
 #include "decl.h"
 #include "expr.h"
 #include "stmt.h"
+#include "scope.h"
 #include "type.h"
 
 struct decl *decl_create(char *name, struct type *t, struct expr *v, struct stmt *c, struct decl *next) {
@@ -46,6 +47,57 @@ void decl_print(struct decl *d, int indent) {
     }
 
     if (d -> next) decl_print(d->next, indent);
+}
+
+void decl_resolve(struct decl *d, int which) {
+    // `which` indicates the `which` value for local declarations, and is -1 for global
+    if (!d) return;
+    struct decl *d_ptr = d;
+
+    while (d_ptr) {
+
+        struct symbol *looked_up = scope_lookup_current(d_ptr->name);
+        if (looked_up) {
+            // if the name already exists in current scope, error
+            ++error_count_name;
+            printf("name error: duplicate declaration for name `%s` with type ", d_ptr->name);
+            type_print(d_ptr->type);
+            printf(" (previously declared as ");
+            type_print(looked_up->type);
+            printf(")\n");
+
+            // bind the symbol to avoid issues in type checking
+            d_ptr->symbol = looked_up;
+
+        } else {
+            // all good: create a new symbol and bind to current scope
+            // we don't copy d_ptr->type here, because we need to resolve parameters / size later
+            struct symbol *s = symbol_create(scope_table_list->scope, which, d_ptr->type, d_ptr->name);
+            scope_bind(d_ptr->name, s);
+            d_ptr->symbol = s;
+            if (__print_name_resolution_result) {
+                printf("create symbol: ");
+                print_name_resolution(s);
+            }
+
+            // ensure parameter names in function prototypes are properly resolved
+            // enter new scope for function and resolve parameters
+            scope_enter();
+            function_param_resolve(d_ptr->type);
+            if (d_ptr->code) {
+                // if declaration is a function, resolve funciton body
+                stmt_resolve(d_ptr->code, 0);
+            }
+            scope_exit();
+        }
+
+        if (d_ptr->value) {
+            // if there's initialization, type check initialization
+            expr_resolve(d_ptr->value);
+        }
+
+        d_ptr = d_ptr->next;
+    }
 }
 
 void decl_typecheck(struct decl *d) {

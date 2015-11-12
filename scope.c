@@ -74,53 +74,6 @@ struct symbol *scope_lookup_current(const char *name) {
 }
 
 // name resolution
-void decl_resolve(struct decl *d, int which) {
-    // `which` indicates the `which` value for local declarations, and is -1 for global
-    if (!d) return;
-
-    struct symbol *looked_up = scope_lookup_current(d->name);
-    if (looked_up) {
-        // if the name already exists in current scope, error
-        ++error_count_name;
-        printf("name error: duplicate declaration for name `%s` with type ", d->name);
-        type_print(d->type);
-        printf(" (previously declared as ");
-        type_print(looked_up->type);
-        printf(")\n");
-
-        // bind the symbol to avoid issues in type checking
-        d->symbol = looked_up;
-
-    } else {
-        // all good: create a new symbol and bind to current scope
-        // we don't copy d->type here, because we need to resolve parameters / size later
-        struct symbol *s = symbol_create(scope_table_list->scope, which, d->type, d->name);
-        scope_bind(d->name, s);
-        d->symbol = s;
-        if (__print_name_resolution_result) {
-            printf("create symbol: ");
-            print_name_resolution(s);
-        }
-
-        // ensure parameter names in function prototypes are properly resolved
-        // enter new scope for function and resolve parameters
-        scope_enter();
-        function_param_resolve(d->type);
-        if (d->code) {
-            // if declaration is a function, resolve funciton body
-            stmt_resolve(d->code, 0);
-        }
-        scope_exit();
-    }
-
-    if (d->value) {
-        // if there's initialization, type check initialization
-        expr_resolve(d->value);
-    }
-
-    // resolve next declaration
-    decl_resolve(d->next, which);
-}
 
 void stmt_resolve(struct stmt *s, int which) {
     if (!s) return;
