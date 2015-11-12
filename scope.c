@@ -74,40 +74,6 @@ struct symbol *scope_lookup_current(const char *name) {
 }
 
 // name resolution
-void function_param_resolve(struct type *t) {
-    // only for functions
-    if (!t) return;
-    if (t->kind != TYPE_FUNCTION) return;
-
-    // resolve parameters
-    int param_count = 0;
-    struct param_list *p_ptr = t->params;
-    while (p_ptr) {
-        if (scope_lookup_current(p_ptr->name)) {
-            // if the name already exists in current scope, error
-            ++error_count_type;
-            printf("name error: duplicate parameter name %s\n", p_ptr->name);
-
-            // move on to next parameter
-            p_ptr = p_ptr->next;
-            continue;
-        }
-
-        // create symbol
-        struct symbol *p_sym = symbol_create(SYMBOL_PARAM, param_count, p_ptr->type, p_ptr->name);
-        scope_bind(p_ptr->name, p_sym);
-        p_ptr->symbol = p_sym;
-        if (__print_name_resolution_result) {
-            printf("create symbol: ");
-            print_name_resolution(p_sym);
-        }
-
-        // next
-        ++param_count;
-        p_ptr = p_ptr->next;
-    }
-}
-
 void print_name_resolution(struct symbol *s) {
     if (!s) return;
     printf("%s resolves to ", s->name);
