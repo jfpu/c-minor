@@ -110,177 +110,180 @@ int expr_precedence(struct expr *e) {
 void expr_print(struct expr *e) {
     if (!e) return;
 
-    int i = 0;
-    switch (e->kind) {
-        case EXPR_NAME:
-            printf("%s", e->name);
-            break;
+    struct expr *e_ptr = e;
 
-        case EXPR_BOOLEAN:
-            if (e->literal_value) {
-                printf("true");
-            } else {
-                printf("false");
-            }
-            break;
+    while (e_ptr) {
+        switch (e_ptr->kind) {
+            case EXPR_NAME:
+                printf("%s", e_ptr->name);
+                break;
 
-        case EXPR_INTEGER:
-            printf("%d", e->literal_value);
-            break;
-
-        case EXPR_CHARACTER:
-            if (e->literal_value == '\0') {
-                printf("'\\0'");
-            } else if (e->literal_value == '\n') {
-                printf("'\\n'");
-            } else {
-                printf("'%c'", e->literal_value);
-            }
-            break;
-
-        case EXPR_STRING:
-            // We need to unescape each individual character
-            i = 0;
-            printf("\"");
-            while (e->string_literal[i]) {
-                if (e->string_literal[i] == '\n') {
-                    printf("\\n");
+            case EXPR_BOOLEAN:
+                if (e_ptr->literal_value) {
+                    printf("true");
                 } else {
-                    printf("%c", e->string_literal[i]);
+                    printf("false");
                 }
-                ++i;
+                break;
+
+            case EXPR_INTEGER:
+                printf("%d", e_ptr->literal_value);
+                break;
+
+            case EXPR_CHARACTER:
+                if (e_ptr->literal_value == '\0') {
+                    printf("'\\0'");
+                } else if (e_ptr->literal_value == '\n') {
+                    printf("'\\n'");
+                } else {
+                    printf("'%c'", e_ptr->literal_value);
+                }
+                break;
+
+            case EXPR_STRING: {
+                // We need to unescape each individual character
+                int i = 0;
+                printf("\"");
+                while (e_ptr->string_literal[i]) {
+                    if (e_ptr->string_literal[i] == '\n') {
+                        printf("\\n");
+                    } else {
+                        printf("%c", e_ptr->string_literal[i]);
+                    }
+                    ++i;
+                }
+                printf("\"");
+                break;
             }
-            printf("\"");
-            break;
+            case EXPR_ASSIGN:
+                expr_print(e_ptr->left);
+                printf("=");
+                expr_print(e_ptr->right);
+                break;
 
-        case EXPR_ASSIGN:
-            expr_print(e->left);
-            printf("=");
-            expr_print(e->right);
-            break;
+            case EXPR_FCALL:
+                expr_print(e_ptr->left);
+                printf("("); expr_print(e_ptr->right); printf(")");
+                break;
 
-        case EXPR_FCALL:
-            expr_print(e->left);
-            printf("("); expr_print(e->right); printf(")");
-            break;
+            case EXPR_ARRAY_DEREF:
+                expr_print(e_ptr->left);
+                printf("["); expr_print(e_ptr->right); printf("]");
+                break;
 
-        case EXPR_ARRAY_DEREF:
-            expr_print(e->left);
-            printf("["); expr_print(e->right); printf("]");
-            break;
+            case EXPR_ADD:
+                PRINT_WITH_PRECEDENCE(e_ptr->left, e);
+                printf("+");
+                PRINT_WITH_PRECEDENCE(e_ptr->right, e);
+                break;
 
-        case EXPR_ADD:
-            PRINT_WITH_PRECEDENCE(e->left, e);
-            printf("+");
-            PRINT_WITH_PRECEDENCE(e->right, e);
-            break;
+            case EXPR_SUB:
+                PRINT_WITH_PRECEDENCE(e_ptr->left, e);
+                printf("-");
+                PRINT_WITH_PRECEDENCE(e_ptr->right, e);
+                break;
 
-        case EXPR_SUB:
-            PRINT_WITH_PRECEDENCE(e->left, e);
-            printf("-");
-            PRINT_WITH_PRECEDENCE(e->right, e);
-            break;
+            case EXPR_MUL:
+                PRINT_WITH_PRECEDENCE(e_ptr->left, e);
+                printf("*");
+                PRINT_WITH_PRECEDENCE(e_ptr->right, e);
+                break;
 
-        case EXPR_MUL:
-            PRINT_WITH_PRECEDENCE(e->left, e);
-            printf("*");
-            PRINT_WITH_PRECEDENCE(e->right, e);
-            break;
+            case EXPR_DIV:
+                PRINT_WITH_PRECEDENCE(e_ptr->left, e);
+                printf("/");
+                PRINT_WITH_PRECEDENCE(e_ptr->right, e);
+                break;
 
-        case EXPR_DIV:
-            PRINT_WITH_PRECEDENCE(e->left, e);
-            printf("/");
-            PRINT_WITH_PRECEDENCE(e->right, e);
-            break;
+            case EXPR_EXP:
+                PRINT_WITH_PRECEDENCE(e_ptr->left, e);
+                printf("^");
+                PRINT_WITH_PRECEDENCE(e_ptr->right, e);
+                break;
 
-        case EXPR_EXP:
-            PRINT_WITH_PRECEDENCE(e->left, e);
-            printf("^");
-            PRINT_WITH_PRECEDENCE(e->right, e);
-            break;
+            case EXPR_MOD:
+                PRINT_WITH_PRECEDENCE(e_ptr->left, e);
+                printf("%%");
+                PRINT_WITH_PRECEDENCE(e_ptr->right, e);
+                break;
 
-        case EXPR_MOD:
-            PRINT_WITH_PRECEDENCE(e->left, e);
-            printf("%%");
-            PRINT_WITH_PRECEDENCE(e->right, e);
-            break;
+            case EXPR_INC:
+                PRINT_WITH_PRECEDENCE(e_ptr->right, e);
+                printf("++");
+                break;
 
-        case EXPR_INC:
-            PRINT_WITH_PRECEDENCE(e->right, e);
-            printf("++");
-            break;
+            case EXPR_DEC:
+                PRINT_WITH_PRECEDENCE(e_ptr->right, e);
+                printf("--");
+                break;
 
-        case EXPR_DEC:
-            PRINT_WITH_PRECEDENCE(e->right, e);
-            printf("--");
-            break;
+            case EXPR_NEG:
+                printf("-");
+                PRINT_WITH_PRECEDENCE(e_ptr->right, e);
+                break;
 
-        case EXPR_NEG:
-            printf("-");
-            PRINT_WITH_PRECEDENCE(e->right, e);
-            break;
+            case EXPR_LAND:
+                PRINT_WITH_PRECEDENCE(e_ptr->left, e);
+                printf("&&");
+                PRINT_WITH_PRECEDENCE(e_ptr->right, e);
+                break;
 
-        case EXPR_LAND:
-            PRINT_WITH_PRECEDENCE(e->left, e);
-            printf("&&");
-            PRINT_WITH_PRECEDENCE(e->right, e);
-            break;
+            case EXPR_LOR:
+                PRINT_WITH_PRECEDENCE(e_ptr->left, e);
+                printf("||");
+                PRINT_WITH_PRECEDENCE(e_ptr->right, e);
+                break;
 
-        case EXPR_LOR:
-            PRINT_WITH_PRECEDENCE(e->left, e);
-            printf("||");
-            PRINT_WITH_PRECEDENCE(e->right, e);
-            break;
+            case EXPR_LNOT:
+                printf("!");
+                PRINT_WITH_PRECEDENCE(e_ptr->right, e);
+                break;
 
-        case EXPR_LNOT:
-            printf("!");
-            PRINT_WITH_PRECEDENCE(e->right, e);
-            break;
+            case EXPR_LT:
+                PRINT_WITH_PRECEDENCE(e_ptr->left, e);
+                printf("<");
+                PRINT_WITH_PRECEDENCE(e_ptr->right, e);
+                break;
 
-        case EXPR_LT:
-            PRINT_WITH_PRECEDENCE(e->left, e);
-            printf("<");
-            PRINT_WITH_PRECEDENCE(e->right, e);
-            break;
+            case EXPR_LE:
+                PRINT_WITH_PRECEDENCE(e_ptr->left, e);
+                printf("<=");
+                PRINT_WITH_PRECEDENCE(e_ptr->right, e);
+                break;
 
-        case EXPR_LE:
-            PRINT_WITH_PRECEDENCE(e->left, e);
-            printf("<=");
-            PRINT_WITH_PRECEDENCE(e->right, e);
-            break;
+            case EXPR_GT:
+                PRINT_WITH_PRECEDENCE(e_ptr->left, e);
+                printf(">");
+                PRINT_WITH_PRECEDENCE(e_ptr->right, e);
+                break;
 
-        case EXPR_GT:
-            PRINT_WITH_PRECEDENCE(e->left, e);
-            printf(">");
-            PRINT_WITH_PRECEDENCE(e->right, e);
-            break;
+            case EXPR_GE:
+                PRINT_WITH_PRECEDENCE(e_ptr->left, e);
+                printf(">=");
+                PRINT_WITH_PRECEDENCE(e_ptr->right, e);
+                break;
 
-        case EXPR_GE:
-            PRINT_WITH_PRECEDENCE(e->left, e);
-            printf(">=");
-            PRINT_WITH_PRECEDENCE(e->right, e);
-            break;
+            case EXPR_EQ:
+                PRINT_WITH_PRECEDENCE(e_ptr->left, e);
+                printf("==");
+                PRINT_WITH_PRECEDENCE(e_ptr->right, e);
+                break;
 
-        case EXPR_EQ:
-            PRINT_WITH_PRECEDENCE(e->left, e);
-            printf("==");
-            PRINT_WITH_PRECEDENCE(e->right, e);
-            break;
+            case EXPR_NE:
+                PRINT_WITH_PRECEDENCE(e_ptr->left, e);
+                printf("!=");
+                PRINT_WITH_PRECEDENCE(e_ptr->right, e);
+                break;
 
-        case EXPR_NE:
-            PRINT_WITH_PRECEDENCE(e->left, e);
-            printf("!=");
-            PRINT_WITH_PRECEDENCE(e->right, e);
-            break;
+            default:
+                printf("Expression");
+                break;
+        }
 
-        default:
-            printf("Expression");
-            break;
-    }
-
-    if (e->next) {
-        printf(", ");
-        expr_print(e->next);
+        e_ptr = e_ptr->next;
+        if (e_ptr) {
+            printf(", ");
+        }
     }
 }
 
