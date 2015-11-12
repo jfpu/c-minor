@@ -34,10 +34,13 @@ struct type *type_copy(struct type *t);
 void type_delete(struct type *t);
 int type_is_equal(struct type *a, struct type *b);
 
+#define TYPE_FREE(_type_obj)    \
+    type_delete((_type_obj));   \
+    (_type_obj) = NULL
+
 // actual type checking functions
 extern unsigned int error_count_type;
 
-struct type *expr_typecheck(struct expr *e);
 void stmt_typecheck(struct stmt *s, const char *name, struct type *expected);
 void decl_typecheck(struct decl *d);
 void array_type_typecheck(struct type *t, const char * const name);

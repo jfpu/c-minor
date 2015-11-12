@@ -316,3 +316,202 @@ int expr_is_lvalue_type(struct expr *e) {
     return (e->kind == EXPR_NAME
         || e->kind == EXPR_ARRAY_DEREF);
 }
+
+struct type *expr_typecheck(struct expr *e) {
+    if (!e) return type_create(TYPE_VOID, NULL, NULL);
+
+    struct type *type_left = NULL;
+    struct type *type_right = NULL;
+
+    switch (e->kind) {
+        case EXPR_NAME:
+            // name resolution
+            return type_copy(e->symbol->type);
+
+        case EXPR_BOOLEAN:
+            return type_create(TYPE_BOOLEAN, NULL, NULL);
+        case EXPR_INTEGER:
+            return type_create(TYPE_INTEGER, NULL, NULL);
+        case EXPR_CHARACTER:
+            return type_create(TYPE_CHARACTER, NULL, NULL);
+        case EXPR_STRING:
+            return type_create(TYPE_STRING, NULL, NULL);
+
+        case EXPR_FCALL: {
+            // if the function name isn't correctly resolved or if the name isn't a function, move on
+            if (!e->left->symbol
+                || e->left->symbol->type->kind != TYPE_FUNCTION) {
+                ++error_count_type;
+                printf("type error: expression `");
+                expr_print(e->left);
+                printf("` is not callable\n");
+                return type_create(TYPE_VOID, NULL, NULL);
+            }
+
+            // otherwise, type check the formal parameter list
+            param_list_typecheck(e->left->symbol->type->params, e->right, e->left->name);
+            return type_copy(e->left->symbol->type->subtype);
+        }
+
+        // = works on any type except arrays
+        case EXPR_ASSIGN: {
+            type_left = expr_typecheck(e->left);
+
+            // we can only assign to an lvalue
+            if (!expr_is_lvalue_type(e->left)) {
+                ++error_count_type;
+                printf("type error: expression `");
+                expr_print(e->left);
+                printf("` of type ");
+                type_print(type_left);
+                printf(" is not an lvalue\n");
+            }
+
+            type_right = expr_typecheck(e->right);
+            if (!type_is_equal(type_left, type_right)) {
+                ++error_count_type;
+                printf("type error: cannot assign expression `");
+                expr_print(e->right);
+                printf("` of type ");
+                type_print(type_right);
+                printf(" to expression `");
+                expr_print(e->left);
+                printf("` of type ");
+                type_print(type_left);
+                printf("\n");
+            }
+            TYPE_FREE(type_left);
+            return type_right;
+        }
+
+        // +, -, *, /, ^, %, ++, -- only work on integers
+        case EXPR_ADD:
+        case EXPR_SUB:
+        case EXPR_MUL:
+        case EXPR_DIV:
+        case EXPR_EXP:
+        case EXPR_MOD: {
+            type_left = expr_typecheck(e->left);
+            type_right = expr_typecheck(e->right);
+            if (type_left->kind != TYPE_INTEGER
+                || type_right->kind != TYPE_INTEGER) {
+                // error
+                ++error_count_type;
+                printf("type error: cannot perform arithmetic operator on expression of type ");
+                type_print(type_left);
+                printf(" with expression of type ");
+                type_print(type_right);
+                printf("\n");
+            }
+            TYPE_FREE(type_left);
+            TYPE_FREE(type_right);
+            return type_create(TYPE_INTEGER, NULL, NULL);
+        }
+
+        case EXPR_INC:
+        case EXPR_DEC:
+        case EXPR_NEG: {
+            type_right = expr_typecheck(e->right);
+            if (type_right->kind != TYPE_INTEGER) {
+                // error
+                ++error_count_type;
+                printf("type error: cannot perform arithmetic operator on expression of type ");
+                type_print(type_right);
+                printf("\n");
+            }
+            TYPE_FREE(type_right);
+            return type_create(TYPE_INTEGER, NULL, NULL);
+        }
+
+        // &&, ||, ! work on booleans
+        case EXPR_LAND:
+        case EXPR_LOR:
+        case EXPR_LNOT: {
+            type_right = expr_typecheck(e->right);
+            if (type_right->kind != TYPE_BOOLEAN) {
+                // error
+                ++error_count_type;
+                printf("type error: cannot perform boolean operator on expression of type ");
+                type_print(type_right);
+                printf("\n");
+            }
+            TYPE_FREE(type_right);
+            return type_create(TYPE_BOOLEAN, NULL, NULL);
+        }
+
+        // <, <=, >, >= work on only integers
+        case EXPR_LT:
+        case EXPR_LE:
+        case EXPR_GT:
+        case EXPR_GE: {
+            type_left = expr_typecheck(e->left);
+            type_right = expr_typecheck(e->right);
+            if (type_left->kind != TYPE_INTEGER
+                || type_right->kind != TYPE_INTEGER) {
+                // error
+                ++error_count_type;
+                printf("type error: cannot perform comparison operator on expression of type ");
+                type_print(type_left);
+                printf(" with expression of type ");
+                type_print(type_right);
+                printf("\n");
+            }
+            TYPE_FREE(type_left);
+            TYPE_FREE(type_right);
+            return type_create(TYPE_BOOLEAN, NULL, NULL);
+        }
+
+        // EQ and NE work on any type except arrays and functions
+        case EXPR_EQ:
+        case EXPR_NE: {
+            type_left = expr_typecheck(e->left);
+            type_right = expr_typecheck(e->right);
+            if (type_left->kind != type_right->kind) {
+                ++error_count_type;
+                printf("type error: cannot compare expressions of type ");
+                type_print(type_left);
+                printf(" and of type ");
+                type_print(type_right);
+                printf("\n");
+            }
+            TYPE_FREE(type_left);
+            TYPE_FREE(type_right);
+            return type_create(TYPE_BOOLEAN, NULL, NULL);
+        }
+
+        // a[b]: a must be an array and b must be an integer
+        case EXPR_ARRAY_DEREF: {
+            type_left = expr_typecheck(e->left);
+            type_right = expr_typecheck(e->right);
+            if (type_left->kind != TYPE_ARRAY) {
+                ++error_count_type;
+                printf("type error: cannot dereference an expression of type ");
+                type_print(type_left);
+                printf("\n");
+
+                // prematurely return an appropriate type to avoid comparing null types
+                TYPE_FREE(type_left);
+                return type_right;
+            }
+            if (type_right->kind != TYPE_INTEGER) {
+                ++error_count_type;
+                printf("type error: array subscript cannot be of type ");
+                type_print(type_right);
+                printf("\n");
+            }
+
+            // compute return type
+            struct type *array_subtype = type_copy(type_left->subtype);
+            TYPE_FREE(type_left);
+            TYPE_FREE(type_right);
+
+            return array_subtype;
+        }
+
+        default: {
+            // this should never happen
+            fprintf(stderr, "fatal error: unknown type\n");
+            return type_create(TYPE_VOID, NULL, NULL);
+        }
+    }
+}

@@ -2,6 +2,7 @@
 #define EXPR_H
 
 #include "symbol.h"
+#include "type.h"
 
 typedef enum {
     EXPR_NAME,
@@ -63,5 +64,6 @@ void expr_print(struct expr *e);
 unsigned int expr_list_length(struct expr *e);
 int expr_is_constant(struct expr *e);
 int expr_is_lvalue_type(struct expr *e);
+struct type *expr_typecheck(struct expr *e);
 
 #endif
