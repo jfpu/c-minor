@@ -49,6 +49,14 @@ void decl_print(struct decl *d, int indent) {
 }
 
 void decl_typecheck(struct decl *d) {
+    struct decl *d_ptr = d;
+    while (d_ptr) {
+        decl_typecheck_individual(d_ptr);
+        d_ptr = d_ptr->next;
+    }
+}
+
+void decl_typecheck_individual(struct decl *d) {
     if (!d) return;
 
     // declaration
@@ -136,9 +144,4 @@ void decl_typecheck(struct decl *d) {
     if (d->code) {
         stmt_typecheck(d->code, d->name, d->type->subtype);
     }
-
-    // clean up
-
-    // check next
-    decl_typecheck(d->next);
 }

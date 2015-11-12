@@ -22,5 +22,6 @@ void decl_print(struct decl *d, int indent);
 
 // type checking
 void decl_typecheck(struct decl *d);
+void decl_typecheck_individual(struct decl *d);
 
 #endif
