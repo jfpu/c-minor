@@ -520,3 +520,25 @@ struct type *expr_typecheck(struct expr *e) {
         }
     }
 }
+
+void expr_list_typecheck(struct expr *e, struct type *expected) {
+    // this is for homogeneous expr_list's
+    // if expected is NULL (for print), we only typecheck each individual expr
+    // otherwise we compare the types too
+    struct expr *e_ptr = e;
+    while (e_ptr) {
+        struct type *actual = expr_typecheck(e_ptr);
+        if (expected && !type_is_equal(actual, expected)) {
+            ++error_count_type;
+            printf("type error: expression list received expression `");
+            expr_print_individual(e_ptr);
+            printf("` of type ");
+            type_print(actual);
+            printf(", expecting ");
+            type_print(expected);
+            printf("\n");
+        }
+        TYPE_FREE(actual);
+        e_ptr = e_ptr->next;
+    }
+}

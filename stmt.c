@@ -168,12 +168,7 @@ void stmt_typecheck(struct stmt *s, const char *name, struct type *expected) {
             }
             case STMT_PRINT: {
                 // type check each item in expr list
-                struct type *type_expr = NULL;
-                struct expr *e_ptr = s_ptr->expr;
-                while (e_ptr) {
-                    type_expr = expr_typecheck(s_ptr->expr);
-                    TYPE_FREE(type_expr);
-                }
+                expr_list_typecheck(s_ptr->expr, NULL);
                 break;
             }
             case STMT_RETURN: {
