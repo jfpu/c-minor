@@ -75,7 +75,7 @@ void function_param_resolve(struct type *t) {
     while (p_ptr) {
         if (scope_lookup_current(p_ptr->name)) {
             // if the name already exists in current scope, error
-            ++error_count_type;
+            ++error_count_name;
             printf("name error: duplicate parameter name %s\n", p_ptr->name);
 
             // move on to next parameter
