@@ -30,6 +30,7 @@ main: function void () = {
   { a: array [1 + 2] integer; }
   { b: integer = 3; a: array [b] integer; }
   { a: array [0] integer; }
+  { a: array [-1] integer; }
 
   // Array initialization must have the correct type
   { a: array [3] integer = {true, 2, 3}; }

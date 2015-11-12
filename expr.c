@@ -304,7 +304,8 @@ int expr_is_constant(struct expr *e) {
     return (e->kind == EXPR_BOOLEAN
         || e->kind == EXPR_INTEGER
         || e->kind == EXPR_CHARACTER
-        || e->kind == EXPR_STRING);
+        || e->kind == EXPR_STRING
+        || (e->kind == EXPR_NEG && expr_is_constant(e->right)));
 }
 
 int expr_is_lvalue_type(struct expr *e) {
