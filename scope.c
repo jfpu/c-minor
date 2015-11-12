@@ -113,6 +113,11 @@ void decl_resolve(struct decl *d, int which) {
         scope_exit();
     }
 
+    if (d->value) {
+        // if there's initialization, type check initialization
+        expr_resolve(d->value);
+    }
+
     // resolve next declaration
     decl_resolve(d->next, which);
 }

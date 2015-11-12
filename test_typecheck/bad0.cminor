@@ -5,6 +5,10 @@
 a: integer;
 a: string;
 
+// Global declarations must be initialized with constant values
+a1: integer = a;
+a_arr: array [3] integer = {a1, a1, a1};
+
 main: function void () = {
 
   // void is not a valid type for variables
