@@ -29,4 +29,7 @@ struct stmt *stmt_create(stmt_kind_t kind, struct decl *d, struct expr *init_exp
 struct stmt *stmt_list_prepend(struct stmt *first, struct stmt *rest);
 void stmt_print(struct stmt *s, int indent);
 
+// type checking
+void stmt_typecheck(struct stmt *s, const char *name, struct type *expected);
+
 #endif
