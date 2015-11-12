@@ -22,4 +22,6 @@ unsigned int param_list_length(struct param_list *p);
 struct param_list *param_list_copy(struct param_list *p);
 void param_list_delete(struct param_list *p);
 
+void param_list_typecheck(struct param_list *p, struct expr *e, const char * const name);
+
 #endif

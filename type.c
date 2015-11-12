@@ -91,8 +91,7 @@ int type_is_equal(struct type *a, struct type *b) {
     return 1;
 }
 
-// actual type checking funcitons
-
+// actual type checking functions
 void array_type_typecheck(struct type *t, const char * const name) {
     // array length must be present and constant and positive
     if (!t->size) {
@@ -117,44 +116,5 @@ void array_type_typecheck(struct type *t, const char * const name) {
         printf("\n");
     } else if (t->subtype->kind == TYPE_ARRAY) {
         array_type_typecheck(t->subtype, name);
-    }
-}
-
-void param_list_typecheck(struct param_list *p, struct expr *e, const char * const name) {
-    // this is invoked for each function invocation
-    // we compare each item in the param list with the given expression list
-
-    struct param_list *p_ptr = p;
-    struct expr *e_ptr = e;
-
-    while (p_ptr && e_ptr) {
-        // comparing each pair
-        struct type *expected_type = p_ptr->type;
-        struct type *received_type = expr_typecheck(e_ptr);
-        if (!type_is_equal(expected_type, received_type)) {
-            // error
-            ++error_count_type;
-            printf("type error: function `%s` parameter %d type mismatch; expected ",
-                name,
-                p_ptr->symbol->which);
-            type_print(expected_type);
-            printf(", received ");
-            type_print(received_type);
-            printf("\n");
-        }
-        TYPE_FREE(received_type);
-
-        // move on
-        p_ptr = p_ptr->next;
-        e_ptr = e_ptr->next;
-    }
-
-    // ensure lengths are the same
-    if (p_ptr != NULL || e_ptr != NULL) {
-        ++error_count_type;
-        printf("type error: function `%s` expected %u parameters, received %u arguments\n",
-            name,
-            param_list_length(p),
-            expr_list_length(e));
     }
 }
