@@ -2,6 +2,7 @@
 #include <string.h> // memset
 #include "utility.h"
 #include "stmt.h"
+#include "scope.h"
 
 struct stmt *stmt_create(stmt_kind_t kind, struct decl *d, struct expr *init_expr, struct expr *e, struct expr *next_expr, struct stmt *body, struct stmt *else_body) {
     struct stmt *s = (struct stmt *)malloc(sizeof(*s));
@@ -111,6 +112,54 @@ void stmt_print(struct stmt *s, int indent) {
             default:
                 _print_indent(indent);
                 printf("Statement!\n");
+                break;
+        }
+
+        s_ptr = s_ptr->next;
+    }
+}
+
+void stmt_resolve(struct stmt *s, int which) {
+    if (!s) return;
+
+    struct stmt *s_ptr = s;
+    while (s_ptr) {
+        switch (s_ptr->kind) {
+            case STMT_DECL:
+                decl_resolve(s_ptr->decl, which);
+                ++which;
+                break;
+
+            case STMT_EXPR:
+                expr_resolve(s_ptr->expr);
+                break;
+
+            case STMT_IF_ELSE:
+                expr_resolve(s_ptr->expr);
+                stmt_resolve(s_ptr->body, which);
+                stmt_resolve(s_ptr->else_body, which);
+                break;
+
+            case STMT_FOR:
+                expr_resolve(s_ptr->init_expr);
+                expr_resolve(s_ptr->expr);
+                expr_resolve(s_ptr->next_expr);
+                stmt_resolve(s_ptr->body, which);
+                break;
+
+            case STMT_PRINT:
+            case STMT_RETURN:
+                expr_resolve(s_ptr->expr);
+                break;
+
+            case STMT_BLOCK:
+                // enter new scope and resolve body in new scope
+                scope_enter();
+                stmt_resolve(s_ptr->body, 0);
+                scope_exit();
+                break;
+
+            case STMT_EMPTY:
                 break;
         }
 

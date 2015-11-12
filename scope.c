@@ -74,52 +74,6 @@ struct symbol *scope_lookup_current(const char *name) {
 }
 
 // name resolution
-
-void stmt_resolve(struct stmt *s, int which) {
-    if (!s) return;
-
-    switch (s->kind) {
-        case STMT_DECL:
-            decl_resolve(s->decl, which);
-            ++which;
-            break;
-
-        case STMT_EXPR:
-            expr_resolve(s->expr);
-            break;
-
-        case STMT_IF_ELSE:
-            expr_resolve(s->expr);
-            stmt_resolve(s->body, which);
-            stmt_resolve(s->else_body, which);
-            break;
-
-        case STMT_FOR:
-            expr_resolve(s->init_expr);
-            expr_resolve(s->expr);
-            expr_resolve(s->next_expr);
-            stmt_resolve(s->body, which);
-            break;
-
-        case STMT_PRINT:
-        case STMT_RETURN:
-            expr_resolve(s->expr);
-            break;
-
-        case STMT_BLOCK:
-            // enter new scope and resolve body in new scope
-            scope_enter();
-            stmt_resolve(s->body, 0);
-            scope_exit();
-            break;
-
-        case STMT_EMPTY:
-            break;
-    }
-
-    stmt_resolve(s->next, which);
-}
-
 void expr_resolve(struct expr *e) {
     if (!e) return;
 

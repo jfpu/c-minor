@@ -28,7 +28,6 @@ struct symbol *scope_lookup_current(const char *name);
 // name resolution
 extern int __print_name_resolution_result;
 extern unsigned int error_count_name;
-void stmt_resolve(struct stmt *s, int which);
 void expr_resolve(struct expr *e);
 void function_param_resolve(struct type *t);
 
