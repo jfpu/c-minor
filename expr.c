@@ -2,6 +2,8 @@
 #include <string.h> // memset
 #include "expr.h"
 #include "scope.h"
+#include "symbol.h"
+#include "register.h"
 
 #define PRINT_WITH_PRECEDENCE(expr, base)                       \
     if (expr_precedence((expr)) < expr_precedence((base))) {    \
@@ -19,6 +21,7 @@ struct expr *expr_create(expr_t kind, struct expr *left, struct expr *right) {
     e->kind = kind;
     e->left = left;
     e->right = right;
+    e->reg = -1;
     return e;
 }
 
@@ -598,3 +601,90 @@ void expr_list_typecheck(struct expr *e, struct type *expected) {
         e_ptr = e_ptr->next;
     }
 }
+
+// for codegen
+void expr_codegen(struct expr *e, FILE *file) {
+    switch (e->kind) {
+        case EXPR_INTEGER:
+        case EXPR_CHARACTER:
+        case EXPR_BOOLEAN: {
+            e->reg = register_alloc();
+            fprintf(file, "MOV $%d, %s\n",
+                e->literal_value,
+                register_name(e->reg));
+            break;
+        }
+        case EXPR_NAME: {
+            e->reg = register_alloc();
+            fprintf(file, "MOV %s, %s\n",
+                symbol_code(e->symbol),
+                register_name(e->reg));
+            break;
+        }
+        case EXPR_STRING:
+            break;
+
+        case EXPR_ADD: {
+            // post-order traversal: we need the left and right children ready first
+            expr_codegen(e->left, file);
+            expr_codegen(e->right, file);
+
+            fprintf(file, "ADD %s, %s\n",
+                register_name(e->left->reg),
+                register_name(e->right->reg));
+
+            // destructive: the right register has the result
+            e->reg = e->right->reg;
+            e->right->reg = -1;
+            register_free(e->left->reg);
+            e->left->reg = -1;
+            break;
+        }
+        case EXPR_ASSIGN:
+        case EXPR_SUB:
+            break;
+
+        case EXPR_MUL: {
+            expr_codegen(e->left, file);
+            expr_codegen(e->right, file);
+
+            // move left register into %rax
+            fprintf(file, "MOV %s, %%rax\n",
+                register_name(e->left->reg));
+
+            // multiply with the right register
+            fprintf(file, "IMUL %s\n",
+                register_name(e->right->reg));
+
+            // move rax into result register
+            fprintf(file, "MOV %%rax, %s\n",
+                register_name(e->right->reg));
+
+            e->reg = e->right->reg;
+            e->right->reg = -1;
+            register_free(e->left->reg);
+            e->left->reg = -1;
+            break;
+        }
+        case EXPR_DIV:
+        case EXPR_EXP:
+        case EXPR_MOD:
+        case EXPR_INC:
+        case EXPR_DEC:
+        case EXPR_NEG:
+        case EXPR_LAND:
+        case EXPR_LOR:
+        case EXPR_LNOT:
+        case EXPR_LT:
+        case EXPR_LE:
+        case EXPR_GT:
+        case EXPR_GE:
+        case EXPR_EQ:
+        case EXPR_NE:
+        case EXPR_FCALL:
+        case EXPR_ARRAY_DEREF:
+        default:
+            break;
+    }
+}
+
