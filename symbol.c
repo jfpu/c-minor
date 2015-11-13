@@ -12,3 +12,7 @@ struct symbol *symbol_create(symbol_t kind, int which, struct type *type, char *
     s->name = name;
     return s;
 }
+
+char *symbol_code(struct symbol *s) {
+
+}

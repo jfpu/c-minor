@@ -18,4 +18,7 @@ struct symbol {
 
 struct symbol *symbol_create(symbol_t kind, int which, struct type *type, char *name);
 
+// for codegen
+char *symbol_code(struct symbol *s);
+
 #endif
