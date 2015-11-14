@@ -1,0 +1,23 @@
+// Test case 4
+// Statements
+
+a: integer;
+b: boolean;
+c: char;
+s: string;
+
+f_v: function void ();
+
+main: function void () = {
+  // if requires a boolean expr
+  if (a) {}
+  if (c) {}
+  if (s) {}
+  if (f_v()) {}
+
+  // for requires a boolean expr
+  for (;a;) {}
+  for (;c;) {}
+  for (;s;) {}
+  for (;f_v();) {}
+}

@@ -1,13 +1,27 @@
 // Test case 4
 // Statements
 
-main: function void () = {
-  b: boolean;
+b: boolean;
+
+main: function integer () = {
+
+  // if requires a boolean expr
   if (b) {}
+
+  // for takes either an empty expr (infinite loop) or a boolean
   for (;;) {}
   for (1;true;1) {}
   for (;b;) {}
-  { a: integer = 3; }
+
+  // statements inside blocks should typecheck
+  {
+    a: integer = 1;
+    b: boolean = true;
+  }
+
+  // print should typecheck its expr list
   print 1;
-  return;
+
+  // return should typecheck its expr list
+  return 0;
 }
