@@ -404,9 +404,7 @@ struct type *expr_typecheck(struct expr *e) {
                 ++error_count_type;
                 printf("type error: expression `");
                 expr_print(e->left);
-                printf("` of type ");
-                type_print(type_left);
-                printf(" is not an lvalue\n");
+                printf("` is not an lvalue\n");
             }
 
             type_right = expr_typecheck(e->right);
@@ -451,7 +449,28 @@ struct type *expr_typecheck(struct expr *e) {
         }
 
         case EXPR_INC:
-        case EXPR_DEC:
+        case EXPR_DEC: {
+            type_right = expr_typecheck(e->right);
+
+            // inc dec only work on lvalues
+            if (!expr_is_lvalue_type(e->right)) {
+                ++error_count_type;
+                printf("type error: expression `");
+                expr_print(e->right);
+                printf("` is not an lvalue\n");
+            }
+
+            // also only work on integers
+            if (type_right->kind != TYPE_INTEGER) {
+                ++error_count_type;
+                printf("type error: cannot increment or decrement expression of type ");
+                type_print(type_right);
+                printf("\n");
+            }
+            TYPE_FREE(type_right);
+            return type_create(TYPE_INTEGER, NULL, NULL);
+        }
+
         case EXPR_NEG: {
             type_right = expr_typecheck(e->right);
             if (type_right->kind != TYPE_INTEGER) {

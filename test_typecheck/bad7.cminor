@@ -1,0 +1,22 @@
+// Test case 7
+// Value semantics
+
+main: function void () = {
+  a: integer;
+  a1: integer;
+  a2: integer;
+
+  // assignment requires an lvalue
+  1 = 2;
+  1 + a = 3;
+
+  // chained assignment requires all lvalues
+  a = a1 = a2 = 1 = a;
+
+  // increment/decrement require lvalues
+  a++;
+  a--;
+  1++;
+  1--;
+  (2+a)++;
+}

@@ -44,11 +44,4 @@ main: function void () = {
   s = f_a();
   s = f_c();
   s = f_b();
-
-  // assignment requires an lvalue
-  1 = 2;
-  1 + 2 = 3;
-
-  // chained assignment with an rvalue in between shouldn't typecheck
-  a1 = 1 = -a3 = a;
 }
