@@ -8,7 +8,7 @@ s: string;
 
 f_v: function void ();
 
-main: function void () = {
+main: function integer () = {
   // if requires a boolean expr
   if (a) {}
   if (c) {}
@@ -20,4 +20,18 @@ main: function void () = {
   for (;c;) {}
   for (;s;) {}
   for (;f_v();) {}
+
+  // statements inside blocks should typecheck
+  {
+    a: integer = true;
+    b: boolean = 'c';
+    if (s) {}
+    for (;f_v();) {}
+  }
+
+  // print should typecheck its expr list
+  print 1 + 'a', true ^ 2;
+
+  // return should typecheck its expr
+  return 0 - "test";
 }
