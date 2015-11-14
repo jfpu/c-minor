@@ -1,0 +1,13 @@
+// Test case 9
+// Unknown names are name errors
+
+f_a: function void ();
+b: integer;
+c: char;
+
+main: function char () = {
+  f_a();
+  a: integer = b;
+
+  return c;
+}

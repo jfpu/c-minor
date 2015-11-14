@@ -1,0 +1,12 @@
+// Test case 8
+// Names must be unique per scope
+
+a: integer;
+
+f: function void (a: char) = {
+  { a: boolean; }
+}
+
+main: function void () = {
+  a: string;
+}
