@@ -3,4 +3,7 @@
 
 main: function void () = {
   f_a();
+  a: integer = b;
+
+  return c;
 }
