@@ -121,7 +121,7 @@ void _lex_manual() {
     YYSTYPE yylval;
     while ((token = yylex(&yylval)) != 0) {
         // Process token
-        printf("%s", token_to_string(token));
+        printf("%s", token_to_string((enum yytokentype)token));
         if (token == INTEGER_LITERAL) {
             printf(" %lld", lexer_val.int_value);
         } else if (token == CHAR_LITERAL) {
