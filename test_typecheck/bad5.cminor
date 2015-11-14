@@ -1,8 +1,0 @@
-// Test case 5
-// Names used must be declared
-
-main: function void () = {
-  a: integer;
-  a = f_a();
-  return;
-}

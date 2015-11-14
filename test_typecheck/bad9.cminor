@@ -1,0 +1,6 @@
+// Test case 9
+// Unknown names are name errors
+
+main: function void () = {
+  f_a();
+}
