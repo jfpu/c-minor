@@ -205,7 +205,7 @@ void stmt_typecheck(struct stmt *s, const char *name, struct type *expected) {
 
                 // type check current body
                 type_expr = expr_typecheck(s_ptr->expr);
-                if (type_expr->kind != TYPE_BOOLEAN) {
+                if (type_expr->kind != TYPE_BOOLEAN && type_expr->kind != TYPE_VOID) {
                     ++error_count_type;
                     printf("type error: for statement received expression of type ");
                     type_print(type_expr);

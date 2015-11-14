@@ -1,0 +1,13 @@
+// Test case 4
+// Statements
+
+main: function void () = {
+  b: boolean;
+  if (b) {}
+  for (;;) {}
+  for (1;true;1) {}
+  for (;b;) {}
+  { a: integer = 3; }
+  print 1;
+  return;
+}
