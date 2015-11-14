@@ -87,10 +87,7 @@ void function_param_resolve(struct type *t, const char * const name) {
         struct symbol *p_sym = symbol_create(SYMBOL_PARAM, param_count, p_ptr->type, p_ptr->name);
         scope_bind(p_ptr->name, p_sym);
         p_ptr->symbol = p_sym;
-        if (__print_name_resolution_result) {
-            printf("create symbol: ");
-            print_name_resolution(p_sym);
-        }
+        if (__print_name_resolution_result) { print_name_resolution(p_sym); }
 
         // next
         ++param_count;

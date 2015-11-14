@@ -343,7 +343,7 @@ void expr_resolve(struct expr *e) {
                     printf("name error: %s is not defined in the current scope\n", e_ptr->name);
                     ++error_count_name;
                 }
-                if (__print_name_resolution_result) print_name_resolution(resolved);
+                if (__print_name_resolution_result) { print_name_resolution(resolved); }
                 e_ptr->symbol = resolved;
                 break;
             }

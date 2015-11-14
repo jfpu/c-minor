@@ -75,10 +75,7 @@ void decl_resolve(struct decl *d, int which) {
             struct symbol *s = symbol_create(scope_table_list->scope, which, d_ptr->type, d_ptr->name);
             scope_bind(d_ptr->name, s);
             d_ptr->symbol = s;
-            if (__print_name_resolution_result) {
-                printf("create symbol: ");
-                print_name_resolution(s);
-            }
+            if (__print_name_resolution_result) { print_name_resolution(s); }
 
             // ensure parameter names in function prototypes are properly resolved
             // enter new scope for function and resolve parameters
