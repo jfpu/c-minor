@@ -3,3 +3,12 @@
 
 a: integer;
 a: string;
+
+f: function void (a: integer, a: string) = {
+  a: boolean;
+}
+
+main: function void () = {
+  a: integer;
+  a: string;
+}

@@ -30,7 +30,7 @@ struct type *type_create_array(struct expr *size, struct type *subtype);
 void type_print(struct type *t);
 
 // name resolution
-void function_param_resolve(struct type *t);
+void function_param_resolve(struct type *t, const char * const name);
 
 // for type checking
 struct type *type_copy(struct type *t);

@@ -83,7 +83,7 @@ void decl_resolve(struct decl *d, int which) {
             // ensure parameter names in function prototypes are properly resolved
             // enter new scope for function and resolve parameters
             scope_enter();
-            function_param_resolve(d_ptr->type);
+            function_param_resolve(d_ptr->type, d_ptr->name);
             if (d_ptr->code) {
                 // if declaration is a function, resolve funciton body
                 stmt_resolve(d_ptr->code, 0);

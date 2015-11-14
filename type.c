@@ -65,7 +65,7 @@ void type_print(struct type *t) {
 }
 
 // name resolution
-void function_param_resolve(struct type *t) {
+void function_param_resolve(struct type *t, const char * const name) {
     // only for functions
     if (!t || t->kind != TYPE_FUNCTION) return;
 
@@ -76,7 +76,7 @@ void function_param_resolve(struct type *t) {
         if (scope_lookup_current(p_ptr->name)) {
             // if the name already exists in current scope, error
             ++error_count_name;
-            printf("name error: duplicate parameter name %s\n", p_ptr->name);
+            printf("name error: duplicate parameter name %s in function `%s`\n", p_ptr->name, name);
 
             // move on to next parameter
             p_ptr = p_ptr->next;
