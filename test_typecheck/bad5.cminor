@@ -1,0 +1,27 @@
+// Test case 5
+// Function declarations: return values
+
+f_a1: function integer () = { return true; }
+f_a2: function integer () = { return 'c'; }
+f_a3: function integer () = { return "test"; }
+f_a4: function integer () = { return; }
+
+f_b1: function boolean () = { return 1; }
+f_b2: function boolean () = { return 'c'; }
+f_b3: function boolean () = { return "test"; }
+f_b4: function boolean () = { return; }
+
+f_c1: function char () = { return 1; }
+f_c2: function char () = { return true; }
+f_c3: function char () = { return "test"; }
+f_c4: function char () = { return; }
+
+f_s1: function string () = { return 1; }
+f_s2: function string () = { return true; }
+f_s3: function string () = { return 'c'; }
+f_s4: function string () = { return; }
+
+f_v1: function void () = { return 1; }
+f_v2: function void () = { return true; }
+f_v3: function void () = { return 'c'; }
+f_v4: function void () = { return "test"; }

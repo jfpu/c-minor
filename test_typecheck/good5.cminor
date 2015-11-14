@@ -1,0 +1,17 @@
+// Test case 5
+// Function declarations: return values
+
+f_a: function integer () = { return 0; }
+f_b: function boolean () = { return true; }
+f_c: function char () = { return 'c'; }
+f_s: function string () = { return "test"; }
+f_v: function void () = {}
+
+main: function void () = {
+  a: integer = f_a();
+  b: boolean = f_b();
+  c: char = f_c();
+  s: string = f_s();
+  f_v();
+  return;
+}
