@@ -38,13 +38,15 @@ enum _cminor_options {
     LEX = 1,
     PARSE,
     RESOLVE,
-    CHECK
+    CHECK,
+    COMPILE
 };
 
 void _lex_manual();
 void _parse();
 void _resolve_name();
 void _typecheck();
+void _compile(FILE *outfile);
 
 int main(int argc, char* argv[]) {
 
@@ -54,12 +56,13 @@ int main(int argc, char* argv[]) {
     const char *optstring = "";
 
     // setup long arguments
-    struct option options_spec[5];
+    struct option options_spec[6];
     SETUP_OPT_STRUCT(options_spec, 0, "scan", LEX);
     SETUP_OPT_STRUCT(options_spec, 1, "print", PARSE);
     SETUP_OPT_STRUCT(options_spec, 2, "resolve", RESOLVE);
     SETUP_OPT_STRUCT(options_spec, 3, "typecheck", CHECK);
-    SETUP_OPT_STRUCT(options_spec, 4, 0, 0);
+    SETUP_OPT_STRUCT(options_spec, 4, "compile", COMPILE);
+    SETUP_OPT_STRUCT(options_spec, 5, 0, 0);
 
     // process flags
     while ((i = getopt_long_only(argc, argv, optstring, options_spec, NULL)) != -1) {
@@ -74,20 +77,24 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "cminor: must pass in at least one flag\n");
         exit(1);
     }
-
-    // consider only the first file requested
     if (optind >= argc) {
         fprintf(stderr, "cminor: no file given\n");
         exit(1);
-    } else if (optind != argc - 1) {
-        fprintf(stderr, "cminor: multiple files given, processing only the first file\n");
     }
 
     // use file
-    const char *filename = argv[optind];
-    FILE *source_file = fopen(filename, "r");
+    // first file is the infile, second (if given) is the outfile
+    const char *infile = NULL, *outfile = NULL;
+    if (opt == COMPILE) {
+        infile = argv[optind];
+        outfile = argv[optind + 1];
+    } else {
+        infile = argv[optind];
+    }
+
+    FILE *source_file = fopen(infile, "r");
     if (!source_file) {
-        fprintf(stderr, "cminor: cannot open file %s\n", filename);
+        fprintf(stderr, "cminor: cannot open file %s\n", infile);
         exit(1);
     }
     yyin = source_file;
@@ -108,8 +115,17 @@ int main(int argc, char* argv[]) {
         case CHECK:
             _typecheck();
             break;
+        case COMPILE: {
+            FILE *assembly_file = fopen(outfile, "w");
+            if (!assembly_file) {
+                fprintf(stderr, "cminor: cannot create file %s\n", outfile);
+                exit(1);
+            }
+            _compile(assembly_file);
+            fclose(assembly_file);
+            break;
+        }
     }
-
     fclose(source_file);
 
     return 0;
@@ -163,4 +179,8 @@ void _typecheck() {
         else printf("encountered %u type errors\n", error_count_type);
         exit(1);
     }
+}
+
+void _compile(FILE *outfile) {
+    _typecheck();
 }
