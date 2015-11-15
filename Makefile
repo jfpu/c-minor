@@ -1,5 +1,5 @@
 FLAGS=-Wall -g
-OBJS=lex.yy.o parser.tab.o decl.o expr.o param_list.o stmt.o type.o utility.o symbol.o scope.o hash_table.o
+OBJS=lex.yy.o parser.tab.o decl.o expr.o param_list.o stmt.o type.o utility.o symbol.o scope.o hash_table.o register.o
 
 all: cminor
 
