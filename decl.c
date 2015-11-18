@@ -194,3 +194,8 @@ void decl_typecheck_individual(struct decl *d) {
         stmt_typecheck(d->code, d->name, d->type->subtype);
     }
 }
+
+// codegen
+void decl_codegen(struct decl *d, FILE *file) {
+    fprintf(stderr, "decl_codegen not implemented\n");
+}

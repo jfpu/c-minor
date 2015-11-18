@@ -27,4 +27,7 @@ void decl_resolve(struct decl *d, int which);
 void decl_typecheck(struct decl *d);
 void decl_typecheck_individual(struct decl *d);
 
+// codegen
+void decl_codegen(struct decl *d, FILE *file);
+
 #endif

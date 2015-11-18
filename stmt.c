@@ -3,6 +3,7 @@
 #include "utility.h"
 #include "stmt.h"
 #include "scope.h"
+#include "register.h"
 
 struct stmt *stmt_create(stmt_kind_t kind, struct decl *d, struct expr *init_expr, struct expr *e, struct expr *next_expr, struct stmt *body, struct stmt *else_body) {
     struct stmt *s = (struct stmt *)malloc(sizeof(*s));
@@ -242,6 +243,49 @@ void stmt_typecheck(struct stmt *s, const char *name, struct type *expected) {
                 // dummy node, ignore
                 break;
         }
+        s_ptr = s_ptr->next;
+    }
+}
+
+void stmt_codegen(struct stmt *s, FILE *file) {
+    if (!s) return;
+        struct stmt *s_ptr = s;
+    while (s_ptr) {
+        switch (s_ptr->kind) {
+            case STMT_DECL: {
+                decl_codegen(s_ptr->decl, file);
+                break;
+            }
+            case STMT_EXPR: {
+                expr_codegen(s_ptr->expr, file);
+                register_free(s_ptr->expr->reg);
+                break;
+            }
+            case STMT_IF_ELSE:
+            case STMT_FOR:
+            case STMT_PRINT: {
+                break;
+            }
+            case STMT_RETURN: {
+                // generate return value
+                expr_codegen(s_ptr->expr, file);
+                // move into %rax
+                fprintf(file, "MOV %s, %%rax\n", register_name(s_ptr->expr->reg));
+                register_free(s_ptr->expr->reg);
+                // unwind stack
+                fprintf(file, "RET\n");
+                break;
+            }
+            case STMT_BLOCK: {
+                stmt_codegen(s_ptr->body, file);
+                break;
+            }
+            case STMT_EMPTY: {
+                // we need to generate function postemble here too
+                break;
+            }
+        }
+
         s_ptr = s_ptr->next;
     }
 }

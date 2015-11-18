@@ -35,4 +35,8 @@ void stmt_resolve(struct stmt *s, int which);
 // type checking
 void stmt_typecheck(struct stmt *s, const char *name, struct type *expected);
 
+// codegen
+extern int label_count;
+void stmt_codegen(struct stmt *s, FILE *file);
+
 #endif
