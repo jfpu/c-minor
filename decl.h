@@ -29,5 +29,6 @@ void decl_typecheck_individual(struct decl *d);
 
 // codegen
 void decl_codegen(struct decl *d, FILE *file);
+void decl_codegen_individual(struct decl *d, FILE *file);
 
 #endif

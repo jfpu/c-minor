@@ -198,4 +198,57 @@ void decl_typecheck_individual(struct decl *d) {
 // codegen
 void decl_codegen(struct decl *d, FILE *file) {
     fprintf(stderr, "decl_codegen not implemented\n");
+    struct decl *d_ptr = d;
+    while (d_ptr) {
+        decl_codegen_individual(d_ptr, file);
+        d_ptr = d_ptr->next;
+    }
+}
+
+void decl_codegen_individual(struct decl *d, FILE *file) {
+    if (!d) return;
+
+    if (d->symbol->kind == SYMBOL_GLOBAL && d->symbol->type->kind != TYPE_FUNCTION) {
+        // global data: emit into data section
+        fprintf(file, ".data\n");
+        fprintf(file, "%s:\n", d->symbol->name);
+
+        if (!d->value) return;
+
+        if (d->symbol->type->kind == TYPE_STRING) {
+            // if it's a string, emit a string literal
+            fprintf(file, ".string ");
+            expr_string_print(d->value->string_literal, file);
+            fprintf(file, "\n");
+        } else {
+            // otherwise emit a quad word
+            fprintf(file, ".quad %d\n", d->value->literal_value);
+        }
+
+    } else if (d->symbol->kind == SYMBOL_GLOBAL && d->symbol->type->kind == TYPE_FUNCTION) {
+        // global function: emit into text section
+        fprintf(file, ".text\n");
+        fprintf(file, "%s:\n", d->symbol->name);
+
+        if (d->code) {
+            // set up call stack
+            fprintf(file, "PUSH %%rbp\n");
+            fprintf(file, "MOV %%rsp, %%rbp\n");
+            fprintf(file, "PUSH %%rbx\n");
+            fprintf(file, "PUSH %%r12\n");
+            fprintf(file, "PUSH %%r13\n");
+            fprintf(file, "PUSH %%r14\n");
+            fprintf(file, "PUSH %%r15\n");
+
+            // then generate code
+            stmt_codegen(d->code, file);
+        }
+    } else if (d->symbol->kind == SYMBOL_LOCAL && d->symbol->type->kind != TYPE_FUNCTION) {
+        // local data: push onto stack
+    } else {
+        // this shouldn't happen
+        printf("fatal error: unexpected declaration\n");
+        decl_print(d, 0);
+        exit(1);
+    }
 }
