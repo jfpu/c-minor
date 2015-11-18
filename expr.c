@@ -156,19 +156,7 @@ void expr_print_individual(struct expr *e) {
             break;
 
         case EXPR_STRING: {
-            // We need to unescape each individual character
-            int i = 0;
-            printf("\"");
-            while (e->string_literal[i]) {
-                if (e->string_literal[i] == '\n') {
-                    printf("\\n");
-                } else {
-                    printf("%c", e->string_literal[i]);
-                }
-                ++i;
-            }
-            printf("\"");
-            break;
+            expr_string_print(e->string_literal, stdout);
         }
         case EXPR_ASSIGN:
             expr_print(e->left);
@@ -741,3 +729,16 @@ void expr_codegen(struct expr *e, FILE *file) {
     }
 }
 
+void expr_string_print(const char * const str, FILE *file) {
+    int i = 0;
+    fprintf(file, "\"");
+    while (str[i]) {
+        if (str[i] == '\n') {
+            fprintf(file, "\\n");
+        } else {
+            fprintf(file, "%c", str[i]);
+        }
+        ++i;
+    }
+    fprintf(file, "\"");
+}

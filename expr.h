@@ -77,4 +77,6 @@ void expr_list_typecheck(struct expr *e, struct type *expected);
 extern int label_count;
 void expr_codegen(struct expr *e, FILE *file);
 
+void expr_string_print(const char * const str, FILE *file);
+
 #endif
