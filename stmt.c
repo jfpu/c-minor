@@ -247,9 +247,21 @@ void stmt_typecheck(struct stmt *s, const char *name, struct type *expected) {
     }
 }
 
+#define UNWIND_STACK(__file) {              \
+    fprintf((__file), "POP %%r15\n");       \
+    fprintf((__file), "POP %%r14\n");       \
+    fprintf((__file), "POP %%r13\n");       \
+    fprintf((__file), "POP %%r12\n");       \
+    fprintf((__file), "POP %%rbx\n");       \
+    fprintf((__file), "MOV %%rbp, %%rsp\n");\
+    fprintf((__file), "POP %%rbp\n");       \
+    fprintf((__file), "RET");               \
+}
+
 void stmt_codegen(struct stmt *s, FILE *file) {
     if (!s) return;
-        struct stmt *s_ptr = s;
+
+    struct stmt *s_ptr = s;
     while (s_ptr) {
         switch (s_ptr->kind) {
             case STMT_DECL: {
@@ -273,7 +285,7 @@ void stmt_codegen(struct stmt *s, FILE *file) {
                 fprintf(file, "MOV %s, %%rax\n", register_name(s_ptr->expr->reg));
                 register_free(s_ptr->expr->reg);
                 // unwind stack
-                fprintf(file, "RET\n");
+                UNWIND_STACK(file);
                 break;
             }
             case STMT_BLOCK: {
@@ -281,7 +293,8 @@ void stmt_codegen(struct stmt *s, FILE *file) {
                 break;
             }
             case STMT_EMPTY: {
-                // we need to generate function postemble here too
+                // we need to unwind the stack here too
+                UNWIND_STACK(file);
                 break;
             }
         }
