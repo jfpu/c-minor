@@ -187,4 +187,5 @@ void _typecheck() {
 void _compile(FILE *outfile) {
     label_count = 0;
     _typecheck();
+    decl_codegen(program, outfile);
 }
