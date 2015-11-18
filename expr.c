@@ -621,17 +621,23 @@ void expr_codegen(struct expr *e, FILE *file) {
                 register_name(e->reg));
             break;
         }
-        case EXPR_STRING:
+        case EXPR_STRING: {
+            // switch into data section, create the string, and switch back and use it
+            // emit the following:
+            // .data
+            // STRn:
+            // .string "xxxxxx"
+            // .text
+            // LEA STRn, expr->reg
             break;
-
+        }
         case EXPR_ADD: {
             // post-order traversal: we need the left and right children ready first
             expr_codegen(e->left, file);
             expr_codegen(e->right, file);
 
-            fprintf(file, "ADD %s, %s\n",
-                register_name(e->left->reg),
-                register_name(e->right->reg));
+            // add left to right
+            fprintf(file, "ADD %s, %s\n", register_name(e->left->reg), register_name(e->right->reg));
 
             // destructive: the right register has the result
             e->reg = e->right->reg;
@@ -640,25 +646,23 @@ void expr_codegen(struct expr *e, FILE *file) {
             e->left->reg = -1;
             break;
         }
-        case EXPR_ASSIGN:
-        case EXPR_SUB:
+        case EXPR_ASSIGN: {
+            fprintf(file, "MOV %s, %s\n", register_name(e->right->reg), symbol_code(e->left->symbol));
             break;
-
+        }
+        case EXPR_SUB: {
+            break;
+        }
         case EXPR_MUL: {
             expr_codegen(e->left, file);
             expr_codegen(e->right, file);
 
             // move left register into %rax
-            fprintf(file, "MOV %s, %%rax\n",
-                register_name(e->left->reg));
-
+            fprintf(file, "MOV %s, %%rax\n", register_name(e->left->reg));
             // multiply with the right register
-            fprintf(file, "IMUL %s\n",
-                register_name(e->right->reg));
-
+            fprintf(file, "IMUL %s\n", register_name(e->right->reg));
             // move rax into result register
-            fprintf(file, "MOV %%rax, %s\n",
-                register_name(e->right->reg));
+            fprintf(file, "MOV %%rax, %s\n", register_name(e->right->reg));
 
             e->reg = e->right->reg;
             e->right->reg = -1;
@@ -668,21 +672,70 @@ void expr_codegen(struct expr *e, FILE *file) {
         }
         case EXPR_DIV:
         case EXPR_EXP:
-        case EXPR_MOD:
-        case EXPR_INC:
-        case EXPR_DEC:
+        case EXPR_MOD: {
+            break;
+        }
+        case EXPR_INC: {
+            // move expression's value to result register
+            fprintf(file, "MOV %s, %s\n", register_name(e->right->reg), register_name(e->reg));
+            // increment
+            fprintf(file, "ADD $1, %s\n", register_name(e->right->reg));
+            // store incremented value back to variable
+            fprintf(file, "MOV %s, %s\n", register_name(e->right->reg), symbol_code(e->right->symbol));
+            break;
+        }
+        case EXPR_DEC: {
+            // move expression's value to result register
+            fprintf(file, "MOV %s, %s\n", register_name(e->right->reg), register_name(e->reg));
+            // increment
+            fprintf(file, "SUB $1, %s\n", register_name(e->right->reg));
+            // store incremented value back to variable
+            fprintf(file, "MOV %s, %s\n", register_name(e->right->reg), symbol_code(e->right->symbol));
+            break;
+        }
         case EXPR_NEG:
         case EXPR_LAND:
         case EXPR_LOR:
-        case EXPR_LNOT:
-        case EXPR_LT:
+        case EXPR_LNOT: {
+            break;
+        }
+        case EXPR_LT: {
+            fprintf(file, "CMP %s, %s\n", register_name(e->left->reg), register_name(e->right->reg));
+            fprintf(file, "JL, label%d\n", label_count + 1);
+            fprintf(file, "MOV $0, %s\n", register_name(e->reg));
+            fprintf(file, "JMP, label%d\n", label_count + 2);
+            fprintf(file, "label%d:\n", label_count++);
+            fprintf(file, "MOV $1, %s\n", register_name(e->reg));
+            fprintf(file, "label%d:\n", label_count++);
+            break;
+        }
         case EXPR_LE:
         case EXPR_GT:
         case EXPR_GE:
         case EXPR_EQ:
-        case EXPR_NE:
-        case EXPR_FCALL:
-        case EXPR_ARRAY_DEREF:
+        case EXPR_NE: {
+            break;
+        }
+        case EXPR_FCALL: {
+            // emit the following:
+            // repeat for each argument: {
+            //      expr_codegen(arg)
+            //      MOV arg->reg, $rdi
+            //      register_free(arg->reg)
+            // }
+            // push caller save registers (r10, r11)
+            //      PUSH %r10; PUSH %r11;
+            // CALL e->left->name
+            // pop caller save registers
+            //      POP %r10; POP %r11;
+            // MOV %rax, e->reg
+            break;
+        }
+        case EXPR_ARRAY_DEREF: {
+            // don't need to worry about arrays!
+            fprintf(stderr, "arrays are not supported\n");
+            exit(1);
+        }
         default:
             break;
     }

@@ -74,6 +74,7 @@ struct type *expr_typecheck(struct expr *e);
 void expr_list_typecheck(struct expr *e, struct type *expected);
 
 // for codegen
+extern int label_count;
 void expr_codegen(struct expr *e, FILE *file);
 
 #endif

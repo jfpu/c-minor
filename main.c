@@ -42,6 +42,9 @@ enum _cminor_options {
     COMPILE
 };
 
+// Codegen
+int label_count = 0;
+
 void _lex_manual();
 void _parse();
 void _resolve_name();
@@ -182,5 +185,6 @@ void _typecheck() {
 }
 
 void _compile(FILE *outfile) {
+    label_count = 0;
     _typecheck();
 }
