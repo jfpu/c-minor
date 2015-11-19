@@ -255,7 +255,7 @@ void stmt_typecheck(struct stmt *s, const char *name, struct type *expected) {
     fprintf((__file), "POP %%rbx\n");       \
     fprintf((__file), "MOV %%rbp, %%rsp\n");\
     fprintf((__file), "POP %%rbp\n");       \
-    fprintf((__file), "RET");               \
+    fprintf((__file), "RET\n");             \
 }
 
 void stmt_codegen(struct stmt *s, FILE *file) {
