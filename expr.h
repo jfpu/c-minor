@@ -2,6 +2,7 @@
 #define EXPR_H
 
 #include "type.h"
+#include <stdio.h>
 
 typedef enum {
     EXPR_NAME,
