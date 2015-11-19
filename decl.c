@@ -228,6 +228,7 @@ void decl_codegen_individual(struct decl *d, FILE *file) {
     } else if (d->symbol->kind == SYMBOL_GLOBAL && d->symbol->type->kind == TYPE_FUNCTION) {
         // global function: emit into text section
         fprintf(file, ".text\n");
+        fprintf(file, ".global %s\n", d->symbol->name);
         fprintf(file, "%s:\n", d->symbol->name);
 
         if (d->code) {
