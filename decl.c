@@ -213,17 +213,24 @@ void decl_codegen_individual(struct decl *d, FILE *file) {
         fprintf(file, ".data\n");
         fprintf(file, "%s:\n", d->symbol->name);
 
-        if (!d->value) return;
-
         if (d->symbol->type->kind == TYPE_STRING) {
             // if it's a string, emit a string literal
             fprintf(file, ".string ");
-            expr_string_print(d->value->string_literal, file);
-            fprintf(file, "\n");
+            if (d->value) {
+                expr_string_print(d->value->string_literal, file);
+            } else {
+                fprintf(file, "\"\"");
+            }
         } else {
             // otherwise emit a quad word
-            fprintf(file, ".quad %d\n", d->value->literal_value);
+            fprintf(file, ".quad ");
+            if (d->value) {
+                fprintf(file, "%d\n", d->value->literal_value);
+            } else {
+                fprintf(file, "0\n");
+            }
         }
+        fprintf(file, "\n");
 
     } else if (d->symbol->kind == SYMBOL_GLOBAL && d->symbol->type->kind == TYPE_FUNCTION) {
         // global function: emit into text section
@@ -240,6 +247,10 @@ void decl_codegen_individual(struct decl *d, FILE *file) {
             fprintf(file, "PUSH %%r13\n");
             fprintf(file, "PUSH %%r14\n");
             fprintf(file, "PUSH %%r15\n");
+
+            // for each parameter, push it on the stack
+
+            // for the total number of local variables, make room in the stack
 
             // then generate code
             stmt_codegen(d->code, file);
