@@ -273,9 +273,79 @@ void stmt_codegen(struct stmt *s, FILE *file) {
                 register_free(s_ptr->expr->reg);
                 break;
             }
-            case STMT_IF_ELSE:
-            case STMT_FOR:
+            case STMT_IF_ELSE: {
+                int false_label = label_count++;
+                int end_label = label_count++;
+
+                expr_codegen(s_ptr->expr, file);
+                fprintf(file, "CMP %s, $0\n", register_name(s_ptr->expr->reg));
+                fprintf(file, "JE .label%d\n", false_label);
+                stmt_codegen(s_ptr->body, file);
+                fprintf(file, "JMP .label%d\n", end_label);
+                fprintf(file, ".label%d:\n", false_label);
+                stmt_codegen(s_ptr->else_body, file);
+                fprintf(file, ".label%d:\n", end_label);
+                break;
+            }
+            case STMT_FOR: {
+                int loop_begin_label = label_count++;
+                int loop_end_label = label_count++;
+
+                // init
+                expr_codegen(s_ptr->init_expr, file);
+                register_free(s_ptr->init_expr->reg);
+
+                // loop body
+                fprintf(file, ".label%d\n", loop_begin_label);
+                expr_codegen(s_ptr->expr, file);
+                fprintf(file, "CMP %s, $0\n", register_name(s_ptr->expr->reg));
+                register_free(s_ptr->expr->reg);
+                fprintf(file, "JE .label%d\n", loop_end_label);
+                stmt_codegen(s_ptr->body, file);
+
+                // next
+                expr_codegen(s_ptr->next_expr, file);
+                register_free(s_ptr->next_expr->reg);
+                fprintf(file, "JMP .label%d\n", loop_begin_label);
+                fprintf(file, ".label%d\n", loop_end_label);
+                break;
+            }
             case STMT_PRINT: {
+                struct expr *e_ptr = s->expr;
+                while (e_ptr) {
+                    expr_codegen(e_ptr, file);
+
+                    // struct type *t = expr_typecheck(e_ptr);
+                    switch (e_ptr->symbol->type->kind) {
+                        case TYPE_BOOLEAN: {
+                            fprintf(file, "MOV %s, %%rdi\n", register_name(e_ptr->reg));
+                            fprintf(file, "CALL print_boolean\n");
+                            break;
+                        }
+                        case TYPE_CHARACTER: {
+                            fprintf(file, "MOV %s, %%rdi\n", register_name(e_ptr->reg));
+                            fprintf(file, "CALL print_character\n");
+                            break;
+                        }
+                        case TYPE_INTEGER: {
+                            fprintf(file, "MOV %s, %%rdi\n", register_name(e_ptr->reg));
+                            fprintf(file, "CALL print_integer\n");
+                            break;
+                        }
+                        case TYPE_STRING: {
+                            fprintf(file, "MOV %s, %%rdi\n", register_name(e_ptr->reg));
+                            fprintf(file, "CALL print_string\n");
+                            break;
+                        }
+                        default:
+                            fprintf(stdout, "expr `");
+                            expr_print(e_ptr);
+                            fprintf(stdout, "` of unknown type passed to print\n");
+                            break;
+                    }
+                    // TYPE_FREE(t);
+                    e_ptr = e_ptr->next;
+                }
                 break;
             }
             case STMT_RETURN: {
