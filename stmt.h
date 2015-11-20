@@ -30,7 +30,7 @@ struct stmt *stmt_list_prepend(struct stmt *first, struct stmt *rest);
 void stmt_print(struct stmt *s, int indent);
 
 // name resolution
-void stmt_resolve(struct stmt *s, int which);
+void stmt_resolve(struct stmt *s, int *which);
 
 // type checking
 void stmt_typecheck(struct stmt *s, const char *name, struct type *expected);

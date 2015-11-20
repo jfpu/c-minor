@@ -49,8 +49,8 @@ void decl_print(struct decl *d, int indent) {
     if (d -> next) decl_print(d->next, indent);
 }
 
-void decl_resolve(struct decl *d, int which) {
-    // `which` indicates the `which` value for local declarations, and is -1 for global
+void decl_resolve(struct decl *d, int *which) {
+    // `which` indicates the `which` value for local declarations, and is NULL for global
     if (!d) return;
     struct decl *d_ptr = d;
 
@@ -72,7 +72,14 @@ void decl_resolve(struct decl *d, int which) {
         } else {
             // all good: create a new symbol and bind to current scope
             // we don't copy d_ptr->type here, because we need to resolve parameters / size later
-            struct symbol *s = symbol_create(scope_table_list->scope, which, d_ptr->type, d_ptr->name);
+            struct symbol *s = NULL;
+            if (which) {
+                s = symbol_create(scope_table_list->scope, *which, d_ptr->type, d_ptr->name);
+                ++(*which);
+            } else {
+                s = symbol_create(scope_table_list->scope, -1, d_ptr->type, d_ptr->name);
+            }
+
             scope_bind(d_ptr->name, s);
             d_ptr->symbol = s;
             if (__print_name_resolution_result) { print_name_resolution(s); }
@@ -82,8 +89,9 @@ void decl_resolve(struct decl *d, int which) {
             scope_enter();
             function_param_resolve(d_ptr->type, d_ptr->name);
             if (d_ptr->code) {
-                // if declaration is a function, resolve funciton body
-                stmt_resolve(d_ptr->code, 0);
+                // if declaration is a function, resolve funciton body with new scope
+                int new_function_scope_which = 0;
+                stmt_resolve(d_ptr->code, &new_function_scope_which);
             }
             scope_exit();
         }
