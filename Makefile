@@ -19,6 +19,6 @@ parse parser.tab.c parser.tab.h: parser.y
 	bison parser.y --report=state
 
 clean:
-	rm -f lex.yy.c lex.yy.h parser.tab.c parser.tab.h parser.output *.o *.s cminor
+	rm -f lex.yy.c lex.yy.h parser.tab.c parser.tab.h parser.output *.o *.s *.out cminor
 
 .PHONY: all clean lex parse
