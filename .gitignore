@@ -38,3 +38,4 @@ parser.tab.c
 parser.tab.h
 parser.output
 cminor
+*.s
