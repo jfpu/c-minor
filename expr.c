@@ -694,6 +694,26 @@ void expr_codegen(struct expr *e, FILE *file) {
             break;
         }
         case EXPR_EXP: {
+            // we're not natively implementing exp
+            // instead we're using the "c-minor standard library"
+            expr_codegen(e->left, file);
+            expr_codegen(e->right, file);
+
+            // call integer_power
+            fprintf(file, "MOV %s, %s\n", register_name(e->left->reg), param_register_name(0));
+            register_free(e->left->reg);
+            fprintf(file, "MOV %s, %s\n", register_name(e->right->reg), param_register_name(1));
+            register_free(e->right->reg);
+
+            fprintf(file, "PUSH %%r10\n");
+            fprintf(file, "PUSH %%r11\n");
+            fprintf(file, "CALL integer_power\n");
+            fprintf(file, "POP %%r11\n");
+            fprintf(file, "POP %%r10\n");
+
+            // store result
+            e->reg = register_alloc();
+            fprintf(file, "MOV %%rax, %s\n", register_name(e->reg));
             break;
         }
         case EXPR_INC:
