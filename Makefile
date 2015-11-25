@@ -1,7 +1,7 @@
 FLAGS=-Wall -g
 OBJS=lex.yy.o parser.tab.o decl.o expr.o param_list.o stmt.o type.o utility.o symbol.o scope.o hash_table.o register.o
 
-all: cminor
+all: cminor library.o
 
 cminor: main.o $(OBJS)
 	$(CC) $(FLAGS) main.o $(OBJS) -o cminor -lm
@@ -21,7 +21,7 @@ parse parser.tab.c parser.tab.h: parser.y
 clean:
 	rm -f lex.yy.c lex.yy.h parser.tab.c parser.tab.h parser.output *.o *.s *.out cminor
 
-wipeassembly:
-	rm ./test_codegen/*.s
+wipeass:
+	rm -f ./test_compile/*.s ./test_compile/*.out
 
-.PHONY: all clean lex parse wipeassembly
+.PHONY: all clean lex parse wipeass
