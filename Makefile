@@ -21,4 +21,7 @@ parse parser.tab.c parser.tab.h: parser.y
 clean:
 	rm -f lex.yy.c lex.yy.h parser.tab.c parser.tab.h parser.output *.o *.s *.out cminor
 
-.PHONY: all clean lex parse
+wipeassembly:
+	rm ./test_codegen/*.s
+
+.PHONY: all clean lex parse wipeassembly
