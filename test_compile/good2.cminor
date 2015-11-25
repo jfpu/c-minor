@@ -1,3 +1,10 @@
+// Test case 2
+// basic arithmetic expressions
+
 main: function integer () = {
-  return 5 + 8;
+  print 5 + 8, '\n';
+  print 8 - 5, '\n';
+  print 5 - 8, '\n';
+  print 5 * 8, '\n';
+  print 10 / 5, '\n';
 }
