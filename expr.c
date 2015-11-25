@@ -604,9 +604,7 @@ void expr_codegen(struct expr *e, FILE *file) {
         }
         case EXPR_NAME: {
             e->reg = register_alloc();
-            fprintf(file, "MOV %s, %s\n",
-                symbol_code(e->symbol),
-                register_name(e->reg));
+            fprintf(file, "MOV %s, %s\n", symbol_code(e->symbol), register_name(e->reg));
             break;
         }
         case EXPR_STRING: {
