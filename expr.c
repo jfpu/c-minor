@@ -597,9 +597,7 @@ void expr_codegen(struct expr *e, FILE *file) {
         case EXPR_CHARACTER:
         case EXPR_BOOLEAN: {
             e->reg = register_alloc();
-            fprintf(file, "MOV $%d, %s\n",
-                e->literal_value,
-                register_name(e->reg));
+            fprintf(file, "MOV $%d, %s\n", e->literal_value, register_name(e->reg));
             break;
         }
         case EXPR_NAME: {
