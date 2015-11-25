@@ -685,21 +685,42 @@ void expr_codegen(struct expr *e, FILE *file) {
         case EXPR_LNOT: {
             break;
         }
-        case EXPR_LT: {
-            fprintf(file, "CMP %s, %s\n", register_name(e->left->reg), register_name(e->right->reg));
-            fprintf(file, "JL, label%d\n", label_count + 1);
-            fprintf(file, "MOV $0, %s\n", register_name(e->reg));
-            fprintf(file, "JMP, label%d\n", label_count + 2);
-            fprintf(file, "label%d:\n", label_count++);
-            fprintf(file, "MOV $1, %s\n", register_name(e->reg));
-            fprintf(file, "label%d:\n", label_count++);
-            break;
-        }
+        case EXPR_LT:
         case EXPR_LE:
         case EXPR_GT:
         case EXPR_GE:
         case EXPR_EQ:
         case EXPR_NE: {
+            const char *jump_action;
+            if (e->kind == EXPR_LT) {
+                jump_action = "JL";
+            } else if (e->kind == EXPR_LE) {
+                jump_action = "JLE";
+            } else if (e->kind == EXPR_GT) {
+                jump_action = "JG";
+            } else if (e->kind == EXPR_GE) {
+                jump_action = "JGE";
+            } else if (e->kind == EXPR_EQ) {
+                jump_action = "JE";
+            } else {
+                jump_action = "JNE";
+            }
+
+            int true_label = label_count++;
+            int end_label = label_count++;
+            e->reg = e->right->reg;
+            fprintf(file, "CMP %s, %s\n", register_name(e->left->reg), register_name(e->right->reg));
+            fprintf(file, "%s, label%d\n", jump_action, true_label);
+            fprintf(file, "MOV $0, %s\n", register_name(e->reg));
+            fprintf(file, "JMP, label%d\n", end_label);
+            fprintf(file, "label%d:\n", true_label);
+            fprintf(file, "MOV $1, %s\n", register_name(e->reg));
+            fprintf(file, "label%d:\n", end_label);
+
+            // reclaim registers
+            e->right->reg = -1;
+            register_free(e->left->reg);
+            e->left->reg = -1;
             break;
         }
         case EXPR_FCALL: {
