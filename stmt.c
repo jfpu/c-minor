@@ -344,6 +344,12 @@ void stmt_codegen(struct stmt *s, FILE *file) {
                             break;
                     }
                     TYPE_FREE(t);
+
+                    // reclaim register
+                    register_free(e_ptr->reg);
+                    e_ptr->reg = -1;
+
+                    // move on
                     e_ptr = e_ptr->next;
                 }
                 break;
