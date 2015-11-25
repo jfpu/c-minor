@@ -617,13 +617,15 @@ void expr_codegen(struct expr *e, FILE *file) {
             // LEA STRn, expr->reg
             break;
         }
-        case EXPR_ADD: {
+        case EXPR_ADD:
+        case EXPR_SUB: {
             // post-order traversal: we need the left and right children ready first
             expr_codegen(e->left, file);
             expr_codegen(e->right, file);
 
-            // add left to right
-            fprintf(file, "ADD %s, %s\n", register_name(e->left->reg), register_name(e->right->reg));
+            // add/sub left with right
+            const char *action = (e->kind == EXPR_ADD) ? "ADD" : "SUB";
+            fprintf(file, "%s %s, %s\n", action, register_name(e->left->reg), register_name(e->right->reg));
 
             // destructive: the right register has the result
             e->reg = e->right->reg;
@@ -634,9 +636,6 @@ void expr_codegen(struct expr *e, FILE *file) {
         }
         case EXPR_ASSIGN: {
             fprintf(file, "MOV %s, %s\n", register_name(e->right->reg), symbol_code(e->left->symbol));
-            break;
-        }
-        case EXPR_SUB: {
             break;
         }
         case EXPR_MUL: {
