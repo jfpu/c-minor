@@ -224,6 +224,12 @@ void decl_codegen(struct decl *d, FILE *file) {
 void decl_codegen_individual(struct decl *d, FILE *file) {
     if (!d) return;
 
+    // arrays are not supported
+    if (d->symbol->type->kind == TYPE_ARRAY) {
+        printf("error: arrays are not supported\n");
+        exit(1);
+    }
+
     if (d->symbol->kind == SYMBOL_GLOBAL && d->symbol->type->kind != TYPE_FUNCTION) {
         // global data: emit into data section
         fprintf(file, ".data\n");
