@@ -4,7 +4,7 @@ OBJS=lex.yy.o parser.tab.o decl.o expr.o param_list.o stmt.o type.o utility.o sy
 all: cminor
 
 cminor: main.o $(OBJS)
-	$(CC) $(FLAGS) main.o $(OBJS) -o cminor
+	$(CC) $(FLAGS) main.o $(OBJS) -o cminor -lm
 
 main.o: main.c parser.tab.h lex.yy.h
 	$(CC) $(FLAGS) -c main.c -o $@
