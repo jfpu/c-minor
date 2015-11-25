@@ -634,6 +634,17 @@ void expr_codegen(struct expr *e, FILE *file) {
             e->left->reg = -1;
             break;
         }
+        case EXPR_NEG: {
+            // we need the right children
+            expr_codegen(e->right, file);
+            // negate right
+            fprintf(file, "SUB $0, %s\n", register_name(e->right->reg));
+
+            // register maneuver
+            e->reg = e->right->reg;
+            e->right->reg = -1;
+            break;
+        }
         case EXPR_ASSIGN: {
             fprintf(file, "MOV %s, %s\n", register_name(e->right->reg), symbol_code(e->left->symbol));
             break;
@@ -676,7 +687,6 @@ void expr_codegen(struct expr *e, FILE *file) {
             e->right->reg = -1;
             break;
         }
-        case EXPR_NEG:
         case EXPR_LAND:
         case EXPR_LOR:
         case EXPR_LNOT: {
