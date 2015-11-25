@@ -660,23 +660,32 @@ void expr_codegen(struct expr *e, FILE *file) {
             break;
         }
         case EXPR_MUL: {
+        case EXPR_DIV: {
             expr_codegen(e->left, file);
             expr_codegen(e->right, file);
 
             // move left register into %rax
             fprintf(file, "MOV %s, %%rax\n", register_name(e->left->reg));
-            // multiply with the right register
-            fprintf(file, "IMUL %s\n", register_name(e->right->reg));
+
+            if (e->kind == EXPR_MUL) {
+                // multiply with the right register
+                fprintf(file, "IMUL %s\n", register_name(e->right->reg));
+            } else {
+                // sign extend %rax
+                fprintf(file, "CDQO\n");
+                // divide by right register
+                fprintf(file, "IDIV %s\n", register_name(e->right->reg));
+            }
             // move rax into result register
             fprintf(file, "MOV %%rax, %s\n", register_name(e->right->reg));
 
+            // register maneuver
             e->reg = e->right->reg;
             e->right->reg = -1;
             register_free(e->left->reg);
             e->left->reg = -1;
             break;
         }
-        case EXPR_DIV:
         case EXPR_EXP:
         case EXPR_MOD: {
             break;
