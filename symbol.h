@@ -16,6 +16,7 @@ struct symbol {
     char *name;
 
     // for functions
+    int param_count;
     int local_count;
 };
 
