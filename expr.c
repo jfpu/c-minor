@@ -850,18 +850,42 @@ void expr_codegen(struct expr *e, FILE *file) {
             break;
         }
         case EXPR_FCALL: {
-            // emit the following:
-            // repeat for each argument: {
-            //      expr_codegen(arg)
-            //      MOV arg->reg, $rdi
-            //      register_free(arg->reg)
-            // }
+            // e_ptr is the list of arguments
+            struct expr *e_ptr = e->right;
+            int arg_count = 0;
+            while (e_ptr) {
+                if (arg_count >= 6) {
+                    printf("error: functions with over 6 arguments are not supported\n");
+                    exit(1);
+                }
+
+                // for each argument, codegen
+                expr_codegen(e_ptr, file);
+                // store
+                fprintf(file, "MOV %s, %s\n", register_name(e_ptr->reg), param_register_name(arg_count));
+                // clean up temporary register
+                register_free(e_ptr->reg);
+                e_ptr->reg = -1;
+
+                // move on
+                e_ptr = e_ptr->next;
+                ++arg_count;
+            }
+
             // push caller save registers (r10, r11)
-            //      PUSH %r10; PUSH %r11;
-            // CALL e->left->name
+            fprintf(file, "PUSH %%r10\n");
+            fprintf(file, "PUSH %%r11\n");
+
+            // call function
+            fprintf(file, "CALL %s\n", e->left->name);
+
             // pop caller save registers
-            //      POP %r10; POP %r11;
-            // MOV %rax, e->reg
+            fprintf(file, "POP %%r11\n");
+            fprintf(file, "POP %%r10\n");
+
+            // store result
+            e->reg = register_alloc();
+            fprintf(file, "MOV %%rax, %s\n", register_name(e->reg));
             break;
         }
         case EXPR_ARRAY_DEREF: {
