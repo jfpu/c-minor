@@ -628,13 +628,13 @@ void expr_codegen(struct expr *e, FILE *file) {
 
             // add/sub left with right
             const char *action = (e->kind == EXPR_ADD) ? "ADD" : "SUB";
-            fprintf(file, "%s %s, %s\n", action, register_name(e->left->reg), register_name(e->right->reg));
+            fprintf(file, "%s %s, %s\n", action, register_name(e->right->reg), register_name(e->left->reg));
 
             // destructive: the right register has the result
-            e->reg = e->right->reg;
-            e->right->reg = -1;
-            register_free(e->left->reg);
+            e->reg = e->left->reg;
             e->left->reg = -1;
+            register_free(e->right->reg);
+            e->right->reg = -1;
             break;
         }
         case EXPR_NEG: {
