@@ -92,6 +92,9 @@ void decl_resolve(struct decl *d, int *which) {
                 // if declaration is a function, resolve funciton body with new scope
                 int new_function_scope_which = 0;
                 stmt_resolve(d_ptr->code, &new_function_scope_which);
+
+                // new_function_scope_which comes back as the total number of locals
+                s->local_count = new_function_scope_which;
             }
             scope_exit();
         }

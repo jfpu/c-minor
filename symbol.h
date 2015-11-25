@@ -14,6 +14,9 @@ struct symbol {
     int which;
     struct type *type;
     char *name;
+
+    // for functions
+    int local_count;
 };
 
 struct symbol *symbol_create(symbol_t kind, int which, struct type *type, char *name);
