@@ -659,8 +659,9 @@ void expr_codegen(struct expr *e, FILE *file) {
             e->right->reg = -1;
             break;
         }
-        case EXPR_MUL: {
-        case EXPR_DIV: {
+        case EXPR_MUL:
+        case EXPR_DIV:
+        case EXPR_MOD: {
             expr_codegen(e->left, file);
             expr_codegen(e->right, file);
 
@@ -676,8 +677,14 @@ void expr_codegen(struct expr *e, FILE *file) {
                 // divide by right register
                 fprintf(file, "IDIV %s\n", register_name(e->right->reg));
             }
-            // move rax into result register
-            fprintf(file, "MOV %%rax, %s\n", register_name(e->right->reg));
+
+            if (e->kind == EXPR_MOD) {
+                // move rdx into result register
+                fprintf(file, "MOV %%rdx, %s\n", register_name(e->right->reg));
+            } else {
+                // move rax into result register
+                fprintf(file, "MOV %%rax, %s\n", register_name(e->right->reg));
+            }
 
             // register maneuver
             e->reg = e->right->reg;
@@ -686,8 +693,7 @@ void expr_codegen(struct expr *e, FILE *file) {
             e->left->reg = -1;
             break;
         }
-        case EXPR_EXP:
-        case EXPR_MOD: {
+        case EXPR_EXP: {
             break;
         }
         case EXPR_INC:
