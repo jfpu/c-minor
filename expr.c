@@ -698,16 +698,16 @@ void expr_codegen(struct expr *e, FILE *file) {
         }
         case EXPR_INC:
         case EXPR_DEC: {
-            const char *action = (e->kind == EXPR_INC) ? "ADD" : "SUB";
-            // claim a new register
+            const char *action = (e->kind == EXPR_INC) ? "INC" : "DEC";
+            // claim a new register for result
             e->reg = register_alloc();
             // move expression's value to result register
             fprintf(file, "MOV %s, %s\n", register_name(e->right->reg), register_name(e->reg));
             // increment/decrement
-            fprintf(file, "%s $1, %s\n", action, register_name(e->right->reg));
+            fprintf(file, "%s %s\n", action, register_name(e->right->reg));
             // store incremented value back to variable
             fprintf(file, "MOV %s, %s\n", register_name(e->right->reg), symbol_code(e->right->symbol));
-            // free unused variable register
+            // free temporary register
             register_free(e->right->reg);
             e->right->reg = -1;
             break;
