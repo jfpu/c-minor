@@ -673,7 +673,7 @@ void expr_codegen(struct expr *e, FILE *file) {
                 fprintf(file, "IMUL %s\n", register_name(e->right->reg));
             } else {
                 // sign extend %rax
-                fprintf(file, "CDQO\n");
+                fprintf(file, "CQO\n");
                 // divide by right register
                 fprintf(file, "IDIV %s\n", register_name(e->right->reg));
             }
