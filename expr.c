@@ -721,7 +721,7 @@ void expr_codegen(struct expr *e, FILE *file) {
         }
         case EXPR_ARRAY_DEREF: {
             // don't need to worry about arrays!
-            fprintf(stderr, "arrays are not supported\n");
+            printf("error: arrays are not supported\n");
             exit(1);
         }
         default:
