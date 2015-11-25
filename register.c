@@ -22,7 +22,19 @@ const char *register_name(int r) {
         return register_name_table[r];
     } else {
         fprintf(stderr, "cminor: unknown register %d passed into register_name\n", r);
-        return "error";
+        exit(1);
+    }
+}
+
+const char *param_register_name(int i) {
+    static const char *param_register_name_table[6] = {
+        "%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"
+    };
+    if (i >= 0 && i < 6) {
+        return param_register_name_table[i];
+    } else {
+        fprintf(stderr, "cminor: unknown parameter number %d\n", i);
+        exit(1);
     }
 }
 
@@ -39,7 +51,7 @@ int register_alloc() {
         }
     }
 
-    fprintf(stderr, "cminor: non-spilling register allocation error\n");
+    printf("error: no free register available\n");
     exit(1);
 }
 
