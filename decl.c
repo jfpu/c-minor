@@ -259,13 +259,6 @@ void decl_codegen_individual(struct decl *d, FILE *file) {
             fprintf(file, "PUSH %%rbp\n");
             fprintf(file, "MOV %%rsp, %%rbp\n");
 
-            // save callee-save registers
-            fprintf(file, "PUSH %%rbx\n");
-            fprintf(file, "PUSH %%r12\n");
-            fprintf(file, "PUSH %%r13\n");
-            fprintf(file, "PUSH %%r14\n");
-            fprintf(file, "PUSH %%r15\n");
-
             // for each parameter, push it on the stack
             if (d->symbol->param_count > 6) {
                 printf("error: functions with over 6 arguments are not supported\n");
@@ -279,6 +272,13 @@ void decl_codegen_individual(struct decl *d, FILE *file) {
             // for the total number of local variables, make room in the stack
             int rsp_move_amount = 8 * d->symbol->local_count;
             fprintf(file, "SUB $%d, %%rsp\n", rsp_move_amount);
+
+            // then save callee-save registers
+            fprintf(file, "PUSH %%rbx\n");
+            fprintf(file, "PUSH %%r12\n");
+            fprintf(file, "PUSH %%r13\n");
+            fprintf(file, "PUSH %%r14\n");
+            fprintf(file, "PUSH %%r15\n");
 
             // then generate code
             stmt_codegen(d->code, file);
