@@ -311,7 +311,7 @@ void stmt_codegen(struct stmt *s, FILE *file) {
                 break;
             }
             case STMT_PRINT: {
-                struct expr *e_ptr = s->expr;
+                struct expr *e_ptr = s_ptr->expr;
                 while (e_ptr) {
                     expr_codegen(e_ptr, file);
 
