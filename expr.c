@@ -697,9 +697,103 @@ void expr_codegen(struct expr *e, FILE *file) {
             e->right->reg = -1;
             break;
         }
-        case EXPR_LAND:
-        case EXPR_LOR:
+        case EXPR_LAND:{
+            int false_label = label_count++;
+            int end_label = label_count++;
+
+            // evaluate left
+            expr_codegen(e->left, file);
+
+            // if left is false, jump to false label
+            fprintf(file, "CMP $0, %s\n", register_name(e->left->reg));
+            fprintf(file, "JE .label%d\n", false_label);
+
+            // otherwise evaluate right
+            expr_codegen(e->right, file);
+
+            // if right is false, jump to false label
+            fprintf(file, "CMP $0, %s\n", register_name(e->right->reg));
+            fprintf(file, "JE .label%d\n", false_label);
+
+            // now both sides are true, evaluates to true
+            fprintf(file, "MOV $1, %s\n", register_name(e->left->reg));
+            fprintf(file, "JMP .label%d\n", end_label);
+
+            // false label: evaluates to false
+            fprintf(file, ".label%d:\n", false_label);
+            fprintf(file, "MOV $0, %s\n", register_name(e->left->reg));
+
+            // end label
+            fprintf(file, ".label%d:\n", end_label);
+
+            // reclaim registers
+            e->reg = e->left->reg;
+            e->left->reg = -1;
+            register_free(e->right->reg);
+            e->right->reg = -1;
+            break;
+        }
+        case EXPR_LOR: {
+            int true_label = label_count++;
+            int end_label = label_count++;
+
+            // evaluate left
+            expr_codegen(e->left, file);
+
+            // if left is true, jump to true label
+            fprintf(file, "CMP $1, %s\n", register_name(e->left->reg));
+            fprintf(file, "JE .label%d\n", true_label);
+
+            // otherwise evaluate right
+            expr_codegen(e->right, file);
+
+            // if right is true, jump to true label
+            fprintf(file, "CMP $1, %s\n", register_name(e->right->reg));
+            fprintf(file, "JE .label%d\n", true_label);
+
+            // now both sides are false, evaluates to false
+            fprintf(file, "MOV $0, %s\n", register_name(e->left->reg));
+            fprintf(file, "JMP .label%d\n", end_label);
+
+            // true label: evaluates to true
+            fprintf(file, ".label%d:\n", true_label);
+            fprintf(file, "MOV $1, %s\n", register_name(e->left->reg));
+
+            // end label
+            fprintf(file, ".label%d:\n", end_label);
+
+            // reclaim registers
+            e->reg = e->left->reg;
+            e->left->reg = -1;
+            register_free(e->right->reg);
+            e->right->reg = -1;
+            break;
+        }
         case EXPR_LNOT: {
+            int true_label = label_count++;
+            int end_label = label_count++;
+
+            // evaluate right
+            expr_codegen(e->right, file);
+
+            // if right is true, evaluate to false
+            fprintf(file, "CMP $1, %s\n", register_name(e->right->reg));
+            fprintf(file, "JE .label%d\n", true_label);
+
+            // otherwise evaluate to true
+            fprintf(file, "MOV $1, %s\n", register_name(e->right->reg));
+            fprintf(file, "JMP .label%d\n", end_label);
+
+            // true label: evaluates to true
+            fprintf(file, ".label%d:\n", true_label);
+            fprintf(file, "MOV $0, %s\n", register_name(e->right->reg));
+
+            // end label
+            fprintf(file, ".label%d:\n", end_label);
+
+            // reclaim registers
+            e->reg = e->right->reg;
+            e->right->reg = -1;
             break;
         }
         case EXPR_LT:
