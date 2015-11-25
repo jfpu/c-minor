@@ -644,7 +644,14 @@ void expr_codegen(struct expr *e, FILE *file) {
             break;
         }
         case EXPR_ASSIGN: {
+            // evaluate right
+            expr_codegen(e->right, file);
+            // assign value to left
             fprintf(file, "MOV %s, %s\n", register_name(e->right->reg), symbol_code(e->left->symbol));
+
+            // expr evaluates to right
+            e->reg = e->right->reg;
+            e->right->reg = -1;
             break;
         }
         case EXPR_MUL: {
