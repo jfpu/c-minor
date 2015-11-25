@@ -606,13 +606,18 @@ void expr_codegen(struct expr *e, FILE *file) {
             break;
         }
         case EXPR_STRING: {
+            e->reg = register_alloc();
+            int string_label = label_count++;
+
             // switch into data section, create the string, and switch back and use it
-            // emit the following:
-            // .data
-            // STRn:
-            // .string "xxxxxx"
-            // .text
-            // LEA STRn, expr->reg
+            fprintf(file, ".data\n");
+            fprintf(file, "str%d:\n", string_label);
+            fprintf(file, ".string ");
+            expr_string_print(e->string_literal, file);
+            fprintf(file, "\n");
+
+            fprintf(file, ".text\n");
+            fprintf(file, "LEA str%d, %s\n", string_label, register_name(e->reg));
             break;
         }
         case EXPR_ADD:
