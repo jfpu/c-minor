@@ -315,8 +315,8 @@ void stmt_codegen(struct stmt *s, FILE *file) {
                 while (e_ptr) {
                     expr_codegen(e_ptr, file);
 
-                    // struct type *t = expr_typecheck(e_ptr);
-                    switch (e_ptr->symbol->type->kind) {
+                    struct type *t = expr_typecheck(e_ptr);
+                    switch (t->kind) {
                         case TYPE_BOOLEAN: {
                             fprintf(file, "MOV %s, %%rdi\n", register_name(e_ptr->reg));
                             fprintf(file, "CALL print_boolean\n");
@@ -343,7 +343,7 @@ void stmt_codegen(struct stmt *s, FILE *file) {
                             fprintf(stdout, "` of unknown type passed to print\n");
                             break;
                     }
-                    // TYPE_FREE(t);
+                    TYPE_FREE(t);
                     e_ptr = e_ptr->next;
                 }
                 break;
