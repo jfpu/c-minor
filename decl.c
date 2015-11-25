@@ -6,6 +6,7 @@
 #include "stmt.h"
 #include "scope.h"
 #include "type.h"
+#include "register.h"
 
 struct decl *decl_create(char *name, struct type *t, struct expr *v, struct stmt *c, struct decl *next) {
     struct decl *d = (struct decl *)malloc(sizeof(*d));
@@ -88,6 +89,10 @@ void decl_resolve(struct decl *d, int *which) {
             // enter new scope for function and resolve parameters
             scope_enter();
             function_param_resolve(d_ptr->type, d_ptr->name);
+
+            // keep track of count of params
+            s->param_count = param_list_length(d_ptr->type->params);
+
             if (d_ptr->code) {
                 // if declaration is a function, resolve funciton body with new scope
                 int new_function_scope_which = 0;
@@ -208,7 +213,6 @@ void decl_typecheck_individual(struct decl *d) {
 
 // codegen
 void decl_codegen(struct decl *d, FILE *file) {
-    fprintf(stderr, "decl_codegen not implemented\n");
     struct decl *d_ptr = d;
     while (d_ptr) {
         decl_codegen_individual(d_ptr, file);
@@ -253,6 +257,8 @@ void decl_codegen_individual(struct decl *d, FILE *file) {
             // set up call stack
             fprintf(file, "PUSH %%rbp\n");
             fprintf(file, "MOV %%rsp, %%rbp\n");
+
+            // save callee-save registers
             fprintf(file, "PUSH %%rbx\n");
             fprintf(file, "PUSH %%r12\n");
             fprintf(file, "PUSH %%r13\n");
@@ -260,14 +266,24 @@ void decl_codegen_individual(struct decl *d, FILE *file) {
             fprintf(file, "PUSH %%r15\n");
 
             // for each parameter, push it on the stack
+            if (d->symbol->param_count > 6) {
+                printf("error: functions with over 6 arguments are not supported\n");
+                exit(1);
+            }
+            struct param_list *p_ptr = d->type->params;
+            while (p_ptr) {
+                fprintf(file, "PUSH %s\n", param_register_name(p_ptr->symbol->which));
+            }
 
             // for the total number of local variables, make room in the stack
+            int rsp_move_amount = 8 * d->symbol->local_count;
+            fprintf(file, "SUB $%d, %%rsp\n", rsp_move_amount);
 
             // then generate code
             stmt_codegen(d->code, file);
         }
     } else if (d->symbol->kind == SYMBOL_LOCAL && d->symbol->type->kind != TYPE_FUNCTION) {
-        // local data: push onto stack
+        // local data: do nothing!
     } else {
         // this shouldn't happen
         printf("fatal error: unexpected declaration\n");
