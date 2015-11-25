@@ -164,7 +164,7 @@ void _resolve_name() {
 
     // create global scope
     scope_table_list = table_node_push(scope_table_list, SYMBOL_GLOBAL);
-    decl_resolve(program, NULL);
+    decl_resolve(program, NULL, -1);
     if (error_count_name > 0) {
         // we have name errors
         if (error_count_name == 1) printf("encountered 1 name error\n");

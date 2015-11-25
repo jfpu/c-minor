@@ -50,7 +50,7 @@ void decl_print(struct decl *d, int indent) {
     if (d -> next) decl_print(d->next, indent);
 }
 
-void decl_resolve(struct decl *d, int *which) {
+void decl_resolve(struct decl *d, int *which, int param_count) {
     // `which` indicates the `which` value for local declarations, and is NULL for global
     if (!d) return;
     struct decl *d_ptr = d;
@@ -80,6 +80,7 @@ void decl_resolve(struct decl *d, int *which) {
             } else {
                 s = symbol_create(scope_table_list->scope, -1, d_ptr->type, d_ptr->name);
             }
+            s->param_count = param_count;
 
             scope_bind(d_ptr->name, s);
             d_ptr->symbol = s;
@@ -96,7 +97,7 @@ void decl_resolve(struct decl *d, int *which) {
             if (d_ptr->code) {
                 // if declaration is a function, resolve funciton body with new scope
                 int new_function_scope_which = 0;
-                stmt_resolve(d_ptr->code, &new_function_scope_which);
+                stmt_resolve(d_ptr->code, &new_function_scope_which, s->param_count);
 
                 // new_function_scope_which comes back as the total number of locals
                 s->local_count = new_function_scope_which;

@@ -120,7 +120,7 @@ void stmt_print(struct stmt *s, int indent) {
     }
 }
 
-void stmt_resolve(struct stmt *s, int *which) {
+void stmt_resolve(struct stmt *s, int *which, int param_count) {
     if (!s) return;
     // which is guaranteed to have a value
 
@@ -128,7 +128,7 @@ void stmt_resolve(struct stmt *s, int *which) {
     while (s_ptr) {
         switch (s_ptr->kind) {
             case STMT_DECL:
-                decl_resolve(s_ptr->decl, which);
+                decl_resolve(s_ptr->decl, which, param_count);
                 break;
 
             case STMT_EXPR:
@@ -137,15 +137,15 @@ void stmt_resolve(struct stmt *s, int *which) {
 
             case STMT_IF_ELSE:
                 expr_resolve(s_ptr->expr);
-                stmt_resolve(s_ptr->body, which);
-                stmt_resolve(s_ptr->else_body, which);
+                stmt_resolve(s_ptr->body, which, param_count);
+                stmt_resolve(s_ptr->else_body, which, param_count);
                 break;
 
             case STMT_FOR:
                 expr_resolve(s_ptr->init_expr);
                 expr_resolve(s_ptr->expr);
                 expr_resolve(s_ptr->next_expr);
-                stmt_resolve(s_ptr->body, which);
+                stmt_resolve(s_ptr->body, which, param_count);
                 break;
 
             case STMT_PRINT:
@@ -156,7 +156,7 @@ void stmt_resolve(struct stmt *s, int *which) {
             case STMT_BLOCK:
                 // enter new scope and resolve body in new scope
                 scope_enter();
-                stmt_resolve(s_ptr->body, which);
+                stmt_resolve(s_ptr->body, which, param_count);
                 scope_exit();
                 break;
 
