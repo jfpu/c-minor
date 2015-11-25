@@ -1,0 +1,5 @@
+// Test case 3
+// sub
+main: function integer () = {
+  return 8 - 1;
+}
