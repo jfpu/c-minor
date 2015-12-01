@@ -840,9 +840,7 @@ void expr_codegen(struct expr *e, FILE *file) {
         case EXPR_LT:
         case EXPR_LE:
         case EXPR_GT:
-        case EXPR_GE:
-        case EXPR_EQ:
-        case EXPR_NE: {
+        case EXPR_GE:{
             int true_label = label_count++;
             int end_label = label_count++;
 
@@ -857,12 +855,8 @@ void expr_codegen(struct expr *e, FILE *file) {
                 jump_action = "JLE";
             } else if (e->kind == EXPR_GT) {
                 jump_action = "JG";
-            } else if (e->kind == EXPR_GE) {
-                jump_action = "JGE";
-            } else if (e->kind == EXPR_EQ) {
-                jump_action = "JE";
             } else {
-                jump_action = "JNE";
+                jump_action = "JGE";
             }
 
             e->reg = e->right->reg;
@@ -873,6 +867,61 @@ void expr_codegen(struct expr *e, FILE *file) {
             fprintf(file, "label%d:\n", true_label);
             fprintf(file, "MOV $1, %s\n", register_name(e->reg));
             fprintf(file, "label%d:\n", end_label);
+
+            // reclaim registers
+            e->right->reg = -1;
+            register_free(e->left->reg);
+            e->left->reg = -1;
+            break;
+        }
+        case EXPR_EQ:
+        case EXPR_NE: {
+            expr_codegen(e->left, file);
+            expr_codegen(e->right, file);
+
+            struct type *t = expr_typecheck(e->left);
+            if (t->kind == TYPE_STRING) {
+                // Call runtime string comparison function
+                fprintf(file, "mov %s, %s\n", register_name(e->left->reg), param_register_name(0));
+                fprintf(file, "mov %s, %s\n", register_name(e->right->reg), param_register_name(1));
+
+                fprintf(file, "push %%r10\n");
+                fprintf(file, "push %%r11\n");
+                fprintf(file, "call %sstring_cmp\n", FN_MANGLE_PREFIX);
+                fprintf(file, "pop %%r11\n");
+                fprintf(file, "pop %%r10\n");
+
+                // store result
+                if (e->kind == EXPR_EQ) {
+                    e->reg = e->right->reg;
+                    fprintf(file, "mov %%rax, %s\n", register_name(e->reg));
+                } else {
+                    e->reg = e->right->reg;
+                    fprintf(file, "not %%rax\n");
+                    fprintf(file, "mov %%rax, %s\n", register_name(e->reg));
+                }
+            } else {
+                // Compare values directly
+                int true_label = label_count++;
+                int end_label = label_count++;
+
+                const char *jump_action;
+                if (e->kind == EXPR_EQ) {
+                    jump_action = "je";
+                } else {
+                    jump_action = "jne";
+                }
+
+                e->reg = e->right->reg;
+                fprintf(file, "CMP %s, %s\n", register_name(e->right->reg), register_name(e->left->reg));
+                fprintf(file, "%s label%d\n", jump_action, true_label);
+                fprintf(file, "MOV $0, %s\n", register_name(e->reg));
+                fprintf(file, "JMP label%d\n", end_label);
+                fprintf(file, "label%d:\n", true_label);
+                fprintf(file, "MOV $1, %s\n", register_name(e->reg));
+                fprintf(file, "label%d:\n", end_label);
+            }
+            TYPE_FREE(t);
 
             // reclaim registers
             e->right->reg = -1;
