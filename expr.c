@@ -811,26 +811,13 @@ void expr_codegen(struct expr *e, FILE *file) {
             break;
         }
         case EXPR_LNOT: {
-            int true_label = label_count++;
-            int end_label = label_count++;
-
             // evaluate right
             expr_codegen(e->right, file);
 
-            // if right is true, evaluate to false
-            fprintf(file, "CMP $1, %s\n", register_name(e->right->reg));
-            fprintf(file, "JE .label%d\n", true_label);
-
-            // otherwise evaluate to true
-            fprintf(file, "MOV $1, %s\n", register_name(e->right->reg));
-            fprintf(file, "JMP .label%d\n", end_label);
-
-            // true label: evaluates to true
-            fprintf(file, ".label%d:\n", true_label);
-            fprintf(file, "MOV $0, %s\n", register_name(e->right->reg));
-
-            // end label
-            fprintf(file, ".label%d:\n", end_label);
+            // flip right->reg
+            fprintf(file, "sub $1, %s\n", register_name(e->right->reg));
+            fprintf(file, "sbb %s, %s\n", register_name(e->right->reg), register_name(e->right->reg));
+            fprintf(file, "and $1, %s\n", register_name(e->right->reg));
 
             // reclaim registers
             e->reg = e->right->reg;
@@ -897,7 +884,10 @@ void expr_codegen(struct expr *e, FILE *file) {
                     fprintf(file, "mov %%rax, %s\n", register_name(e->reg));
                 } else {
                     e->reg = e->right->reg;
-                    fprintf(file, "not %%rax\n");
+                    // flip %rax
+                    fprintf(file, "sub $1, %%rax\n");
+                    fprintf(file, "sbb %%rax, %%rax\n");
+                    fprintf(file, "and $1, %%rax\n");
                     fprintf(file, "mov %%rax, %s\n", register_name(e->reg));
                 }
             } else {
