@@ -315,8 +315,22 @@ void decl_codegen_individual(struct decl *d, FILE *file) {
         // then generate code
         stmt_codegen(d->code, file);
 
-    } else if (d->symbol->kind == SYMBOL_LOCAL && d->symbol->type->kind != TYPE_FUNCTION) {
-        // local data: do nothing!
+    } else if (d->symbol->kind == SYMBOL_LOCAL) {
+        // local data
+        // if there is initialization, set the value
+        if (d->value) {
+            // compute value
+            expr_codegen(d->value, file);
+
+            // load value
+            fprintf(file, "mov %s, %s\n", register_name(d->value->reg), symbol_code(d->symbol));
+
+            // reclaim register
+            register_free(d->value->reg);
+            d->value->reg = -1;
+        }
+        // otherwise, do nothing!
+
     } else {
         // this shouldn't happen
         printf("fatal error: unexpected declaration\n");
