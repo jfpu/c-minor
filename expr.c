@@ -837,6 +837,13 @@ void expr_codegen(struct expr *e, FILE *file) {
         case EXPR_GE:
         case EXPR_EQ:
         case EXPR_NE: {
+            int true_label = label_count++;
+            int end_label = label_count++;
+
+            // evaluate both sides
+            expr_codegen(e->left, file);
+            expr_codegen(e->right, file);
+
             const char *jump_action;
             if (e->kind == EXPR_LT) {
                 jump_action = "JL";
@@ -852,8 +859,6 @@ void expr_codegen(struct expr *e, FILE *file) {
                 jump_action = "JNE";
             }
 
-            int true_label = label_count++;
-            int end_label = label_count++;
             e->reg = e->right->reg;
             fprintf(file, "CMP %s, %s\n", register_name(e->left->reg), register_name(e->right->reg));
             fprintf(file, "%s, label%d\n", jump_action, true_label);
