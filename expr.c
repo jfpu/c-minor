@@ -618,7 +618,7 @@ void expr_codegen(struct expr *e, FILE *file) {
             // switch into data section, create the string, and switch back and use it
             fprintf(file, ".data\n");
             fprintf(file, "str%d:\n", string_label);
-            fprintf(file, ".string ");
+            fprintf(file, ".asciz ");
             expr_string_print(e->string_literal, file);
             fprintf(file, "\n");
 

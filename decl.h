@@ -28,6 +28,7 @@ void decl_typecheck(struct decl *d);
 void decl_typecheck_individual(struct decl *d);
 
 // codegen
+extern int label_count;
 void decl_codegen(struct decl *d, FILE *file);
 void decl_codegen_individual(struct decl *d, FILE *file);
 

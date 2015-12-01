@@ -239,18 +239,29 @@ void decl_codegen_individual(struct decl *d, FILE *file) {
     if (d->symbol->kind == SYMBOL_GLOBAL && d->symbol->type->kind != TYPE_FUNCTION) {
         // global data: emit into data section
         fprintf(file, ".data\n");
-        fprintf(file, "%s:\n", d->symbol->name);
 
         if (d->symbol->type->kind == TYPE_STRING) {
-            // if it's a string, emit a string literal
-            fprintf(file, ".string ");
+            // if it's a string, first emit a string literal
+            int string_label = label_count++;
+
+            // switch into data section, create the string, and switch back and use it
+            fprintf(file, ".data\n");
+            fprintf(file, "str%d:\n", string_label);
+            fprintf(file, ".asciz ");
             if (d->value) {
                 expr_string_print(d->value->string_literal, file);
             } else {
                 fprintf(file, "\"\"");
             }
+            fprintf(file, "\n");
+
+            // then emit a quad word
+            fprintf(file, "%s:\n", d->symbol->name);
+            fprintf(file, ".quad str%d\n", string_label);
+
         } else {
             // otherwise emit a quad word
+            fprintf(file, "%s:\n", d->symbol->name);
             fprintf(file, ".quad ");
             if (d->value) {
                 fprintf(file, "%d\n", d->value->literal_value);
