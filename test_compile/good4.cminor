@@ -16,7 +16,7 @@ s_: string;
 main: function integer () = {
 
   print "expected:\n";
-  print "15 true c abcde\n"
+  print "15 true c abcde\n";
   print "actual:\n";
   print a, ' ', b, ' ', c, ' ', s, '\n';
 
@@ -25,7 +25,7 @@ main: function integer () = {
   c_ = c;
   s_ = s;
   print "expected:\n";
-  print "15 true c abcde\n"
+  print "15 true c abcde\n";
   print "actual:\n";
   print a_, ' ', b_, ' ', c_, ' ', s_, '\n';
 
