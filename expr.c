@@ -343,7 +343,7 @@ void expr_resolve(struct expr *e) {
                 // otherwise we resolve both sides
                 expr_resolve(e_ptr->left);
                 expr_resolve(e_ptr->right);
-                return;
+                break;
             }
         }
         e_ptr = e_ptr->next;
