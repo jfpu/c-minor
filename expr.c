@@ -5,6 +5,12 @@
 #include "symbol.h"
 #include "register.h"
 
+#ifdef __linux__
+#define FN_MANGLE_PREFIX ""
+#else
+#define FN_MANGLE_PREFIX "_"
+#endif
+
 #define PRINT_WITH_PRECEDENCE(expr, base)                       \
     if (expr_precedence((expr)) < expr_precedence((base))) {    \
         printf("("); expr_print((expr)); printf(")");           \
@@ -617,7 +623,7 @@ void expr_codegen(struct expr *e, FILE *file) {
             fprintf(file, "\n");
 
             fprintf(file, ".text\n");
-            fprintf(file, "LEA str%d, %s\n", string_label, register_name(e->reg));
+            fprintf(file, "lea str%d(%%rip), %s\n", string_label, register_name(e->reg));
             break;
         }
         case EXPR_ADD:
@@ -707,7 +713,7 @@ void expr_codegen(struct expr *e, FILE *file) {
 
             fprintf(file, "PUSH %%r10\n");
             fprintf(file, "PUSH %%r11\n");
-            fprintf(file, "CALL integer_power\n");
+            fprintf(file, "CALL %sinteger_power\n", FN_MANGLE_PREFIX);
             fprintf(file, "POP %%r11\n");
             fprintf(file, "POP %%r10\n");
 
@@ -902,7 +908,7 @@ void expr_codegen(struct expr *e, FILE *file) {
             fprintf(file, "PUSH %%r11\n");
 
             // call function
-            fprintf(file, "CALL %s\n", e->left->name);
+            fprintf(file, "CALL %s%s\n", e->left->name, FN_MANGLE_PREFIX);
 
             // pop caller save registers
             fprintf(file, "POP %%r11\n");
@@ -936,3 +942,5 @@ void expr_string_print(const char * const str, FILE *file) {
     }
     fprintf(file, "\"");
 }
+
+#undef FN_MANGLE_PREFIX

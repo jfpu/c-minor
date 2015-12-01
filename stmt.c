@@ -5,6 +5,12 @@
 #include "scope.h"
 #include "register.h"
 
+#ifdef __linux__
+#define FN_MANGLE_PREFIX ""
+#else
+#define FN_MANGLE_PREFIX "_"
+#endif
+
 struct stmt *stmt_create(stmt_kind_t kind, struct decl *d, struct expr *init_expr, struct expr *e, struct expr *next_expr, struct stmt *body, struct stmt *else_body) {
     struct stmt *s = (struct stmt *)malloc(sizeof(*s));
     memset(s, 0, sizeof(*s));
@@ -315,34 +321,43 @@ void stmt_codegen(struct stmt *s, FILE *file) {
                 while (e_ptr) {
                     expr_codegen(e_ptr, file);
 
+                    // push caller save registers (r10, r11)
+                    fprintf(file, "PUSH %%r10\n");
+                    fprintf(file, "PUSH %%r11\n");
+
                     struct type *t = expr_typecheck(e_ptr);
                     switch (t->kind) {
                         case TYPE_BOOLEAN: {
                             fprintf(file, "MOV %s, %%rdi\n", register_name(e_ptr->reg));
-                            fprintf(file, "CALL print_boolean\n");
+                            fprintf(file, "CALL %sprint_boolean\n", FN_MANGLE_PREFIX);
                             break;
                         }
                         case TYPE_CHARACTER: {
                             fprintf(file, "MOV %s, %%rdi\n", register_name(e_ptr->reg));
-                            fprintf(file, "CALL print_character\n");
+                            fprintf(file, "CALL %sprint_character\n", FN_MANGLE_PREFIX);
                             break;
                         }
                         case TYPE_INTEGER: {
                             fprintf(file, "MOV %s, %%rdi\n", register_name(e_ptr->reg));
-                            fprintf(file, "CALL print_integer\n");
+                            fprintf(file, "CALL %sprint_integer\n", FN_MANGLE_PREFIX);
                             break;
                         }
                         case TYPE_STRING: {
                             fprintf(file, "MOV %s, %%rdi\n", register_name(e_ptr->reg));
-                            fprintf(file, "CALL print_string\n");
+                            fprintf(file, "CALL %sprint_string\n", FN_MANGLE_PREFIX);
                             break;
                         }
                         default:
                             fprintf(stdout, "expr `");
                             expr_print(e_ptr);
                             fprintf(stdout, "` of unknown type passed to print\n");
-                            break;
+                            exit(1);
                     }
+
+                    // pop caller save registers
+                    fprintf(file, "POP %%r11\n");
+                    fprintf(file, "POP %%r10\n");
+
                     TYPE_FREE(t);
 
                     // reclaim register
@@ -378,3 +393,5 @@ void stmt_codegen(struct stmt *s, FILE *file) {
         s_ptr = s_ptr->next;
     }
 }
+
+#undef FN_MANGLE_PREFIX

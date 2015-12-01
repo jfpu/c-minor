@@ -8,6 +8,12 @@
 #include "type.h"
 #include "register.h"
 
+#ifdef __linux__
+#define FN_MANGLE_PREFIX ""
+#else
+#define FN_MANGLE_PREFIX "_"
+#endif
+
 struct decl *decl_create(char *name, struct type *t, struct expr *v, struct stmt *c, struct decl *next) {
     struct decl *d = (struct decl *)malloc(sizeof(*d));
     memset(d, 0, sizeof(*d));
@@ -260,8 +266,8 @@ void decl_codegen_individual(struct decl *d, FILE *file) {
         if (!d->code) return;
 
         fprintf(file, ".text\n");
-        fprintf(file, ".global %s\n", d->symbol->name);
-        fprintf(file, "%s:\n", d->symbol->name);
+        fprintf(file, ".global %s%s\n", FN_MANGLE_PREFIX, d->symbol->name);
+        fprintf(file, "%s%s:\n", FN_MANGLE_PREFIX, d->symbol->name);
 
         // set up call stack
         fprintf(file, "PUSH %%rbp\n");
@@ -274,19 +280,26 @@ void decl_codegen_individual(struct decl *d, FILE *file) {
         }
         struct param_list *p_ptr = d->type->params;
         while (p_ptr) {
-            fprintf(file, "PUSH %s\n", param_register_name(p_ptr->symbol->which));
+            fprintf(file, "push %s\n", param_register_name(p_ptr->symbol->which));
         }
 
         // for the total number of local variables, make room in the stack
-        int rsp_move_amount = 8 * d->symbol->local_count;
-        fprintf(file, "SUB $%d, %%rsp\n", rsp_move_amount);
+        // OS X requires 16-bit stack alignment
+        int rsp_move_amount;
+        if (d->symbol->local_count % 2 == 1) {
+            rsp_move_amount = 8 * (d->symbol->local_count + 1);
+        } else {
+            rsp_move_amount = 8 * d->symbol->local_count;
+        }
+        fprintf(file, "sub $%d, %%rsp\n", rsp_move_amount);
 
         // then save callee-save registers
-        fprintf(file, "PUSH %%rbx\n");
-        fprintf(file, "PUSH %%r12\n");
-        fprintf(file, "PUSH %%r13\n");
-        fprintf(file, "PUSH %%r14\n");
-        fprintf(file, "PUSH %%r15\n");
+        fprintf(file, "push $0\n");
+        fprintf(file, "push %%rbx\n");
+        fprintf(file, "push %%r12\n");
+        fprintf(file, "push %%r13\n");
+        fprintf(file, "push %%r14\n");
+        fprintf(file, "push %%r15\n");
 
         // then generate code
         stmt_codegen(d->code, file);
@@ -300,3 +313,5 @@ void decl_codegen_individual(struct decl *d, FILE *file) {
         exit(1);
     }
 }
+
+#undef FN_MANGLE_PREFIX
