@@ -641,7 +641,7 @@ void expr_codegen(struct expr *e, FILE *file) {
             // we need the right children
             expr_codegen(e->right, file);
             // negate right
-            fprintf(file, "SUB $0, %s\n", register_name(e->right->reg));
+            fprintf(file, "NEG %s\n", register_name(e->right->reg));
 
             // register maneuver
             e->reg = e->right->reg;
