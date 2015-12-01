@@ -26,13 +26,17 @@ char *symbol_code(struct symbol *s) {
     switch (s->kind) {
         case SYMBOL_GLOBAL: {
             // globals are referred to by label
-            return s->name;
+            // need relative addressing
+            int name_len = strlen(s->name);
+            char *str = (char *)malloc(name_len + 6 * sizeof(char));
+            sprintf(str, "%s(%%rip)", s->name);
+            return str;
         }
         case SYMBOL_LOCAL: {
             // locals are accessed with offset(%rbp)
             int offset = 8 + s->param_count * 8 + s->which * 8;
             int num_len = (int)ceil(log10(offset));
-            char *str = (char *)malloc(num_len + 8);
+            char *str = (char *)malloc(num_len + 8 * sizeof(char));
             sprintf(str, "-%d(%%rbp)", offset);
             return str;
         }
@@ -40,7 +44,7 @@ char *symbol_code(struct symbol *s) {
             // params are accessed with offset(%rbp) too
             int offset = 8 + s->which * 8;
             int num_len = (int)ceil(log10(offset));
-            char *str = (char *)malloc(num_len + 8);
+            char *str = (char *)malloc(num_len + 8 * sizeof(char));
             sprintf(str, "-%d(%%rbp)", offset);
             return str;
         }
