@@ -1,0 +1,27 @@
+// Test case 4
+// Global declarations
+
+a: integer = 15;
+a_: integer;
+
+b: boolean = true;
+b_: boolean;
+
+c: char = 'c';
+c_: char;
+
+s: string = "abcde";
+s_: string;
+
+main: function integer () = {
+
+  print a, ' ', b, ' ', c, ' ', s, '\n';
+
+  a_ = a;
+  b_ = b;
+  c_ = c;
+  s_ = s;
+  print a_, ' ', b_, ' ', c_, ' ', s_, '\n';
+
+  return 0;
+}

@@ -1,0 +1,15 @@
+// Test case 7
+// Logical operators on local variables
+
+main: function integer () = {
+  a1: integer = 15;
+  a2: integer = 7;
+  b1: boolean = true;
+  b2: boolean = false;
+  c1: char = 'c';
+  c2: char = 'd';
+  s1: string = "abcde";
+  s2: string = "abcd";
+
+  return 0;
+}

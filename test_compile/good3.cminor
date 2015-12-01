@@ -1,0 +1,47 @@
+// Test case 3
+// Basic boolean expressions
+
+main: function integer () = {
+  print 1 < 2, '\n';
+  print 1 <= 2, '\n';
+  print 2 > 1, '\n';
+  print 2 >= 1, '\n';
+  print 1 == 1, '\n';
+  print 1 != 2, '\n';
+
+  print 2 < 1, '\n';
+  print 2 <= 1, '\n';
+  print 1 > 2, '\n';
+  print 1 >= 2, '\n';
+  print 1 == 2, '\n';
+  print 1 != 1, '\n';
+
+  print 'a' == 'a', '\n';
+  print "abcd" == "abcd", '\n';
+  print true == true, '\n';
+  print 'a' != 'b', '\n';
+  print "abcd" != "abcde", '\n';
+  print true != false, '\n';
+
+  print 'a' != 'a', '\n';
+  print "abcd" != "abcd", '\n';
+  print true != true, '\n';
+  print 'a' == 'b', '\n';
+  print "abcd" == "abcde", '\n';
+  print true == false, '\n';
+
+  print true && true, '\n';
+  print false && true, '\n';
+  print true && false, '\n';
+  print false && false, '\n';
+
+  print true || true, '\n';
+  print false || true, '\n';
+  print true || false, '\n';
+  print false || false, '\n';
+
+  print !true, '\n';
+  print !false, '\n';
+
+  return 0;
+}

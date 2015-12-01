@@ -1,5 +1,5 @@
 // Test case 2
-// basic arithmetic expressions
+// Basic arithmetic expressions
 
 main: function integer () = {
   print 5 + 8, '\n';
@@ -7,4 +7,8 @@ main: function integer () = {
   print 5 - 8, '\n';
   print 5 * 8, '\n';
   print 10 / 5, '\n';
+  print 10 % 5, '\n';
+  print 12 % 5, '\n';
+  print -1, '\n';
+  print 2 ^ 3, '\n';
 }
