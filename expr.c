@@ -860,7 +860,7 @@ void expr_codegen(struct expr *e, FILE *file) {
             }
 
             e->reg = e->right->reg;
-            fprintf(file, "CMP %s, %s\n", register_name(e->left->reg), register_name(e->right->reg));
+            fprintf(file, "CMP %s, %s\n", register_name(e->right->reg), register_name(e->left->reg));
             fprintf(file, "%s label%d\n", jump_action, true_label);
             fprintf(file, "MOV $0, %s\n", register_name(e->reg));
             fprintf(file, "JMP label%d\n", end_label);
