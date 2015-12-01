@@ -8,7 +8,7 @@ trans_dict = {
 }
 
 if ARGV.count != 1 or !trans_dict.has_key?(ARGV[0])
-  warn "invalid option [lex, parse, typecheck]"
+  warn "invalid option [lex, parse, typecheck, compile]"
   exit 1
 end
 
