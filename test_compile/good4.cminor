@@ -15,12 +15,18 @@ s_: string;
 
 main: function integer () = {
 
+  print "expected:\n";
+  print "15 true c abcde\n"
+  print "actual:\n";
   print a, ' ', b, ' ', c, ' ', s, '\n';
 
   a_ = a;
   b_ = b;
   c_ = c;
   s_ = s;
+  print "expected:\n";
+  print "15 true c abcde\n"
+  print "actual:\n";
   print a_, ' ', b_, ' ', c_, ' ', s_, '\n';
 
   return 0;
