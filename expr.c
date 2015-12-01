@@ -725,6 +725,9 @@ void expr_codegen(struct expr *e, FILE *file) {
         case EXPR_INC:
         case EXPR_DEC: {
             const char *action = (e->kind == EXPR_INC) ? "INC" : "DEC";
+            // evaluate e->right (name)
+            expr_codegen(e->right, file);
+
             // claim a new register for result
             e->reg = register_alloc();
             // move expression's value to result register
