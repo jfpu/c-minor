@@ -19,7 +19,7 @@ main: function integer () = {
   print "1 = ", a1 % a2, '\n';
   print "7 = ", a2 % a1, '\n';
 
-  print "-22 = ", -a1 + -a2;
+  print "-22 = ", -a1 + -a2, '\n';
 
   print "15 = ", a1++, '\n';
   print "16 = ", a1, '\n';
