@@ -603,12 +603,12 @@ void expr_codegen(struct expr *e, FILE *file) {
         case EXPR_CHARACTER:
         case EXPR_BOOLEAN: {
             e->reg = register_alloc();
-            fprintf(file, "MOV $%d, %s\n", e->literal_value, register_name(e->reg));
+            fprintf(file, "mov $%d, %s\n", e->literal_value, register_name(e->reg));
             break;
         }
         case EXPR_NAME: {
             e->reg = register_alloc();
-            fprintf(file, "MOV %s, %s\n", symbol_code(e->symbol), register_name(e->reg));
+            fprintf(file, "mov %s, %s\n", symbol_code(e->symbol), register_name(e->reg));
             break;
         }
         case EXPR_STRING: {
@@ -633,7 +633,7 @@ void expr_codegen(struct expr *e, FILE *file) {
             expr_codegen(e->right, file);
 
             // add/sub left with right
-            const char *action = (e->kind == EXPR_ADD) ? "ADD" : "SUB";
+            const char *action = (e->kind == EXPR_ADD) ? "add" : "sub";
             fprintf(file, "%s %s, %s\n", action, register_name(e->right->reg), register_name(e->left->reg));
 
             // destructive: the right register has the result
@@ -647,7 +647,7 @@ void expr_codegen(struct expr *e, FILE *file) {
             // we need the right children
             expr_codegen(e->right, file);
             // negate right
-            fprintf(file, "NEG %s\n", register_name(e->right->reg));
+            fprintf(file, "neg %s\n", register_name(e->right->reg));
 
             // register maneuver
             e->reg = e->right->reg;
@@ -658,7 +658,7 @@ void expr_codegen(struct expr *e, FILE *file) {
             // evaluate right
             expr_codegen(e->right, file);
             // assign value to left
-            fprintf(file, "MOV %s, %s\n", register_name(e->right->reg), symbol_code(e->left->symbol));
+            fprintf(file, "mov %s, %s\n", register_name(e->right->reg), symbol_code(e->left->symbol));
 
             // expr evaluates to right
             e->reg = e->right->reg;
@@ -672,24 +672,24 @@ void expr_codegen(struct expr *e, FILE *file) {
             expr_codegen(e->right, file);
 
             // move left register into %rax
-            fprintf(file, "MOV %s, %%rax\n", register_name(e->left->reg));
+            fprintf(file, "mov %s, %%rax\n", register_name(e->left->reg));
 
             if (e->kind == EXPR_MUL) {
                 // multiply with the right register
-                fprintf(file, "IMUL %s\n", register_name(e->right->reg));
+                fprintf(file, "imul %s\n", register_name(e->right->reg));
             } else {
                 // sign extend %rax
-                fprintf(file, "CQO\n");
+                fprintf(file, "cqo\n");
                 // divide by right register
-                fprintf(file, "IDIV %s\n", register_name(e->right->reg));
+                fprintf(file, "idiv %s\n", register_name(e->right->reg));
             }
 
             if (e->kind == EXPR_MOD) {
                 // move rdx into result register
-                fprintf(file, "MOV %%rdx, %s\n", register_name(e->right->reg));
+                fprintf(file, "mov %%rdx, %s\n", register_name(e->right->reg));
             } else {
                 // move rax into result register
-                fprintf(file, "MOV %%rax, %s\n", register_name(e->right->reg));
+                fprintf(file, "mov %%rax, %s\n", register_name(e->right->reg));
             }
 
             // register maneuver
@@ -706,36 +706,36 @@ void expr_codegen(struct expr *e, FILE *file) {
             expr_codegen(e->right, file);
 
             // call integer_power
-            fprintf(file, "MOV %s, %s\n", register_name(e->left->reg), param_register_name(0));
+            fprintf(file, "mov %s, %s\n", register_name(e->left->reg), param_register_name(0));
             register_free(e->left->reg);
-            fprintf(file, "MOV %s, %s\n", register_name(e->right->reg), param_register_name(1));
+            fprintf(file, "mov %s, %s\n", register_name(e->right->reg), param_register_name(1));
             register_free(e->right->reg);
 
-            fprintf(file, "PUSH %%r10\n");
-            fprintf(file, "PUSH %%r11\n");
-            fprintf(file, "CALL %sinteger_power\n", FN_MANGLE_PREFIX);
-            fprintf(file, "POP %%r11\n");
-            fprintf(file, "POP %%r10\n");
+            fprintf(file, "push %%r10\n");
+            fprintf(file, "push %%r11\n");
+            fprintf(file, "call %sinteger_power\n", FN_MANGLE_PREFIX);
+            fprintf(file, "pop %%r11\n");
+            fprintf(file, "pop %%r10\n");
 
             // store result
             e->reg = register_alloc();
-            fprintf(file, "MOV %%rax, %s\n", register_name(e->reg));
+            fprintf(file, "mov %%rax, %s\n", register_name(e->reg));
             break;
         }
         case EXPR_INC:
         case EXPR_DEC: {
-            const char *action = (e->kind == EXPR_INC) ? "INC" : "DEC";
+            const char *action = (e->kind == EXPR_INC) ? "inc" : "dec";
             // evaluate e->right (name)
             expr_codegen(e->right, file);
 
             // claim a new register for result
             e->reg = register_alloc();
             // move expression's value to result register
-            fprintf(file, "MOV %s, %s\n", register_name(e->right->reg), register_name(e->reg));
+            fprintf(file, "mov %s, %s\n", register_name(e->right->reg), register_name(e->reg));
             // increment/decrement
             fprintf(file, "%s %s\n", action, register_name(e->right->reg));
             // store incremented value back to variable
-            fprintf(file, "MOV %s, %s\n", register_name(e->right->reg), symbol_code(e->right->symbol));
+            fprintf(file, "mov %s, %s\n", register_name(e->right->reg), symbol_code(e->right->symbol));
             // free temporary register
             register_free(e->right->reg);
             e->right->reg = -1;
@@ -749,23 +749,23 @@ void expr_codegen(struct expr *e, FILE *file) {
             expr_codegen(e->left, file);
 
             // if left is false, jump to false label
-            fprintf(file, "CMP $0, %s\n", register_name(e->left->reg));
-            fprintf(file, "JE .label%d\n", false_label);
+            fprintf(file, "cmp $0, %s\n", register_name(e->left->reg));
+            fprintf(file, "je .label%d\n", false_label);
 
             // otherwise evaluate right
             expr_codegen(e->right, file);
 
             // if right is false, jump to false label
-            fprintf(file, "CMP $0, %s\n", register_name(e->right->reg));
-            fprintf(file, "JE .label%d\n", false_label);
+            fprintf(file, "cmp $0, %s\n", register_name(e->right->reg));
+            fprintf(file, "je .label%d\n", false_label);
 
             // now both sides are true, evaluates to true
-            fprintf(file, "MOV $1, %s\n", register_name(e->left->reg));
-            fprintf(file, "JMP .label%d\n", end_label);
+            fprintf(file, "mov $1, %s\n", register_name(e->left->reg));
+            fprintf(file, "jmp .label%d\n", end_label);
 
             // false label: evaluates to false
             fprintf(file, ".label%d:\n", false_label);
-            fprintf(file, "MOV $0, %s\n", register_name(e->left->reg));
+            fprintf(file, "mov $0, %s\n", register_name(e->left->reg));
 
             // end label
             fprintf(file, ".label%d:\n", end_label);
@@ -785,23 +785,23 @@ void expr_codegen(struct expr *e, FILE *file) {
             expr_codegen(e->left, file);
 
             // if left is true, jump to true label
-            fprintf(file, "CMP $1, %s\n", register_name(e->left->reg));
-            fprintf(file, "JE .label%d\n", true_label);
+            fprintf(file, "cmp $1, %s\n", register_name(e->left->reg));
+            fprintf(file, "je .label%d\n", true_label);
 
             // otherwise evaluate right
             expr_codegen(e->right, file);
 
             // if right is true, jump to true label
-            fprintf(file, "CMP $1, %s\n", register_name(e->right->reg));
-            fprintf(file, "JE .label%d\n", true_label);
+            fprintf(file, "cmp $1, %s\n", register_name(e->right->reg));
+            fprintf(file, "je .label%d\n", true_label);
 
             // now both sides are false, evaluates to false
-            fprintf(file, "MOV $0, %s\n", register_name(e->left->reg));
-            fprintf(file, "JMP .label%d\n", end_label);
+            fprintf(file, "mov $0, %s\n", register_name(e->left->reg));
+            fprintf(file, "jmp .label%d\n", end_label);
 
             // true label: evaluates to true
             fprintf(file, ".label%d:\n", true_label);
-            fprintf(file, "MOV $1, %s\n", register_name(e->left->reg));
+            fprintf(file, "mov $1, %s\n", register_name(e->left->reg));
 
             // end label
             fprintf(file, ".label%d:\n", end_label);
@@ -840,22 +840,22 @@ void expr_codegen(struct expr *e, FILE *file) {
 
             const char *jump_action;
             if (e->kind == EXPR_LT) {
-                jump_action = "JL";
+                jump_action = "jl";
             } else if (e->kind == EXPR_LE) {
-                jump_action = "JLE";
+                jump_action = "jle";
             } else if (e->kind == EXPR_GT) {
-                jump_action = "JG";
+                jump_action = "jg";
             } else {
-                jump_action = "JGE";
+                jump_action = "jge";
             }
 
             e->reg = e->right->reg;
-            fprintf(file, "CMP %s, %s\n", register_name(e->right->reg), register_name(e->left->reg));
+            fprintf(file, "cmp %s, %s\n", register_name(e->right->reg), register_name(e->left->reg));
             fprintf(file, "%s label%d\n", jump_action, true_label);
-            fprintf(file, "MOV $0, %s\n", register_name(e->reg));
-            fprintf(file, "JMP label%d\n", end_label);
+            fprintf(file, "mov $0, %s\n", register_name(e->reg));
+            fprintf(file, "jmp label%d\n", end_label);
             fprintf(file, "label%d:\n", true_label);
-            fprintf(file, "MOV $1, %s\n", register_name(e->reg));
+            fprintf(file, "mov $1, %s\n", register_name(e->reg));
             fprintf(file, "label%d:\n", end_label);
 
             // reclaim registers
@@ -906,12 +906,12 @@ void expr_codegen(struct expr *e, FILE *file) {
                 }
 
                 e->reg = e->right->reg;
-                fprintf(file, "CMP %s, %s\n", register_name(e->right->reg), register_name(e->left->reg));
+                fprintf(file, "cmp %s, %s\n", register_name(e->right->reg), register_name(e->left->reg));
                 fprintf(file, "%s label%d\n", jump_action, true_label);
-                fprintf(file, "MOV $0, %s\n", register_name(e->reg));
-                fprintf(file, "JMP label%d\n", end_label);
+                fprintf(file, "mov $0, %s\n", register_name(e->reg));
+                fprintf(file, "jmp label%d\n", end_label);
                 fprintf(file, "label%d:\n", true_label);
-                fprintf(file, "MOV $1, %s\n", register_name(e->reg));
+                fprintf(file, "mov $1, %s\n", register_name(e->reg));
                 fprintf(file, "label%d:\n", end_label);
             }
             TYPE_FREE(t);
@@ -935,7 +935,7 @@ void expr_codegen(struct expr *e, FILE *file) {
                 // for each argument, codegen
                 expr_codegen(e_ptr, file);
                 // store
-                fprintf(file, "MOV %s, %s\n", register_name(e_ptr->reg), param_register_name(arg_count));
+                fprintf(file, "mov %s, %s\n", register_name(e_ptr->reg), param_register_name(arg_count));
                 // clean up temporary register
                 register_free(e_ptr->reg);
                 e_ptr->reg = -1;
@@ -946,19 +946,19 @@ void expr_codegen(struct expr *e, FILE *file) {
             }
 
             // push caller save registers (r10, r11)
-            fprintf(file, "PUSH %%r10\n");
-            fprintf(file, "PUSH %%r11\n");
+            fprintf(file, "push %%r10\n");
+            fprintf(file, "push %%r11\n");
 
             // call function
-            fprintf(file, "CALL %s%s\n", e->left->name, FN_MANGLE_PREFIX);
+            fprintf(file, "call %s%s\n", e->left->name, FN_MANGLE_PREFIX);
 
             // pop caller save registers
-            fprintf(file, "POP %%r11\n");
-            fprintf(file, "POP %%r10\n");
+            fprintf(file, "pop %%r11\n");
+            fprintf(file, "pop %%r10\n");
 
             // store result
             e->reg = register_alloc();
-            fprintf(file, "MOV %%rax, %s\n", register_name(e->reg));
+            fprintf(file, "mov %%rax, %s\n", register_name(e->reg));
             break;
         }
         case EXPR_ARRAY_DEREF: {

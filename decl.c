@@ -281,8 +281,8 @@ void decl_codegen_individual(struct decl *d, FILE *file) {
         fprintf(file, "%s%s:\n", FN_MANGLE_PREFIX, d->symbol->name);
 
         // set up call stack
-        fprintf(file, "PUSH %%rbp\n");
-        fprintf(file, "MOV %%rsp, %%rbp\n");
+        fprintf(file, "push %%rbp\n");
+        fprintf(file, "mov %%rsp, %%rbp\n");
 
         // for each parameter, push it on the stack
         if (d->symbol->param_count > 6) {

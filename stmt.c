@@ -254,14 +254,14 @@ void stmt_typecheck(struct stmt *s, const char *name, struct type *expected) {
 }
 
 #define UNWIND_STACK(__file) {              \
-    fprintf((__file), "POP %%r15\n");       \
-    fprintf((__file), "POP %%r14\n");       \
-    fprintf((__file), "POP %%r13\n");       \
-    fprintf((__file), "POP %%r12\n");       \
-    fprintf((__file), "POP %%rbx\n");       \
-    fprintf((__file), "MOV %%rbp, %%rsp\n");\
-    fprintf((__file), "POP %%rbp\n");       \
-    fprintf((__file), "RET\n");             \
+    fprintf((__file), "pop %%r15\n");       \
+    fprintf((__file), "pop %%r14\n");       \
+    fprintf((__file), "pop %%r13\n");       \
+    fprintf((__file), "pop %%r12\n");       \
+    fprintf((__file), "pop %%rbx\n");       \
+    fprintf((__file), "mov %%rbp, %%rsp\n");\
+    fprintf((__file), "pop %%rbp\n");       \
+    fprintf((__file), "ret\n");             \
 }
 
 void stmt_codegen(struct stmt *s, FILE *file) {
@@ -284,10 +284,10 @@ void stmt_codegen(struct stmt *s, FILE *file) {
                 int end_label = label_count++;
 
                 expr_codegen(s_ptr->expr, file);
-                fprintf(file, "CMP %s, $0\n", register_name(s_ptr->expr->reg));
-                fprintf(file, "JE .label%d\n", false_label);
+                fprintf(file, "cmp %s, $0\n", register_name(s_ptr->expr->reg));
+                fprintf(file, "je .label%d\n", false_label);
                 stmt_codegen(s_ptr->body, file);
-                fprintf(file, "JMP .label%d\n", end_label);
+                fprintf(file, "jmp .label%d\n", end_label);
                 fprintf(file, ".label%d:\n", false_label);
                 stmt_codegen(s_ptr->else_body, file);
                 fprintf(file, ".label%d:\n", end_label);
@@ -304,15 +304,15 @@ void stmt_codegen(struct stmt *s, FILE *file) {
                 // loop body
                 fprintf(file, ".label%d\n", loop_begin_label);
                 expr_codegen(s_ptr->expr, file);
-                fprintf(file, "CMP %s, $0\n", register_name(s_ptr->expr->reg));
+                fprintf(file, "cmp %s, $0\n", register_name(s_ptr->expr->reg));
                 register_free(s_ptr->expr->reg);
-                fprintf(file, "JE .label%d\n", loop_end_label);
+                fprintf(file, "je .label%d\n", loop_end_label);
                 stmt_codegen(s_ptr->body, file);
 
                 // next
                 expr_codegen(s_ptr->next_expr, file);
                 register_free(s_ptr->next_expr->reg);
-                fprintf(file, "JMP .label%d\n", loop_begin_label);
+                fprintf(file, "jmp .label%d\n", loop_begin_label);
                 fprintf(file, ".label%d\n", loop_end_label);
                 break;
             }
@@ -322,29 +322,29 @@ void stmt_codegen(struct stmt *s, FILE *file) {
                     expr_codegen(e_ptr, file);
 
                     // push caller save registers (r10, r11)
-                    fprintf(file, "PUSH %%r10\n");
-                    fprintf(file, "PUSH %%r11\n");
+                    fprintf(file, "push %%r10\n");
+                    fprintf(file, "push %%r11\n");
 
                     struct type *t = expr_typecheck(e_ptr);
                     switch (t->kind) {
                         case TYPE_BOOLEAN: {
-                            fprintf(file, "MOV %s, %%rdi\n", register_name(e_ptr->reg));
-                            fprintf(file, "CALL %sprint_boolean\n", FN_MANGLE_PREFIX);
+                            fprintf(file, "mov %s, %%rdi\n", register_name(e_ptr->reg));
+                            fprintf(file, "call %sprint_boolean\n", FN_MANGLE_PREFIX);
                             break;
                         }
                         case TYPE_CHARACTER: {
-                            fprintf(file, "MOV %s, %%rdi\n", register_name(e_ptr->reg));
-                            fprintf(file, "CALL %sprint_character\n", FN_MANGLE_PREFIX);
+                            fprintf(file, "mov %s, %%rdi\n", register_name(e_ptr->reg));
+                            fprintf(file, "call %sprint_character\n", FN_MANGLE_PREFIX);
                             break;
                         }
                         case TYPE_INTEGER: {
-                            fprintf(file, "MOV %s, %%rdi\n", register_name(e_ptr->reg));
-                            fprintf(file, "CALL %sprint_integer\n", FN_MANGLE_PREFIX);
+                            fprintf(file, "mov %s, %%rdi\n", register_name(e_ptr->reg));
+                            fprintf(file, "call %sprint_integer\n", FN_MANGLE_PREFIX);
                             break;
                         }
                         case TYPE_STRING: {
-                            fprintf(file, "MOV %s, %%rdi\n", register_name(e_ptr->reg));
-                            fprintf(file, "CALL %sprint_string\n", FN_MANGLE_PREFIX);
+                            fprintf(file, "mov %s, %%rdi\n", register_name(e_ptr->reg));
+                            fprintf(file, "call %sprint_string\n", FN_MANGLE_PREFIX);
                             break;
                         }
                         default:
@@ -355,8 +355,8 @@ void stmt_codegen(struct stmt *s, FILE *file) {
                     }
 
                     // pop caller save registers
-                    fprintf(file, "POP %%r11\n");
-                    fprintf(file, "POP %%r10\n");
+                    fprintf(file, "pop %%r11\n");
+                    fprintf(file, "pop %%r10\n");
 
                     TYPE_FREE(t);
 
@@ -373,7 +373,7 @@ void stmt_codegen(struct stmt *s, FILE *file) {
                 // generate return value
                 expr_codegen(s_ptr->expr, file);
                 // move into %rax
-                fprintf(file, "MOV %s, %%rax\n", register_name(s_ptr->expr->reg));
+                fprintf(file, "mov %s, %%rax\n", register_name(s_ptr->expr->reg));
                 register_free(s_ptr->expr->reg);
                 // unwind stack
                 UNWIND_STACK(file);
