@@ -18,7 +18,7 @@ lex lex.yy.c lex.yy.h: lexer.l parser.tab.h
 parse parser.tab.c parser.tab.h: parser.y
 	bison parser.y --report=state
 
-clean:
+clean: wipeass
 	rm -f lex.yy.c lex.yy.h parser.tab.c parser.tab.h parser.output *.o *.s *.out cminor
 
 wipeass:
