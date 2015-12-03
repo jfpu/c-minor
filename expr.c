@@ -483,7 +483,24 @@ struct type *expr_typecheck(struct expr *e) {
 
         // &&, ||, ! work on booleans
         case EXPR_LAND:
-        case EXPR_LOR:
+        case EXPR_LOR: {
+            type_left = expr_typecheck(e->left);
+            type_right = expr_typecheck(e->right);
+            if (type_left->kind != TYPE_BOOLEAN
+                || type_right->kind != TYPE_BOOLEAN) {
+                // error
+                ++error_count_type;
+                printf("type error: cannot perform boolean operator on expression of type ");
+                type_print(type_left);
+                printf(" with expression of type ");
+                type_print(type_right);
+                printf("\n");
+            }
+            TYPE_FREE(type_left);
+            TYPE_FREE(type_right);
+            return type_create(TYPE_BOOLEAN, NULL, NULL);
+        }
+
         case EXPR_LNOT: {
             type_right = expr_typecheck(e->right);
             if (type_right->kind != TYPE_BOOLEAN) {
