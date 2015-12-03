@@ -298,8 +298,10 @@ void stmt_codegen(struct stmt *s, FILE *file) {
                 int loop_end_label = label_count++;
 
                 // init
-                expr_codegen(s_ptr->init_expr, file);
-                register_free(s_ptr->init_expr->reg);
+                if (s_ptr->init_expr) {
+                    expr_codegen(s_ptr->init_expr, file);
+                    register_free(s_ptr->init_expr->reg);
+                }
 
                 // loop body
                 fprintf(file, ".label%d\n", loop_begin_label);
@@ -310,8 +312,11 @@ void stmt_codegen(struct stmt *s, FILE *file) {
                 stmt_codegen(s_ptr->body, file);
 
                 // next
-                expr_codegen(s_ptr->next_expr, file);
-                register_free(s_ptr->next_expr->reg);
+                if (s_ptr->next_expr) {
+                    expr_codegen(s_ptr->next_expr, file);
+                    register_free(s_ptr->next_expr->reg);
+                }
+
                 fprintf(file, "jmp .label%d\n", loop_begin_label);
                 fprintf(file, ".label%d\n", loop_end_label);
                 break;
