@@ -967,7 +967,7 @@ void expr_codegen(struct expr *e, FILE *file) {
             fprintf(file, "push %%r11\n");
 
             // call function
-            fprintf(file, "call %s%s\n", e->left->name, FN_MANGLE_PREFIX);
+            fprintf(file, "call %s%s\n", FN_MANGLE_PREFIX, e->left->name);
 
             // pop caller save registers
             fprintf(file, "pop %%r11\n");
