@@ -13,6 +13,7 @@ struct symbol *symbol_create(symbol_t kind, int which, struct type *type, char *
     s->name = name;
     s->param_count = 0;
     s->local_count = 0;
+    s->is_prototype_only = 1;
     return s;
 }
 

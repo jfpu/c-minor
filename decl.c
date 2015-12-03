@@ -64,8 +64,8 @@ void decl_resolve(struct decl *d, int *which, int param_count) {
     while (d_ptr) {
 
         struct symbol *looked_up = scope_lookup_current(d_ptr->name);
-        if (looked_up) {
-            // if the name already exists in current scope, error
+        if (looked_up && !(looked_up->type->kind == TYPE_FUNCTION && looked_up->is_prototype_only)) {
+            // if the name already exists in current scope, and it's not a funciton prototype, error
             ++error_count_name;
             printf("name error: duplicate declaration for name `%s` with type ", d_ptr->name);
             type_print(d_ptr->type);
@@ -73,8 +73,28 @@ void decl_resolve(struct decl *d, int *which, int param_count) {
             type_print(looked_up->type);
             printf(")\n");
 
-            // bind the symbol to avoid issues in type checking
-            d_ptr->symbol = looked_up;
+        } else if (looked_up && looked_up->type->kind == TYPE_FUNCTION && looked_up->is_prototype_only) {
+            // we're defining a previously declared function
+            struct symbol *s = looked_up;
+            if (__print_name_resolution_result) { print_name_resolution(s); }
+
+            // we could re-resolve the parameters without issues
+            scope_enter();
+            function_param_resolve(d_ptr->type, d_ptr->name);
+            s->param_count = param_list_length(d_ptr->type->params);
+
+            if (d_ptr->code) {
+                // if code is supplied, resolve code
+                int new_function_scope_which = 0;
+                stmt_resolve(d_ptr->code, &new_function_scope_which, s->param_count);
+
+                // new_function_scope_which comes back as the total number of locals
+                s->local_count = new_function_scope_which;
+
+                // function is not prototype only, set accordingly
+                s->is_prototype_only = 0;
+            }
+            scope_exit();
 
         } else {
             // all good: create a new symbol and bind to current scope
@@ -107,6 +127,9 @@ void decl_resolve(struct decl *d, int *which, int param_count) {
 
                 // new_function_scope_which comes back as the total number of locals
                 s->local_count = new_function_scope_which;
+
+                // function is not prototype only, set accordingly
+                s->is_prototype_only = 0;
             }
             scope_exit();
         }

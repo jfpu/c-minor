@@ -18,6 +18,7 @@ struct symbol {
     // for functions
     int param_count;
     int local_count;
+    int is_prototype_only;
 };
 
 struct symbol *symbol_create(symbol_t kind, int which, struct type *type, char *name);
