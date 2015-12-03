@@ -13,4 +13,6 @@ main: function integer () = {
   } else {
     print "else branch correctly taken", '\n';
   }
+
+  return 0;
 }
