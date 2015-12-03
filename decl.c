@@ -338,6 +338,16 @@ void decl_codegen_individual(struct decl *d, FILE *file) {
         // then generate code
         stmt_codegen(d->code, file);
 
+        // then unwind stack
+        fprintf(file, "pop %%r15\n");
+        fprintf(file, "pop %%r14\n");
+        fprintf(file, "pop %%r13\n");
+        fprintf(file, "pop %%r12\n");
+        fprintf(file, "pop %%rbx\n");
+        fprintf(file, "mov %%rbp, %%rsp\n");
+        fprintf(file, "pop %%rbp\n");
+        fprintf(file, "ret\n");
+
     } else if (d->symbol->kind == SYMBOL_LOCAL) {
         // local data
         // if there is initialization, set the value

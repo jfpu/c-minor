@@ -384,8 +384,7 @@ void stmt_codegen(struct stmt *s, FILE *file) {
                 break;
             }
             case STMT_EMPTY: {
-                // we need to unwind the stack here too
-                UNWIND_STACK(file);
+                // do nothing!
                 break;
             }
         }
@@ -394,4 +393,5 @@ void stmt_codegen(struct stmt *s, FILE *file) {
     }
 }
 
+#undef UNWIND_STACK
 #undef FN_MANGLE_PREFIX
