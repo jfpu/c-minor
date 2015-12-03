@@ -20,5 +20,14 @@ main: function integer () = {
     a++;
   }
 
+  a = 0;
+  for (;;) {
+    print "a = ", a, '\n';
+    a++;
+    if (a == 10) {
+      return 0;
+    }
+  }
+
   return 0;
 }
