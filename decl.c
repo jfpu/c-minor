@@ -315,6 +315,7 @@ void decl_codegen_individual(struct decl *d, FILE *file) {
         struct param_list *p_ptr = d->type->params;
         while (p_ptr) {
             fprintf(file, "push %s\n", param_register_name(p_ptr->symbol->which));
+            p_ptr = p_ptr->next;
         }
 
         // for the total number of local variables, make room in the stack
