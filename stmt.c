@@ -305,10 +305,13 @@ void stmt_codegen(struct stmt *s, FILE *file) {
 
                 // loop body
                 fprintf(file, ".label%d:\n", loop_begin_label);
-                expr_codegen(s_ptr->expr, file);
-                fprintf(file, "cmp $0, %s\n", register_name(s_ptr->expr->reg));
-                register_free(s_ptr->expr->reg);
-                fprintf(file, "je .label%d\n", loop_end_label);
+
+                if (s_ptr->expr) {
+                    expr_codegen(s_ptr->expr, file);
+                    fprintf(file, "cmp $0, %s\n", register_name(s_ptr->expr->reg));
+                    register_free(s_ptr->expr->reg);
+                    fprintf(file, "je .label%d\n", loop_end_label);
+                }
                 stmt_codegen(s_ptr->body, file);
 
                 // next
