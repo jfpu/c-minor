@@ -6,6 +6,6 @@ a: function integer (param: integer) = {
 }
 
 main: function integer () = {
-  print a(10), '\n';
+  print "10 = ", a(10), '\n';
   return 0;
 }
