@@ -1,0 +1,24 @@
+// Test case 12
+// Basic for loop
+
+main: function integer () = {
+
+  a: integer;
+
+  for (a = 0; a < 10; a++) {
+    print "a = ", a, '\n';
+  }
+
+  a = 0;
+  for (; a < 10; a++) {
+    print "a = ", a, '\n';
+  }
+
+  a = 0;
+  for (; a < 10;) {
+    print "a = ", a, '\n';
+    a++;
+  }
+
+  return 0;
+}
