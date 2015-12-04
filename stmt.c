@@ -285,6 +285,11 @@ void stmt_codegen(struct stmt *s, FILE *file) {
 
                 expr_codegen(s_ptr->expr, file);
                 fprintf(file, "cmp $0, %s\n", register_name(s_ptr->expr->reg));
+
+                // reclaim register
+                register_free(s_ptr->expr->reg);
+                s_ptr->expr->reg = -1;
+
                 fprintf(file, "je .label%d\n", false_label);
                 stmt_codegen(s_ptr->body, file);
                 fprintf(file, "jmp .label%d\n", end_label);
