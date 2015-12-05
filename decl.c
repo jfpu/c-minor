@@ -96,6 +96,9 @@ void decl_resolve(struct decl *d, int *which, int param_count) {
             }
             scope_exit();
 
+            // associate symbol with decl
+            d_ptr->symbol = s;
+
         } else {
             // all good: create a new symbol and bind to current scope
             // we don't copy d_ptr->type here, because we need to resolve parameters / size later
