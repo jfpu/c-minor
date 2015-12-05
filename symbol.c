@@ -1,5 +1,5 @@
 #include <stdlib.h> // malloc
-#include <string.h> // memset
+#include <string.h> // memset, strlen
 #include "symbol.h"
 #include <math.h>   // log10, ceil
 
@@ -29,7 +29,7 @@ char *symbol_code(struct symbol *s) {
             // globals are referred to by label
             // need relative addressing
             int name_len = strlen(s->name);
-            char *str = (char *)malloc(name_len + 6 * sizeof(char));
+            char *str = (char *)malloc((name_len + 6) * sizeof(char));
             sprintf(str, "%s(%%rip)", s->name);
             return str;
         }
@@ -37,7 +37,7 @@ char *symbol_code(struct symbol *s) {
             // locals are accessed with offset(%rbp)
             int offset = 8 + s->param_count * 8 + s->which * 8;
             int num_len = (int)ceil(log10(offset));
-            char *str = (char *)malloc(num_len + 8 * sizeof(char));
+            char *str = (char *)malloc((num_len + 8) * sizeof(char));
             sprintf(str, "-%d(%%rbp)", offset);
             return str;
         }
@@ -45,7 +45,7 @@ char *symbol_code(struct symbol *s) {
             // params are accessed with offset(%rbp) too
             int offset = 8 + s->which * 8;
             int num_len = (int)ceil(log10(offset));
-            char *str = (char *)malloc(num_len + 8 * sizeof(char));
+            char *str = (char *)malloc((num_len + 8) * sizeof(char));
             sprintf(str, "-%d(%%rbp)", offset);
             return str;
         }
