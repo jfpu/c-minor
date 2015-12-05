@@ -324,7 +324,7 @@ void decl_codegen_individual(struct decl *d, FILE *file) {
         // for the total number of local variables, make room in the stack
         // OS X requires 16-bit stack alignment
         int rsp_move_amount;
-        if (d->symbol->local_count % 2 == 1) {
+        if ((d->symbol->local_count + d->symbol->param_count) % 2 == 1) {
             rsp_move_amount = 8 * (d->symbol->local_count + 1);
         } else {
             rsp_move_amount = 8 * d->symbol->local_count;
