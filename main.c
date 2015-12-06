@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
     SETUP_OPT_STRUCT(options_spec, 1, "print", PARSE);
     SETUP_OPT_STRUCT(options_spec, 2, "resolve", RESOLVE);
     SETUP_OPT_STRUCT(options_spec, 3, "typecheck", CHECK);
-    SETUP_OPT_STRUCT(options_spec, 4, "compile", COMPILE);
+    SETUP_OPT_STRUCT(options_spec, 4, "codegen", COMPILE);
     SETUP_OPT_STRUCT(options_spec, 5, 0, 0);
 
     // process flags

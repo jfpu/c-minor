@@ -4,7 +4,7 @@ trans_dict = {
   "lex" => "scan",
   "parse" => "print",
   "typecheck" => "typecheck",
-  "compile" => "compile"
+  "compile" => "codegen"
 }
 
 if ARGV.count != 1 or !trans_dict.has_key?(ARGV[0])
